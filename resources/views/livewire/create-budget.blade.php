@@ -1,6 +1,6 @@
-<div x-show="createBudget" x-transition class="fixed z-50  pointer-events-none flex left-0 top-0 h-full w-full bg-black bg-opacity-10 backdrop-blur-sm">
+<div x-show="createBudget" x-transition class="fixed left-0 top-0 z-50 flex h-full w-full bg-black bg-opacity-10 backdrop-blur-sm">
     {{-- Card --}}
-    <div x-on:click.away="createBudget = false" class="pointer-events-auto m-auto px-9 h-96 w-80 bg-white rounded-3xl">
+    <div x-on:click.away="createBudget = false" class="m-auto w-80 rounded-2xl bg-white px-8 py-8">
         {{-- Card header --}}
         <div class="py-4 text-gray-800">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="0.6" stroke="currentColor" class="size-24 mx-auto">
@@ -11,17 +11,23 @@
         </div>
 
         {{-- Card body --}}
-        <form class="space-y-5" wire:submit='store'> 
+        <form class="space-y-5" wire:submit="store">
             <div class="space-y-3">
                 <div>
-                    <input wire:model='name' type="text" name="name" id="name" placeholder="Plan name" class="bg-gray-200 px-3 py-2 rounded-xl">
+                    <input wire:model="name" type="text" name="name" id="budget-name" placeholder="Plan name" class="w-full rounded-lg bg-gray-100 px-3 py-2">
+                    @error('name')
+                        <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div>
-                    <input wire:model='income' type="number" min="50000" name="name" id="name" placeholder="2.000.000" class="bg-gray-200 px-3 py-2 rounded-xl">
+                    <input wire:model="income" type="number" min="0" name="income" id="budget-income" placeholder="2000000" class="w-full rounded-lg bg-gray-100 px-3 py-2">
+                    @error('income')
+                        <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
             <div class="flex justify-end">
-                <button class="flex items-center space-x-1 bg-green-500 text-white p-2 rounded-xl">
+                <button type="submit" class="flex items-center space-x-1 rounded-lg bg-green-500 p-2 text-white hover:bg-green-600">
                     <span>GO</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />

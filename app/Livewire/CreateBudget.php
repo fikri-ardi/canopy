@@ -12,12 +12,18 @@ class CreateBudget extends Component
 
     public function store()
     {
-        $budget = Budget::create([
-            'name' => $this->name,
-            'income' => $this->income
+        $validated = $this->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'income' => ['required', 'numeric', 'min:0'],
         ]);
 
-        dd($budget);
+        $budget = Budget::create([
+            'name' => $validated['name'],
+            'income' => $validated['income'],
+        ]);
+
+        $this->reset(['name', 'income']);
+        $this->dispatch('budget-created', budgetId: $budget->id);
     }
 
     public function render()

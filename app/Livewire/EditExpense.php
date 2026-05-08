@@ -2,7 +2,6 @@
 
 namespace App\Livewire;
 
-use Illuminate\Support\Number;
 use Livewire\Component;
 
 class EditExpense extends Component
@@ -29,6 +28,16 @@ class EditExpense extends Component
         $this->spend->update([
             $name => $value
         ]);
+
+        $this->dispatch('expense-updated');
+    }
+
+    public function delete()
+    {
+        $this->spend->delete();
+
+        $this->dispatch('expense-deleted');
+        $this->skipRender();
     }
 
     public function render()

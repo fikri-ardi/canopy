@@ -14,8 +14,8 @@
     <div class="min-h-full flex">
         <livewire:sidebar />
 
-        <main class="w-full">
-            <div class="mx-auto max-w-7xl">
+        <main class="min-w-0 flex-1">
+            <div class="w-full">
                 {{ $slot }}
             </div>
         </main>
