@@ -30,6 +30,7 @@ class ShowExpense extends Component
         return view('livewire.show-expense', [
             'spends' => Spend::with($relations)
                 ->where('budget_id', $this->activeBudgetId)
+                ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
                 ->get(),
         ]);
     }

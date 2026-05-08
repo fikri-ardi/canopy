@@ -24,6 +24,8 @@ class EditExpense extends Component
 
     public function mount($spend = null, $iteration = null)
     {
+        abort_unless($spend && $spend->budget()->where('user_id', auth()->id())->exists(), 404);
+
         $this->iteration = $iteration;
         $this->spend = $spend;
         $this->name = $spend->name;
@@ -34,11 +36,15 @@ class EditExpense extends Component
         $this->label_id = $this->labelsReady ? $spend->label_id : null;
         $this->platforms = Platform::get(['id', 'name']);
         $this->statuses = Status::get(['id', 'body']);
-        $this->labels = $this->labelsReady ? Label::get(['id', 'name']) : collect();
+        $this->labels = $this->labelsReady ? Label::where('user_id', auth()->id())->get(['id', 'name']) : collect();
     }
 
     public function updated($name, $value)
     {
+        if (! $this->spendBelongsToCurrentUser()) {
+            return;
+        }
+
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'regex:/^[0-9.]+$/'],
@@ -47,7 +53,7 @@ class EditExpense extends Component
         ];
 
         if ($this->labelsReady) {
-            $rules['label_id'] = ['nullable', 'exists:labels,id'];
+            $rules['label_id'] = ['nullable', 'exists:labels,id,user_id,'.auth()->id()];
         }
 
         $this->validateOnly($name, $rules);
@@ -62,6 +68,10 @@ class EditExpense extends Component
 
     public function delete()
     {
+        if (! $this->spendBelongsToCurrentUser()) {
+            return;
+        }
+
         $this->spend->delete();
 
         $this->dispatch('expense-deleted');
@@ -75,6 +85,13 @@ class EditExpense extends Component
 
     private function labelsSchemaReady(): bool
     {
-        return Schema::hasTable('labels') && Schema::hasColumn('spends', 'label_id');
+        return Schema::hasTable('labels')
+            && Schema::hasColumn('labels', 'user_id')
+            && Schema::hasColumn('spends', 'label_id');
+    }
+
+    private function spendBelongsToCurrentUser(): bool
+    {
+        return $this->spend?->budget()->where('user_id', auth()->id())->exists() ?? false;
     }
 }

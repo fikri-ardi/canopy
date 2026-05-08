@@ -32,8 +32,9 @@ class CreateExpense extends Component
         $this->labels = collect();
 
         if ($this->labelsReady) {
-            $this->selectedLabel = Label::first() ?? Label::create(['name' => 'General']);
-            $this->labels = Label::get(['id', 'name']);
+            $this->selectedLabel = Label::where('user_id', auth()->id())->first()
+                ?? Label::create(['user_id' => auth()->id(), 'name' => 'General']);
+            $this->labels = Label::where('user_id', auth()->id())->get(['id', 'name']);
         }
 
         $this->activeBudgetId = $activeBudgetId;
@@ -49,9 +50,9 @@ class CreateExpense extends Component
         $this->selectedStatus = $status;
     }
 
-    public function selectLabel(Label $label)
+    public function selectLabel($labelId)
     {
-        $this->selectedLabel = $label;
+        $this->selectedLabel = Label::where('user_id', auth()->id())->find($labelId);
     }
 
     public function store()
@@ -61,7 +62,9 @@ class CreateExpense extends Component
             'amount' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $activeBudget = $this->activeBudgetId ? Budget::find($this->activeBudgetId) : null;
+        $activeBudget = $this->activeBudgetId
+            ? Budget::where('user_id', auth()->id())->find($this->activeBudgetId)
+            : null;
 
         if (! $activeBudget || ! $this->selectedPlatform || ! $this->selectedStatus) {
             return;
@@ -86,7 +89,9 @@ class CreateExpense extends Component
 
     private function labelsSchemaReady(): bool
     {
-        return Schema::hasTable('labels') && Schema::hasColumn('spends', 'label_id');
+        return Schema::hasTable('labels')
+            && Schema::hasColumn('labels', 'user_id')
+            && Schema::hasColumn('spends', 'label_id');
     }
 
     public function render()

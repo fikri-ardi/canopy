@@ -20,14 +20,14 @@ class Budget extends Component
     public function mount()
     {
         $this->refreshBudgets();
-        $this->setActiveBudget(ModelsBudget::first());
+        $this->setActiveBudget($this->userBudgetsQuery()->first());
     }
 
     #[On('budget-created')]
     public function budgetCreated($budgetId = null)
     {
         $this->refreshBudgets();
-        $this->setActiveBudget(ModelsBudget::find($budgetId) ?? ModelsBudget::first());
+        $this->setActiveBudget($this->userBudgetsQuery()->find($budgetId) ?? $this->userBudgetsQuery()->first());
     }
 
     #[On('saved')]
@@ -35,11 +35,17 @@ class Budget extends Component
     #[On('expense-deleted')]
     public function refreshSummary()
     {
-        $this->setActiveBudget($this->activeBudgetId ? ModelsBudget::find($this->activeBudgetId) : null, false);
+        $this->setActiveBudget($this->activeBudgetId ? $this->userBudgetsQuery()->find($this->activeBudgetId) : null, false);
     }
 
-    public function selectBudget(ModelsBudget $budget)
+    public function selectBudget($budgetId)
     {
+        $budget = $this->userBudgetsQuery()->find($budgetId);
+
+        if (! $budget) {
+            return;
+        }
+
         $this->setActiveBudget($budget);
     }
 
@@ -69,10 +75,10 @@ class Budget extends Component
 
     public function deleteActiveBudget()
     {
-        $budget = $this->activeBudgetId ? ModelsBudget::find($this->activeBudgetId) : null;
+        $budget = $this->activeBudgetId ? $this->userBudgetsQuery()->find($this->activeBudgetId) : null;
 
         if (! $budget) {
-            $this->setActiveBudget(ModelsBudget::first());
+            $this->setActiveBudget($this->userBudgetsQuery()->first());
             return;
         }
 
@@ -82,7 +88,7 @@ class Budget extends Component
         });
 
         $this->refreshBudgets();
-        $this->setActiveBudget(ModelsBudget::first());
+        $this->setActiveBudget($this->userBudgetsQuery()->first());
         $this->dispatch('budget-deleted');
     }
 
@@ -96,6 +102,7 @@ class Budget extends Component
 
         $newBudget = DB::transaction(function () use ($sourceBudget) {
             $newBudget = ModelsBudget::create([
+                'user_id' => auth()->id(),
                 'name' => $this->duplicateBudgetName($sourceBudget->name),
                 'income' => $sourceBudget->income,
             ]);
@@ -124,7 +131,12 @@ class Budget extends Component
 
     private function refreshBudgets()
     {
-        $this->budgets = ModelsBudget::get(['id', 'name']);
+        $this->budgets = $this->userBudgetsQuery()->get(['id', 'name']);
+    }
+
+    private function userBudgetsQuery()
+    {
+        return ModelsBudget::query()->where('user_id', auth()->id());
     }
 
     private function setActiveBudget(?ModelsBudget $budget, bool $refreshChildren = true): void
@@ -143,7 +155,7 @@ class Budget extends Component
         $copyName = $baseName;
         $copyNumber = 2;
 
-        while (ModelsBudget::where('name', $copyName)->exists()) {
+        while ($this->userBudgetsQuery()->where('name', $copyName)->exists()) {
             $copyName = $baseName.' '.$copyNumber;
             $copyNumber++;
         }

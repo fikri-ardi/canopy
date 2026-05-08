@@ -18,6 +18,7 @@ class CreateBudget extends Component
         ]);
 
         $budget = Budget::create([
+            'user_id' => auth()->id(),
             'name' => $validated['name'],
             'income' => $validated['income'],
         ]);

@@ -18,6 +18,7 @@ class Dashboard extends Component
 
         $labels = Spend::query()
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
+            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
             ->when($this->search, function ($query) {
                 $query->where(function ($query) {
                     $query->where('labels.name', 'like', '%'.$this->search.'%')
@@ -32,6 +33,7 @@ class Dashboard extends Component
         return $labels->map(function ($label) {
             $items = Spend::query()
                 ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
+                ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
                 ->whereRaw("coalesce(labels.name, 'Unlabeled') = ?", [$label->label_name])
                 ->when($this->search, function ($query) {
                     $query->where(function ($query) {
@@ -63,10 +65,11 @@ class Dashboard extends Component
     private function totalExpense(): int
     {
         if (! $this->labelsSchemaReady()) {
-            return (int) Spend::sum('amount');
+            return (int) Spend::whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))->sum('amount');
         }
 
-        return (int) Spend::when($this->search, function ($query) {
+        return (int) Spend::whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+            ->when($this->search, function ($query) {
             $query->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
                 ->where(function ($query) {
                     $query->where('labels.name', 'like', '%'.$this->search.'%')
@@ -94,6 +97,8 @@ class Dashboard extends Component
 
     private function labelsSchemaReady(): bool
     {
-        return Schema::hasTable('labels') && Schema::hasColumn('spends', 'label_id');
+        return Schema::hasTable('labels')
+            && Schema::hasColumn('labels', 'user_id')
+            && Schema::hasColumn('spends', 'label_id');
     }
 }
