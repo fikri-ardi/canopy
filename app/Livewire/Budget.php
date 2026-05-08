@@ -12,20 +12,22 @@ use Livewire\Component;
 class Budget extends Component
 {
     public $activeBudget;
+    public $activeBudgetId;
     public $budgets;
     public $renameBudgetName;
+    public $budgetRenderKey = 0;
 
     public function mount()
     {
         $this->refreshBudgets();
-        $this->activeBudget = ModelsBudget::first();
+        $this->setActiveBudget(ModelsBudget::first());
     }
 
     #[On('budget-created')]
     public function budgetCreated($budgetId = null)
     {
         $this->refreshBudgets();
-        $this->activeBudget = ModelsBudget::find($budgetId) ?? ModelsBudget::first();
+        $this->setActiveBudget(ModelsBudget::find($budgetId) ?? ModelsBudget::first());
     }
 
     #[On('saved')]
@@ -33,12 +35,12 @@ class Budget extends Component
     #[On('expense-deleted')]
     public function refreshSummary()
     {
-        $this->activeBudget = $this->activeBudget?->fresh();
+        $this->setActiveBudget($this->activeBudgetId ? ModelsBudget::find($this->activeBudgetId) : null, false);
     }
 
     public function selectBudget(ModelsBudget $budget)
     {
-        $this->activeBudget = $budget;
+        $this->setActiveBudget($budget);
     }
 
     public function startRenamingBudget()
@@ -60,22 +62,27 @@ class Budget extends Component
             'name' => $validated['renameBudgetName'],
         ]);
 
-        $this->activeBudget = $this->activeBudget->fresh();
+        $this->setActiveBudget($this->activeBudget->fresh(), false);
         $this->refreshBudgets();
         $this->dispatch('budget-renamed');
     }
 
     public function deleteActiveBudget()
     {
-        if (! $this->activeBudget) {
+        $budget = $this->activeBudgetId ? ModelsBudget::find($this->activeBudgetId) : null;
+
+        if (! $budget) {
+            $this->setActiveBudget(ModelsBudget::first());
             return;
         }
 
-        $this->activeBudget->spends()->delete();
-        $this->activeBudget->delete();
+        DB::transaction(function () use ($budget) {
+            $budget->spends()->delete();
+            $budget->delete();
+        });
 
         $this->refreshBudgets();
-        $this->activeBudget = ModelsBudget::first();
+        $this->setActiveBudget(ModelsBudget::first());
         $this->dispatch('budget-deleted');
     }
 
@@ -112,12 +119,22 @@ class Budget extends Component
         });
 
         $this->refreshBudgets();
-        $this->activeBudget = $newBudget;
+        $this->setActiveBudget($newBudget);
     }
 
     private function refreshBudgets()
     {
         $this->budgets = ModelsBudget::get(['id', 'name']);
+    }
+
+    private function setActiveBudget(?ModelsBudget $budget, bool $refreshChildren = true): void
+    {
+        $this->activeBudget = $budget;
+        $this->activeBudgetId = $budget?->getKey();
+
+        if ($refreshChildren) {
+            $this->budgetRenderKey++;
+        }
     }
 
     private function duplicateBudgetName(string $name): string

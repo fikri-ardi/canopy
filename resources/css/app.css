@@ -8,12 +8,82 @@
     }
 
     body {
-        @apply bg-gray-50 text-gray-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+        @apply overflow-x-hidden bg-gray-50 text-gray-900 antialiased dark:bg-slate-950 dark:text-slate-100;
     }
 
     input,
     select,
     button {
         @apply focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-950;
+    }
+}
+
+@layer components {
+    .app-header {
+        @apply border-b border-gray-200 bg-white/90 px-4 py-5 text-sm shadow-sm shadow-gray-200/40 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90 dark:shadow-black/20 sm:px-6 lg:px-8;
+    }
+
+    .eyebrow {
+        @apply text-xs font-semibold uppercase text-green-600 dark:text-green-400;
+    }
+
+    .page-title {
+        @apply mt-1 text-2xl font-bold text-gray-950 dark:text-slate-50;
+    }
+
+    .page-subtitle {
+        @apply mt-1 text-sm text-gray-500 dark:text-slate-400;
+    }
+
+    .panel {
+        @apply rounded-lg border border-gray-200 bg-white shadow-sm shadow-gray-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20;
+    }
+
+    .metric-card {
+        @apply panel min-h-28 overflow-hidden px-4 py-4;
+    }
+
+    .icon-box {
+        @apply inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20;
+    }
+
+    .icon-box-muted {
+        @apply inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 ring-1 ring-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg bg-green-500 px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-green-500/20 transition hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800;
+    }
+
+    .btn-icon {
+        @apply inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50 hover:text-gray-950 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white;
+    }
+
+    .btn-danger {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-red-500/20 transition hover:bg-red-600;
+    }
+
+    .input-field {
+        @apply w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition placeholder:text-gray-400 hover:border-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600;
+    }
+
+    .select-menu {
+        @apply absolute left-0 top-full z-50 mt-1 flex w-full flex-col overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-gray-200 dark:bg-slate-900 dark:ring-slate-700;
+    }
+
+    .modal-backdrop {
+        @apply fixed inset-0 z-50 flex min-h-screen w-screen overflow-y-auto bg-slate-950/20 p-4 backdrop-blur-sm dark:bg-black/50;
+    }
+
+    .modal-panel {
+        @apply m-auto max-h-[calc(100vh-2rem)] w-full max-w-sm overflow-y-auto rounded-lg border border-gray-200 bg-white p-5 shadow-xl shadow-slate-900/10 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/30 sm:p-6;
+    }
+
+    .table-shell {
+        @apply min-w-0 overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm shadow-gray-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20;
     }
 }

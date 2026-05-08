@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Budget;
 use App\Models\Label;
 use App\Models\Platform;
 use App\Models\Status;
@@ -19,9 +20,9 @@ class CreateExpense extends Component
     public $labels;
     public $selectedLabel;
     public $labelsReady = false;
-    public $activeBudget;
+    public $activeBudgetId;
 
-    public function mount($activeBudget = null)
+    public function mount($activeBudgetId = null)
     {
         $this->platforms = Platform::get(['id', 'name']);
         $this->selectedPlatform = Platform::first();
@@ -35,7 +36,7 @@ class CreateExpense extends Component
             $this->labels = Label::get(['id', 'name']);
         }
 
-        $this->activeBudget = $activeBudget;
+        $this->activeBudgetId = $activeBudgetId;
     }
 
     public function selectPlatform(Platform $platform)
@@ -60,7 +61,9 @@ class CreateExpense extends Component
             'amount' => ['required', 'numeric', 'min:0'],
         ]);
 
-        if (! $this->activeBudget || ! $this->selectedPlatform || ! $this->selectedStatus) {
+        $activeBudget = $this->activeBudgetId ? Budget::find($this->activeBudgetId) : null;
+
+        if (! $activeBudget || ! $this->selectedPlatform || ! $this->selectedStatus) {
             return;
         }
 
@@ -75,7 +78,7 @@ class CreateExpense extends Component
             $payload['label_id'] = $this->selectedLabel->id;
         }
 
-        $this->activeBudget->spends()->create($payload);
+        $activeBudget->spends()->create($payload);
 
         $this->reset(['name', 'amount']);
         $this->dispatch('saved');

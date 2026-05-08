@@ -11,7 +11,7 @@ use Livewire\Component;
 class ShowExpense extends Component
 {
     #[Reactive]
-    public $activeBudget;
+    public $activeBudgetId;
 
     #[On('saved')]
     #[On('expense-deleted')]
@@ -29,7 +29,7 @@ class ShowExpense extends Component
 
         return view('livewire.show-expense', [
             'spends' => Spend::with($relations)
-                ->where('budget_id', $this->activeBudget?->getKey())
+                ->where('budget_id', $this->activeBudgetId)
                 ->get(),
         ]);
     }
