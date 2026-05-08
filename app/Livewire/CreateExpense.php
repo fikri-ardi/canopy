@@ -2,8 +2,10 @@
 
 namespace App\Livewire;
 
+use App\Models\Label;
 use App\Models\Platform;
 use App\Models\Status;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 
 class CreateExpense extends Component
@@ -14,6 +16,9 @@ class CreateExpense extends Component
     public $selectedPlatform;
     public $statuses;
     public $selectedStatus;
+    public $labels;
+    public $selectedLabel;
+    public $labelsReady = false;
     public $activeBudget;
 
     public function mount($activeBudget = null)
@@ -22,6 +27,14 @@ class CreateExpense extends Component
         $this->selectedPlatform = Platform::first();
         $this->statuses = Status::get(['id', 'body']);
         $this->selectedStatus = Status::first();
+        $this->labelsReady = $this->labelsSchemaReady();
+        $this->labels = collect();
+
+        if ($this->labelsReady) {
+            $this->selectedLabel = Label::first() ?? Label::create(['name' => 'General']);
+            $this->labels = Label::get(['id', 'name']);
+        }
+
         $this->activeBudget = $activeBudget;
     }
 
@@ -35,16 +48,42 @@ class CreateExpense extends Component
         $this->selectedStatus = $status;
     }
 
+    public function selectLabel(Label $label)
+    {
+        $this->selectedLabel = $label;
+    }
+
     public function store()
     {
-        $this->activeBudget->spends()->create([
-            'platform_id' => $this->selectedPlatform->id,
-            'status_id' => $this->selectedStatus->id,
-            'name' => $this->name,
-            'amount' => $this->amount
+        $validated = $this->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'amount' => ['required', 'numeric', 'min:0'],
         ]);
 
+        if (! $this->activeBudget || ! $this->selectedPlatform || ! $this->selectedStatus) {
+            return;
+        }
+
+        $payload = [
+            'platform_id' => $this->selectedPlatform->id,
+            'status_id' => $this->selectedStatus->id,
+            'name' => $validated['name'],
+            'amount' => $validated['amount']
+        ];
+
+        if ($this->labelsReady && $this->selectedLabel) {
+            $payload['label_id'] = $this->selectedLabel->id;
+        }
+
+        $this->activeBudget->spends()->create($payload);
+
+        $this->reset(['name', 'amount']);
         $this->dispatch('saved');
+    }
+
+    private function labelsSchemaReady(): bool
+    {
+        return Schema::hasTable('labels') && Schema::hasColumn('spends', 'label_id');
     }
 
     public function render()

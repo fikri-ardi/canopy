@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Budget as ModelsBudget;
 use App\Models\Spend;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -32,6 +33,7 @@ class Budget extends Component
     #[On('expense-deleted')]
     public function refreshSummary()
     {
+        $this->activeBudget = $this->activeBudget?->fresh();
     }
 
     public function selectBudget(ModelsBudget $budget)
@@ -92,12 +94,18 @@ class Budget extends Component
             ]);
 
             Spend::where('budget_id', $sourceBudget->id)->get()->each(function ($spend) use ($newBudget) {
-                $newBudget->spends()->create([
+                $payload = [
                     'platform_id' => $spend->platform_id,
                     'status_id' => $spend->status_id,
                     'name' => $spend->name,
                     'amount' => $spend->getRawOriginal('amount'),
-                ]);
+                ];
+
+                if (Schema::hasColumn('spends', 'label_id')) {
+                    $payload['label_id'] = $spend->label_id;
+                }
+
+                $newBudget->spends()->create($payload);
             });
 
             return $newBudget;
@@ -132,40 +140,136 @@ class Budget extends Component
             return [
                 ['label' => 'TOTAL INCOME', 'amount' => 0],
                 ['label' => 'TOTAL EXPENSE', 'amount' => 0],
-                ['label' => 'UNMANAGED', 'amount' => 0],
+                ['label' => 'REMAINING', 'amount' => 0],
                 ['label' => 'MAIN BANK', 'amount' => 0],
                 ['label' => 'CASH', 'amount' => 0],
-                ['label' => 'GOPAY', 'amount' => 0],
-                ['label' => 'SHOPEEPAY', 'amount' => 0],
             ];
         }
 
-        $totalExpense = Spend::where('budget_id', $this->activeBudget->id)->sum('amount');
-        $platformTotals = Spend::query()
+        $totalExpense = $this->totalExpense();
+        $platformTotals = $this->platformTotals();
+
+        return [
+            ['label' => 'TOTAL INCOME', 'amount' => (int) $this->activeBudget->income],
+            ['label' => 'TOTAL EXPENSE', 'amount' => (int) $totalExpense],
+            ['label' => 'REMAINING', 'amount' => $this->remainingBalance()],
+            ['label' => 'MAIN BANK', 'amount' => $this->mainBankBalance()],
+            ['label' => 'CASH', 'amount' => (int) ($platformTotals['cash'] ?? 0)],
+        ];
+    }
+
+    private function totalExpense(): int
+    {
+        if (! $this->activeBudget) {
+            return 0;
+        }
+
+        return (int) Spend::where('budget_id', $this->activeBudget->id)->sum('amount');
+    }
+
+    private function remainingBalance(): int
+    {
+        if (! $this->activeBudget) {
+            return 0;
+        }
+
+        return (int) $this->activeBudget->income - $this->totalExpense();
+    }
+
+    private function mainBankBalance(): int
+    {
+        if (! $this->activeBudget) {
+            return 0;
+        }
+
+        $managedExpense = Spend::query()
+            ->join('statuses', 'spends.status_id', '=', 'statuses.id')
+            ->where('spends.budget_id', $this->activeBudget->id)
+            ->whereNotIn(DB::raw('lower(statuses.body)'), ['unallocated', 'unalocated'])
+            ->sum('spends.amount');
+
+        return (int) $this->activeBudget->income - (int) $managedExpense;
+    }
+
+    private function platformTotals()
+    {
+        if (! $this->activeBudget) {
+            return collect();
+        }
+
+        return Spend::query()
             ->join('platforms', 'spends.platform_id', '=', 'platforms.id')
             ->where('spends.budget_id', $this->activeBudget->id)
             ->selectRaw('lower(platforms.name) as platform_name, sum(spends.amount) as total')
             ->groupByRaw('lower(platforms.name)')
             ->pluck('total', 'platform_name');
+    }
 
-        $mainBank = collect(['seabank', 'bri', 'jago', 'bni'])
-            ->sum(fn ($platform) => (int) ($platformTotals[$platform] ?? 0));
+    private function platformAnalytics()
+    {
+        if (! $this->activeBudget) {
+            return collect();
+        }
 
-        return [
-            ['label' => 'TOTAL INCOME', 'amount' => (int) $this->activeBudget->income],
-            ['label' => 'TOTAL EXPENSE', 'amount' => (int) $totalExpense],
-            ['label' => 'UNMANAGED', 'amount' => (int) $this->activeBudget->income - (int) $totalExpense],
-            ['label' => 'MAIN BANK', 'amount' => $mainBank],
-            ['label' => 'CASH', 'amount' => (int) ($platformTotals['cash'] ?? 0)],
-            ['label' => 'GOPAY', 'amount' => (int) ($platformTotals['gopay'] ?? 0)],
-            ['label' => 'SHOPEEPAY', 'amount' => (int) ($platformTotals['shopeepay'] ?? 0)],
-        ];
+        $totalExpense = max($this->totalExpense(), 1);
+
+        return Spend::query()
+            ->join('platforms', 'spends.platform_id', '=', 'platforms.id')
+            ->where('spends.budget_id', $this->activeBudget->id)
+            ->selectRaw('platforms.name as name, sum(spends.amount) as total, count(*) as transactions')
+            ->groupBy('platforms.id', 'platforms.name')
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn ($platform) => [
+                'name' => $platform->name,
+                'total' => (int) $platform->total,
+                'transactions' => (int) $platform->transactions,
+                'percentage' => round(((int) $platform->total / $totalExpense) * 100),
+            ]);
+    }
+
+    private function statusAnalytics()
+    {
+        if (! $this->activeBudget) {
+            return collect();
+        }
+
+        return Spend::query()
+            ->join('statuses', 'spends.status_id', '=', 'statuses.id')
+            ->where('spends.budget_id', $this->activeBudget->id)
+            ->selectRaw('statuses.body as name, sum(spends.amount) as total, count(*) as transactions')
+            ->groupBy('statuses.id', 'statuses.body')
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn ($status) => [
+                'name' => $status->name,
+                'total' => (int) $status->total,
+                'transactions' => (int) $status->transactions,
+            ]);
+    }
+
+    private function spendProgress(): int
+    {
+        if (! $this->activeBudget || (int) $this->activeBudget->income === 0) {
+            return 0;
+        }
+
+        return min(100, round(($this->totalExpense() / (int) $this->activeBudget->income) * 100));
+    }
+
+    public function rupiah($amount): string
+    {
+        return 'Rp'.number_format((int) $amount, 0, ',', '.');
     }
 
     public function render()
     {
         return view('livewire.budget', [
             'summaryCards' => $this->summaryCards(),
+            'platformAnalytics' => $this->platformAnalytics(),
+            'statusAnalytics' => $this->statusAnalytics(),
+            'spendProgress' => $this->spendProgress(),
+            'remainingBalance' => $this->remainingBalance(),
         ]);
     }
 }

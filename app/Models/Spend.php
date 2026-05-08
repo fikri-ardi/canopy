@@ -29,6 +29,11 @@ class Spend extends Model
         return $this->belongsTo(Status::class);
     }
 
+    public function label(): BelongsTo
+    {
+        return $this->belongsTo(Label::class);
+    }
+
     /**
      * Interact with the user's first name.
      */

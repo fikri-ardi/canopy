@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-const defaultTheme = require('tailwindcss/defaultTheme')
-
 export default {
+    darkMode: 'class',
     content: [
         "./resources/**/*.blade.php",
         "./resources/**/*.js",
@@ -10,7 +9,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+                sans: ['Geist Mono', 'ui-monospace', 'monospace'],
+                mono: ['JetBrains Mono', 'monospace'],
             },
         },
     },

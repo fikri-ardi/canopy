@@ -17,6 +17,7 @@ class SpendSeeder extends Seeder
             'budget_id' => 1,
             'platform_id' => 1,
             'status_id' => 1,
+            'label_id' => 1,
             'name' => 'Makan',
             'amount' => 300000,
         ]);

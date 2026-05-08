@@ -19,12 +19,19 @@ Tujuan utama dari **iplants** adalah menyediakan sistem pencatatan keuangan yang
 - Setiap budget memiliki atribut **Income** sebagai batas maksimal pengeluaran yang direncanakan.
 
 ### 3.3. Granular Expense Tracking (Spends)
-- Pencatatan transaksi yang mencakup nama pengeluaran, nominal, kategori budget, platform pembayaran, dan status transaksi.
+- Pencatatan transaksi yang mencakup nama pengeluaran, nominal, kategori budget, label transaksi, platform pembayaran, dan status transaksi.
+- Pengguna dapat memberi label setiap transaksi seperti "Jajan", "Elektronik", atau "Investasi" untuk memudahkan analisis pola pengeluaran.
 - Memungkinkan pengguna mengetahui ke mana setiap unit mata uang dialokasikan.
 
 ### 3.4. Analytics & Reporting
 - Visualisasi distribusi pengeluaran berdasarkan platform (E-wallet vs Bank vs Cash).
+- Visualisasi dashboard berdasarkan label transaksi. Setiap label menampilkan total pengeluaran, jumlah transaksi, dan chart ringkas yang menggabungkan expense dengan nama yang sama menjadi satu total.
 - Laporan sisa saldo (Remaining Balance) dari setiap kategori budget secara real-time.
+- Indikator **Main Bank** pada header budget dihitung dengan rumus: `Total Income - total expense dengan status selain Unallocated`.
+
+### 3.5. Label Management
+- Pengguna dapat membuat, mengubah, dan menghapus label transaksi melalui menu Labels.
+- Saat label dihapus, transaksi lama tetap tersimpan dan ditampilkan sebagai transaksi tanpa label sampai diberi label baru.
 
 ## 4. Database Schema (Detailed)
 Berdasarkan analisis sistem, berikut adalah struktur tabel yang diimplementasikan:
@@ -33,9 +40,10 @@ Berdasarkan analisis sistem, berikut adalah struktur tabel yang diimplementasika
 | :--- | :--- | :--- |
 | **users** | `id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `timestamps` | Menyimpan data otentikasi pengguna. |
 | **budgets** | `id`, `name`, `income`, `created_at`, `updated_at` | Menyimpan kategori budget dan target pendapatan/alokasi dana. |
+| **labels** | `id`, `name`, `created_at`, `updated_at` | Menyimpan label/kategori transaksi seperti Jajan, Elektronik, atau Investasi. |
 | **platforms** | `id`, `name`, `created_at`, `updated_at` | Daftar penyedia layanan keuangan (e.g., Jago, BNI, ShopeePay). |
 | **statuses** | `id`, `body`, `created_at`, `updated_at` | Status transaksi (e.g., Allocated, Withdrawn, Done). |
-| **spends** | `id`, `budget_id`, `platform_id`, `status_id`, `name`, `amount`, `created_at`, `updated_at` | Tabel utama transaksi yang menghubungkan budget, platform, dan status. |
+| **spends** | `id`, `budget_id`, `platform_id`, `status_id`, `label_id`, `name`, `amount`, `created_at`, `updated_at` | Tabel utama transaksi yang menghubungkan budget, platform, status, dan label. |
 
 ## 5. UI/UX Requirements
 ### 5.1. Visual Style
@@ -51,3 +59,5 @@ Berdasarkan analisis sistem, berikut adalah struktur tabel yang diimplementasika
 
 ### 5.3. Interaction
 - Penggunaan komponen reaktif Livewire untuk input data tanpa perlu memuat ulang halaman (Single Page Experience).
+- Dropdown pemilihan budget, label, platform, dan status menggunakan pola visual yang konsisten.
+- Aksi hapus menggunakan modal konfirmasi dengan backdrop penuh agar konsisten dengan modal input data.

@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             BudgetSeeder::class,
+            LabelSeeder::class,
             PlatformSeeder::class,
             StatusSeeder::class,
             SpendSeeder::class,
