@@ -196,6 +196,48 @@ class Budget extends Component
         return (int) Spend::where('budget_id', $this->activeBudget->id)->sum('amount');
     }
 
+    private function transactionCount(): int
+    {
+        if (! $this->activeBudget) {
+            return 0;
+        }
+
+        return (int) Spend::where('budget_id', $this->activeBudget->id)->count();
+    }
+
+    private function averageExpense(): int
+    {
+        $transactionCount = $this->transactionCount();
+
+        if ($transactionCount === 0) {
+            return 0;
+        }
+
+        return (int) round($this->totalExpense() / $transactionCount);
+    }
+
+    private function largestExpense(): int
+    {
+        if (! $this->activeBudget) {
+            return 0;
+        }
+
+        return (int) Spend::where('budget_id', $this->activeBudget->id)->max('amount');
+    }
+
+    private function unallocatedTotal(): int
+    {
+        if (! $this->activeBudget) {
+            return 0;
+        }
+
+        return (int) Spend::query()
+            ->join('statuses', 'spends.status_id', '=', 'statuses.id')
+            ->where('spends.budget_id', $this->activeBudget->id)
+            ->whereIn(DB::raw('lower(statuses.body)'), ['unallocated', 'unalocated'])
+            ->sum('spends.amount');
+    }
+
     private function remainingBalance(): int
     {
         if (! $this->activeBudget) {
@@ -277,6 +319,25 @@ class Budget extends Component
             ]);
     }
 
+    private function topExpenses()
+    {
+        if (! $this->activeBudget) {
+            return collect();
+        }
+
+        $relations = ['platform', 'status'];
+
+        if (Schema::hasColumn('spends', 'label_id')) {
+            $relations[] = 'label';
+        }
+
+        return Spend::with($relations)
+            ->where('budget_id', $this->activeBudget->id)
+            ->orderByDesc('amount')
+            ->take(4)
+            ->get();
+    }
+
     private function spendProgress(): int
     {
         if (! $this->activeBudget || (int) $this->activeBudget->income === 0) {
@@ -295,8 +356,15 @@ class Budget extends Component
     {
         return view('livewire.budget', [
             'summaryCards' => $this->summaryCards(),
+            'insightCards' => [
+                ['label' => 'TRANSACTIONS', 'amount' => $this->transactionCount(), 'format' => 'number'],
+                ['label' => 'AVG EXPENSE', 'amount' => $this->averageExpense(), 'format' => 'money'],
+                ['label' => 'LARGEST EXPENSE', 'amount' => $this->largestExpense(), 'format' => 'money'],
+                ['label' => 'UNALLOCATED', 'amount' => $this->unallocatedTotal(), 'format' => 'money'],
+            ],
             'platformAnalytics' => $this->platformAnalytics(),
             'statusAnalytics' => $this->statusAnalytics(),
+            'topExpenses' => $this->topExpenses(),
             'spendProgress' => $this->spendProgress(),
             'remainingBalance' => $this->remainingBalance(),
         ]);

@@ -3,26 +3,47 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <div class="eyebrow">Dashboard</div>
-                <h1 class="page-title">Label Spending</h1>
-                <p class="page-subtitle">See where money goes across labels and repeated expense names.</p>
+                <h1 class="page-title">Financial Command Center</h1>
+                <p class="page-subtitle">A quick read on income, spending pressure, budgets, and recent movement.</p>
             </div>
 
-            <button type="button" x-on:click="theme = theme === 'dark' ? 'light' : 'dark'" class="btn-icon" aria-label="Toggle appearance" title="Toggle appearance">
-                <svg x-show="theme === 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                </svg>
-                <svg x-show="theme !== 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25 9.75 9.75 0 0 0 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
-                </svg>
-            </button>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('budgets') }}" class="btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span>Manage Budget</span>
+                </a>
+                <button type="button" x-on:click="theme = theme === 'dark' ? 'light' : 'dark'" class="btn-icon" aria-label="Toggle appearance" title="Toggle appearance">
+                    <svg x-show="theme === 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                    </svg>
+                    <svg x-show="theme !== 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25 9.75 9.75 0 0 0 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                    </svg>
+                </button>
+            </div>
         </div>
     </header>
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-        <section class="grid gap-3 md:grid-cols-3">
+        <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
-                    <div>
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Income</div>
+                        <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($totalIncome) }}</div>
+                    </div>
+                    <span class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182-.586-.439-1.354-.659-2.121-.659-.768 0-1.536-.22-2.121-.659-1.172-.879-1.172-2.303 0-3.182 1.171-.879 3.07-.879 4.242 0l.879.659" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Expense</div>
                         <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($totalExpense) }}</div>
                     </div>
@@ -35,7 +56,33 @@
             </div>
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
-                    <div>
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Remaining</div>
+                        <div class="mt-4 truncate text-xl font-bold {{ $remainingBalance < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}">{{ $this->rupiah($remainingBalance) }}</div>
+                    </div>
+                    <span class="{{ $remainingBalance < 0 ? 'inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20' : 'icon-box-muted' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>
+                        <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $transactionCount }}</div>
+                    </div>
+                    <span class="icon-box-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Active Labels</div>
                         <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $labelCount }}</div>
                     </div>
@@ -46,25 +93,93 @@
                     </span>
                 </div>
             </div>
-            <div class="metric-card">
-                <div class="flex items-start justify-between gap-3">
-                    <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Top Label</div>
-                        <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $topLabel['name'] ?? '-' }}</div>
+        </section>
+
+        <section class="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)]">
+            <div class="panel px-4 py-4">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <div class="eyebrow">Budget Health</div>
+                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Spending pressure by budget</h2>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ $budgetCount }} active budgets tracked.</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 px-3 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Avg Spend</div>
+                        <div class="font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($averageTransaction) }}</div>
+                    </div>
+                </div>
+
+                <div class="mt-5 space-y-4">
+                    @forelse ($budgetHealth as $budget)
+                        <div>
+                            <div class="mb-2 flex items-center justify-between gap-3 text-sm">
+                                <div class="min-w-0">
+                                    <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $budget['name'] }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($budget['spent']) }} of {{ $this->rupiah($budget['income']) }}</div>
+                                </div>
+                                <div class="{{ $budget['tone'] === 'danger' ? 'text-red-500' : ($budget['tone'] === 'warning' ? 'text-amber-500' : 'text-green-500') }} shrink-0 font-semibold">
+                                    {{ $budget['percentage'] }}%
+                                </div>
+                            </div>
+                            <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
+                                <div class="h-full rounded-full {{ $budget['tone'] === 'danger' ? 'bg-red-500' : ($budget['tone'] === 'warning' ? 'bg-amber-500' : 'bg-green-500') }}" style="width: {{ $budget['percentage'] }}%"></div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
+                            No budgets yet.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="panel px-4 py-4">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <div class="eyebrow">Recent Movement</div>
+                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Latest expenses</h2>
                     </div>
                     <span class="icon-box-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-6.75c-.621 0-1.125.504-1.125 1.125V18.75m9 0H7.5" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
                     </span>
                 </div>
+
+                <div class="mt-4 divide-y divide-gray-100 dark:divide-slate-800">
+                    @forelse ($recentExpenses as $expense)
+                        <div class="flex items-center justify-between gap-3 py-3">
+                            <div class="min-w-0">
+                                <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $expense->name }}</div>
+                                <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
+                                    <span>{{ $expense->budget?->name }}</span>
+                                    <span>{{ $expense->label?->name ?? 'Unlabeled' }}</span>
+                                    <span>{{ $expense->created_at?->format('d M Y') }}</span>
+                                </div>
+                            </div>
+                            <div class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
+                        </div>
+                    @empty
+                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No recent expenses.</div>
+                    @endforelse
+                </div>
+
+                @if ($largestExpense)
+                    <div class="mt-4 rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Largest Expense</div>
+                        <div class="mt-2 flex items-center justify-between gap-3">
+                            <div class="min-w-0 truncate font-semibold text-gray-950 dark:text-slate-50">{{ $largestExpense->name }}</div>
+                            <div class="shrink-0 font-bold text-red-500">{{ $this->rupiah($largestExpense->getRawOriginal('amount')) }}</div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </section>
 
         <section class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h2 class="text-xl font-bold text-gray-950 dark:text-slate-50">Breakdown by Label</h2>
-                <p class="text-sm text-gray-500 dark:text-slate-400">Grouped totals, sorted by spending volume.</p>
+                <p class="text-sm text-gray-500 dark:text-slate-400">{{ $labelCount }} active labels, top category: {{ $topLabel['name'] ?? '-' }}.</p>
             </div>
             <div class="relative w-full sm:w-80">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400">
