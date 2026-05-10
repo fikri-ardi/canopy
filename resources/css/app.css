@@ -43,6 +43,16 @@
         @apply panel min-h-28 overflow-hidden px-4 py-4;
     }
 
+    .metric-value {
+        @apply mt-4 break-words text-xl font-bold leading-tight text-gray-950 dark:text-slate-50;
+        overflow-wrap: anywhere;
+    }
+
+    .metric-value-lg {
+        @apply mt-5 break-words text-xl font-bold leading-tight text-gray-950 dark:text-slate-50;
+        overflow-wrap: anywhere;
+    }
+
     .icon-box {
         @apply inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20;
     }
@@ -73,6 +83,10 @@
 
     .select-menu {
         @apply absolute left-0 top-full z-50 mt-1 flex w-full flex-col overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-gray-200 dark:bg-slate-900 dark:ring-slate-700;
+    }
+
+    .floating-select-menu {
+        @apply fixed z-[80] flex max-h-60 flex-col overflow-y-auto rounded-lg bg-white py-1 shadow-xl ring-1 ring-gray-200 dark:bg-slate-900 dark:ring-slate-700;
     }
 
     .modal-backdrop {

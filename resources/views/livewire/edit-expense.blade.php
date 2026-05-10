@@ -1,4 +1,7 @@
-<tr x-data="{deleteExpense: false}" class="bg-white text-gray-800 transition hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800/60">
+<tr
+    x-data="{deleteExpense: false, labelMenu: canopyDropdown(), platformMenu: canopyDropdown(), statusMenu: canopyDropdown()}"
+    class="bg-white text-gray-800 transition hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800/60"
+>
     <td class="px-3 py-3 text-center text-gray-400 dark:text-slate-500">{{ $iteration }}</td>
     <td class="p-2">
         <input wire:model.blur="name" type="text" class="w-full min-w-0 rounded-lg bg-transparent px-3 py-2 outline-none transition hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200 dark:hover:bg-slate-800 dark:hover:ring-slate-700" />
@@ -14,29 +17,59 @@
     </td>
     <td class="p-2">
         @if ($labelsReady)
-            <select wire:model.live="label_id" class="input-field min-w-40">
-                <option value="">Unlabeled</option>
-                @foreach ($labels as $label)
-                    <option value="{{ $label->id }}">{{ $label->name }}</option>
-                @endforeach
-            </select>
+            <button x-ref="labelTrigger" type="button" x-on:click.stop="labelMenu.toggle($refs.labelTrigger, $refs.labelMenu)" class="btn-secondary min-w-40 w-full justify-between">
+                <span class="truncate">{{ $spend->label?->name ?? 'Unlabeled' }}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+            <template x-teleport="body">
+                <div x-ref="labelMenu" x-show="labelMenu.open" x-cloak x-transition x-bind:style="labelMenu.style" x-on:click.outside="labelMenu.close()" x-on:resize.window="labelMenu.close()" class="floating-select-menu">
+                    <button type="button" x-on:click="labelMenu.close()" wire:click="$set('label_id', '')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">Unlabeled</button>
+                    @foreach ($labels as $label)
+                        <button type="button" x-on:click="labelMenu.close()" wire:click="$set('label_id', {{ $label->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                            {{ $label->name }}
+                        </button>
+                    @endforeach
+                </div>
+            </template>
         @else
             <span class="block rounded-lg bg-gray-50 px-3 py-2 text-gray-400 ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">Pending migration</span>
         @endif
     </td>
     <td class="p-2">
-        <select wire:model.live="platform_id" class="input-field min-w-40">
-            @foreach ($platforms as $platform)
-                <option value="{{ $platform->id }}">{{ $platform->name }}</option>
-            @endforeach
-        </select>
+        <button x-ref="platformTrigger" type="button" x-on:click.stop="platformMenu.toggle($refs.platformTrigger, $refs.platformMenu)" class="btn-secondary min-w-40 w-full justify-between">
+            <span class="truncate">{{ $spend->platform->name }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+        </button>
+        <template x-teleport="body">
+            <div x-ref="platformMenu" x-show="platformMenu.open" x-cloak x-transition x-bind:style="platformMenu.style" x-on:click.outside="platformMenu.close()" x-on:resize.window="platformMenu.close()" class="floating-select-menu">
+                @foreach ($platforms as $platform)
+                    <button type="button" x-on:click="platformMenu.close()" wire:click="$set('platform_id', {{ $platform->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                        {{ $platform->name }}
+                    </button>
+                @endforeach
+            </div>
+        </template>
     </td>
     <td class="p-2">
-        <select wire:model.live="status_id" class="input-field min-w-40">
-            @foreach ($statuses as $status)
-                <option value="{{ $status->id }}">{{ $status->body }}</option>
-            @endforeach
-        </select>
+        <button x-ref="statusTrigger" type="button" x-on:click.stop="statusMenu.toggle($refs.statusTrigger, $refs.statusMenu)" class="btn-secondary min-w-40 w-full justify-between">
+            <span class="truncate">{{ $spend->status->body }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+        </button>
+        <template x-teleport="body">
+            <div x-ref="statusMenu" x-show="statusMenu.open" x-cloak x-transition x-bind:style="statusMenu.style" x-on:click.outside="statusMenu.close()" x-on:resize.window="statusMenu.close()" class="floating-select-menu">
+                @foreach ($statuses as $status)
+                    <button type="button" x-on:click="statusMenu.close()" wire:click="$set('status_id', {{ $status->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                        {{ $status->body }}
+                    </button>
+                @endforeach
+            </div>
+        </template>
     </td>
     <td class="p-2 text-center">
         <button

@@ -1,4 +1,4 @@
-<div class="min-w-0">
+<div class="min-w-0" x-data="{budgetMenu: canopyDropdown(), labelMenu: canopyDropdown(), platformMenu: canopyDropdown(), sortMenu: canopyDropdown(), statusMenu: canopyDropdown()}">
     <header class="app-header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -20,19 +20,19 @@
         <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Filtered Total</div>
-                <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($totalAmount) }}</div>
+                <div class="metric-value">{{ $this->rupiah($totalAmount) }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>
-                <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ number_format($transactionCount, 0, ',', '.') }}</div>
+                <div class="metric-value">{{ number_format($transactionCount, 0, ',', '.') }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Average Spend</div>
-                <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($averageAmount) }}</div>
+                <div class="metric-value">{{ $this->rupiah($averageAmount) }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Largest Spend</div>
-                <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($largestAmount) }}</div>
+                <div class="metric-value">{{ $this->rupiah($largestAmount) }}</div>
             </div>
         </section>
 
@@ -45,45 +45,83 @@
                     <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search expense, budget, label, platform" class="input-field pl-9">
                 </div>
 
-                <select wire:model.live="budgetId" class="input-field">
-                    <option value="all">All budgets</option>
-                    @foreach ($budgets as $budget)
-                        <option value="{{ $budget->id }}">{{ $budget->name }}</option>
-                    @endforeach
-                </select>
+                <div>
+                    <button x-ref="budgetTrigger" type="button" x-on:click.stop="budgetMenu.toggle($refs.budgetTrigger, $refs.budgetMenu)" class="btn-secondary w-full justify-between">
+                        <span class="truncate">{{ $budgetId === 'all' ? 'All budgets' : $budgets->firstWhere('id', (int) $budgetId)?->name }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                    </button>
+                    <template x-teleport="body">
+                        <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" class="floating-select-menu">
+                            <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All budgets</button>
+                            @foreach ($budgets as $budget)
+                                <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', '{{ $budget->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $budget->name }}</button>
+                            @endforeach
+                        </div>
+                    </template>
+                </div>
 
-                <select wire:model.live="labelId" @disabled(! $labelsReady) class="input-field">
-                    <option value="all">All labels</option>
+                <div>
+                    <button x-ref="labelTrigger" type="button" x-on:click.stop="labelMenu.toggle($refs.labelTrigger, $refs.labelMenu)" @disabled(! $labelsReady) class="btn-secondary w-full justify-between disabled:cursor-not-allowed disabled:opacity-50">
+                        <span class="truncate">{{ $labelId === 'all' ? 'All labels' : ($labelId === 'unlabeled' ? 'Unlabeled' : $labels->firstWhere('id', (int) $labelId)?->name) }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                    </button>
                     @if ($labelsReady)
-                        <option value="unlabeled">Unlabeled</option>
-                        @foreach ($labels as $label)
-                            <option value="{{ $label->id }}">{{ $label->name }}</option>
-                        @endforeach
+                        <template x-teleport="body">
+                            <div x-ref="labelMenu" x-show="labelMenu.open" x-cloak x-transition x-bind:style="labelMenu.style" x-on:click.outside="labelMenu.close()" x-on:resize.window="labelMenu.close()" class="floating-select-menu">
+                                <button type="button" x-on:click="labelMenu.close()" wire:click="$set('labelId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All labels</button>
+                                <button type="button" x-on:click="labelMenu.close()" wire:click="$set('labelId', 'unlabeled')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">Unlabeled</button>
+                                @foreach ($labels as $label)
+                                    <button type="button" x-on:click="labelMenu.close()" wire:click="$set('labelId', '{{ $label->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label->name }}</button>
+                                @endforeach
+                            </div>
+                        </template>
                     @endif
-                </select>
+                </div>
 
-                <select wire:model.live="platformId" class="input-field">
-                    <option value="all">All platforms</option>
-                    @foreach ($platforms as $platform)
-                        <option value="{{ $platform->id }}">{{ $platform->name }}</option>
-                    @endforeach
-                </select>
+                <div>
+                    <button x-ref="platformTrigger" type="button" x-on:click.stop="platformMenu.toggle($refs.platformTrigger, $refs.platformMenu)" class="btn-secondary w-full justify-between">
+                        <span class="truncate">{{ $platformId === 'all' ? 'All platforms' : $platforms->firstWhere('id', (int) $platformId)?->name }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                    </button>
+                    <template x-teleport="body">
+                        <div x-ref="platformMenu" x-show="platformMenu.open" x-cloak x-transition x-bind:style="platformMenu.style" x-on:click.outside="platformMenu.close()" x-on:resize.window="platformMenu.close()" class="floating-select-menu">
+                            <button type="button" x-on:click="platformMenu.close()" wire:click="$set('platformId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All platforms</button>
+                            @foreach ($platforms as $platform)
+                                <button type="button" x-on:click="platformMenu.close()" wire:click="$set('platformId', '{{ $platform->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $platform->name }}</button>
+                            @endforeach
+                        </div>
+                    </template>
+                </div>
 
-                <select wire:model.live="sort" class="input-field">
-                    <option value="latest">Latest first</option>
-                    <option value="amount_desc">Highest amount</option>
-                    <option value="amount_asc">Lowest amount</option>
-                    <option value="name">Name</option>
-                </select>
+                <div>
+                    @php($sortLabels = ['latest' => 'Latest first', 'amount_desc' => 'Highest amount', 'amount_asc' => 'Lowest amount', 'name' => 'Name'])
+                    <button x-ref="sortTrigger" type="button" x-on:click.stop="sortMenu.toggle($refs.sortTrigger, $refs.sortMenu)" class="btn-secondary w-full justify-between">
+                        <span class="truncate">{{ $sortLabels[$sort] ?? 'Latest first' }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                    </button>
+                    <template x-teleport="body">
+                        <div x-ref="sortMenu" x-show="sortMenu.open" x-cloak x-transition x-bind:style="sortMenu.style" x-on:click.outside="sortMenu.close()" x-on:resize.window="sortMenu.close()" class="floating-select-menu">
+                            @foreach ($sortLabels as $value => $label)
+                                <button type="button" x-on:click="sortMenu.close()" wire:click="$set('sort', '{{ $value }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label }}</button>
+                            @endforeach
+                        </div>
+                    </template>
+                </div>
             </div>
 
-            <div class="mt-3">
-                <select wire:model.live="statusId" class="input-field w-full md:w-64">
-                    <option value="all">All statuses</option>
-                    @foreach ($statuses as $status)
-                        <option value="{{ $status->id }}">{{ $status->body }}</option>
-                    @endforeach
-                </select>
+            <div class="mt-3 w-full md:w-64">
+                <button x-ref="statusTrigger" type="button" x-on:click.stop="statusMenu.toggle($refs.statusTrigger, $refs.statusMenu)" class="btn-secondary w-full justify-between">
+                    <span class="truncate">{{ $statusId === 'all' ? 'All statuses' : $statuses->firstWhere('id', (int) $statusId)?->body }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                </button>
+                <template x-teleport="body">
+                    <div x-ref="statusMenu" x-show="statusMenu.open" x-cloak x-transition x-bind:style="statusMenu.style" x-on:click.outside="statusMenu.close()" x-on:resize.window="statusMenu.close()" class="floating-select-menu">
+                        <button type="button" x-on:click="statusMenu.close()" wire:click="$set('statusId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All statuses</button>
+                        @foreach ($statuses as $status)
+                            <button type="button" x-on:click="statusMenu.close()" wire:click="$set('statusId', '{{ $status->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $status->body }}</button>
+                        @endforeach
+                    </div>
+                </template>
             </div>
         </section>
 

@@ -1,4 +1,4 @@
-<div class="min-w-0">
+<div class="min-w-0" x-data="{budgetMenu: canopyDropdown(), rangeMenu: canopyDropdown()}">
     <header class="app-header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -7,19 +7,40 @@
                 <p class="page-subtitle">Analyze budget health, category pressure, payment mix, and high-impact expenses.</p>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
-                <select wire:model.live="budgetId" class="input-field w-44">
-                    <option value="all">All budgets</option>
-                    @foreach ($budgets as $budget)
-                        <option value="{{ $budget->id }}">{{ $budget->name }}</option>
-                    @endforeach
-                </select>
-                <select wire:model.live="range" class="input-field w-40">
-                    <option value="all">All time</option>
-                    <option value="30">Last 30 days</option>
-                    <option value="90">Last 90 days</option>
-                    <option value="365">Last year</option>
-                </select>
+            <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+                <div class="min-w-0 flex-1 sm:w-44 sm:flex-none">
+                    <button x-ref="budgetTrigger" type="button" x-on:click.stop="budgetMenu.toggle($refs.budgetTrigger, $refs.budgetMenu)" class="btn-secondary w-full justify-between">
+                        <span class="truncate">{{ $budgetId === 'all' ? 'All budgets' : $budgets->firstWhere('id', (int) $budgetId)?->name }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <template x-teleport="body">
+                        <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" class="floating-select-menu">
+                            <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All budgets</button>
+                            @foreach ($budgets as $budget)
+                                <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', '{{ $budget->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $budget->name }}</button>
+                            @endforeach
+                        </div>
+                    </template>
+                </div>
+
+                <div class="min-w-0 flex-1 sm:w-40 sm:flex-none">
+                    @php($rangeLabels = ['all' => 'All time', '30' => 'Last 30 days', '90' => 'Last 90 days', '365' => 'Last year'])
+                    <button x-ref="rangeTrigger" type="button" x-on:click.stop="rangeMenu.toggle($refs.rangeTrigger, $refs.rangeMenu)" class="btn-secondary w-full justify-between">
+                        <span class="truncate">{{ $rangeLabels[$range] ?? 'All time' }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <template x-teleport="body">
+                        <div x-ref="rangeMenu" x-show="rangeMenu.open" x-cloak x-transition x-bind:style="rangeMenu.style" x-on:click.outside="rangeMenu.close()" x-on:resize.window="rangeMenu.close()" class="floating-select-menu">
+                            @foreach ($rangeLabels as $value => $label)
+                                <button type="button" x-on:click="rangeMenu.close()" wire:click="$set('range', '{{ $value }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label }}</button>
+                            @endforeach
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
     </header>
@@ -28,23 +49,23 @@
         <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Planned Income</div>
-                <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($totalIncome) }}</div>
+                <div class="metric-value">{{ $this->rupiah($totalIncome) }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Expense</div>
-                <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($totalExpense) }}</div>
+                <div class="metric-value">{{ $this->rupiah($totalExpense) }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Remaining</div>
-                <div class="mt-4 truncate text-xl font-bold {{ $remainingBalance < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}">{{ $this->rupiah($remainingBalance) }}</div>
+                <div class="mt-4 break-words text-xl font-bold leading-tight {{ $remainingBalance < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}" style="overflow-wrap:anywhere">{{ $this->rupiah($remainingBalance) }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>
-                <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ number_format($transactionCount, 0, ',', '.') }}</div>
+                <div class="metric-value">{{ number_format($transactionCount, 0, ',', '.') }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Average</div>
-                <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($averageExpense) }}</div>
+                <div class="metric-value">{{ $this->rupiah($averageExpense) }}</div>
             </div>
         </section>
 

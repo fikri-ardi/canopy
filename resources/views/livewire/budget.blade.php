@@ -186,7 +186,7 @@
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
                                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
-                                <div class="mt-5 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($card['amount']) }}</div>
+                                <div class="metric-value-lg">{{ $this->rupiah($card['amount']) }}</div>
                             </div>
                             <span class="icon-box">
                                 @switch($card['label'])
@@ -226,7 +226,7 @@
                         @foreach ($insightCards as $card)
                             <div class="rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
-                                <div class="mt-3 truncate text-lg font-bold text-gray-950 dark:text-slate-50">
+                                <div class="mt-3 break-words text-lg font-bold leading-tight text-gray-950 dark:text-slate-50" style="overflow-wrap:anywhere">
                                     {{ $card['format'] === 'money' ? $this->rupiah($card['amount']) : number_format($card['amount'], 0, ',', '.') }}
                                 </div>
                             </div>

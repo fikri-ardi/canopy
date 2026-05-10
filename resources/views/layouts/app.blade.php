@@ -33,6 +33,50 @@
             </div>
         </main>
     </div>
+    <script>
+        window.canopyDropdown = function () {
+            return {
+                open: false,
+                style: '',
+                toggle(trigger, menu) {
+                    this.open ? this.close() : this.show(trigger, menu);
+                },
+                show(trigger, menu) {
+                    this.open = true;
+                    requestAnimationFrame(() => {
+                        this.position(trigger, menu);
+                        requestAnimationFrame(() => {
+                            if (this.open) {
+                                this.position(trigger, menu);
+                            }
+                        });
+                    });
+                },
+                close() {
+                    this.open = false;
+                },
+                position(trigger, menu) {
+                    if (!trigger || !menu) {
+                        return;
+                    }
+
+                    const rect = trigger.getBoundingClientRect();
+                    const gap = 6;
+                    const margin = 8;
+                    const measuredHeight = menu.offsetHeight || menu.scrollHeight || menu.getBoundingClientRect().height || 240;
+                    const menuHeight = Math.min(measuredHeight, window.innerHeight - (margin * 2));
+                    const menuWidth = Math.min(rect.width, window.innerWidth - (margin * 2));
+                    const left = Math.min(Math.max(margin, rect.left), window.innerWidth - menuWidth - margin);
+                    const opensUp = window.innerHeight - rect.bottom < menuHeight && rect.top > window.innerHeight - rect.bottom;
+                    const top = opensUp
+                        ? Math.max(margin, rect.top - menuHeight - gap)
+                        : Math.min(window.innerHeight - menuHeight - margin, rect.bottom + gap);
+
+                    this.style = `top:${top}px;left:${left}px;width:${menuWidth}px;max-height:${menuHeight}px;`;
+                },
+            };
+        };
+    </script>
     @livewireScripts
 </body>
 

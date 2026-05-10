@@ -32,7 +32,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Income</div>
-                        <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($totalIncome) }}</div>
+                        <div class="metric-value">{{ $this->rupiah($totalIncome) }}</div>
                     </div>
                     <span class="icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -45,7 +45,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Expense</div>
-                        <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($totalExpense) }}</div>
+                        <div class="metric-value">{{ $this->rupiah($totalExpense) }}</div>
                     </div>
                     <span class="icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -58,7 +58,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Remaining</div>
-                        <div class="mt-4 truncate text-xl font-bold {{ $remainingBalance < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}">{{ $this->rupiah($remainingBalance) }}</div>
+                        <div class="mt-4 break-words text-xl font-bold leading-tight {{ $remainingBalance < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}" style="overflow-wrap:anywhere">{{ $this->rupiah($remainingBalance) }}</div>
                     </div>
                     <span class="{{ $remainingBalance < 0 ? 'inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20' : 'icon-box-muted' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -71,7 +71,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>
-                        <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $transactionCount }}</div>
+                        <div class="metric-value">{{ $transactionCount }}</div>
                     </div>
                     <span class="icon-box-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -84,7 +84,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Active Labels</div>
-                        <div class="mt-4 truncate text-xl font-bold text-gray-950 dark:text-slate-50">{{ $labelCount }}</div>
+                        <div class="metric-value">{{ $labelCount }}</div>
                     </div>
                     <span class="icon-box-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
