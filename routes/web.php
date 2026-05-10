@@ -5,8 +5,10 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Livewire\Budget;
 use App\Livewire\Dashboard;
 use App\Livewire\Labels;
+use App\Livewire\Platforms;
 use App\Livewire\Reports;
 use App\Livewire\Spends;
+use App\Livewire\Statuses;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -23,5 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/spends', Spends::class)->name('spends');
     Route::get('/reports', Reports::class)->name('reports');
     Route::get('/labels', Labels::class)->name('labels');
+    Route::get('/platforms', Platforms::class)->name('platforms');
+    Route::get('/statuses', Statuses::class)->name('statuses');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });

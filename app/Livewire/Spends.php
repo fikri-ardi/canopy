@@ -51,8 +51,8 @@ class Spends extends Component
             'labels' => $this->labelsSchemaReady()
                 ? Label::where('user_id', auth()->id())->orderBy('name')->get(['id', 'name'])
                 : collect(),
-            'platforms' => Platform::orderBy('name')->get(['id', 'name']),
-            'statuses' => Status::orderBy('body')->get(['id', 'body']),
+            'platforms' => $this->userPlatformsQuery()->get(['id', 'name']),
+            'statuses' => $this->userStatusesQuery()->get(['id', 'body']),
             'labelsReady' => $this->labelsSchemaReady(),
         ]);
     }
@@ -110,5 +110,29 @@ class Spends extends Component
         return Schema::hasTable('labels')
             && Schema::hasColumn('labels', 'user_id')
             && Schema::hasColumn('spends', 'label_id');
+    }
+
+    private function userPlatformsQuery()
+    {
+        return Platform::query()
+            ->when($this->platformsSchemaReady(), fn ($query) => $query->where('user_id', auth()->id()))
+            ->orderBy('name');
+    }
+
+    private function userStatusesQuery()
+    {
+        return Status::query()
+            ->when($this->statusesSchemaReady(), fn ($query) => $query->where('user_id', auth()->id()))
+            ->orderBy('body');
+    }
+
+    private function platformsSchemaReady(): bool
+    {
+        return Schema::hasColumn('platforms', 'user_id');
+    }
+
+    private function statusesSchemaReady(): bool
+    {
+        return Schema::hasColumn('statuses', 'user_id');
     }
 }

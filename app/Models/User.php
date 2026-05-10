@@ -54,4 +54,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Label::class);
     }
+
+    public function platforms(): HasMany
+    {
+        return $this->hasMany(Platform::class);
+    }
+
+    public function statuses(): HasMany
+    {
+        return $this->hasMany(Status::class);
+    }
 }

@@ -6,6 +6,7 @@ use App\Models\Label;
 use App\Models\Platform;
 use App\Models\Status;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class EditExpense extends Component
@@ -34,8 +35,8 @@ class EditExpense extends Component
         $this->status_id = $spend->status_id;
         $this->labelsReady = $this->labelsSchemaReady();
         $this->label_id = $this->labelsReady ? $spend->label_id : null;
-        $this->platforms = Platform::get(['id', 'name']);
-        $this->statuses = Status::get(['id', 'body']);
+        $this->platforms = $this->userPlatformsQuery()->get(['id', 'name']);
+        $this->statuses = $this->userStatusesQuery()->get(['id', 'body']);
         $this->labels = $this->labelsReady ? Label::where('user_id', auth()->id())->get(['id', 'name']) : collect();
     }
 
@@ -48,8 +49,14 @@ class EditExpense extends Component
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'regex:/^[0-9.]+$/'],
-            'platform_id' => ['required', 'exists:platforms,id'],
-            'status_id' => ['required', 'exists:statuses,id'],
+            'platform_id' => [
+                'required',
+                Rule::exists('platforms', 'id')->when($this->platformsSchemaReady(), fn ($rule) => $rule->where('user_id', auth()->id())),
+            ],
+            'status_id' => [
+                'required',
+                Rule::exists('statuses', 'id')->when($this->statusesSchemaReady(), fn ($rule) => $rule->where('user_id', auth()->id())),
+            ],
         ];
 
         if ($this->labelsReady) {
@@ -93,5 +100,29 @@ class EditExpense extends Component
     private function spendBelongsToCurrentUser(): bool
     {
         return $this->spend?->budget()->where('user_id', auth()->id())->exists() ?? false;
+    }
+
+    private function userPlatformsQuery()
+    {
+        return Platform::query()
+            ->when($this->platformsSchemaReady(), fn ($query) => $query->where('user_id', auth()->id()))
+            ->orderBy('name');
+    }
+
+    private function userStatusesQuery()
+    {
+        return Status::query()
+            ->when($this->statusesSchemaReady(), fn ($query) => $query->where('user_id', auth()->id()))
+            ->orderBy('body');
+    }
+
+    private function platformsSchemaReady(): bool
+    {
+        return Schema::hasColumn('platforms', 'user_id');
+    }
+
+    private function statusesSchemaReady(): bool
+    {
+        return Schema::hasColumn('statuses', 'user_id');
     }
 }

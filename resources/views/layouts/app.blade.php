@@ -10,7 +10,7 @@
     @livewireStyles
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
-    <title>Implants - Your Income Pal</title>
+    <title>Canopy - Your Income Pal</title>
 </head>
 
 <body

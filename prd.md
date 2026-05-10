@@ -1,13 +1,13 @@
-# Product Requirements Document (PRD) - iplants
+# Product Requirements Document (PRD) - Canopy
 
 ## 1. Project Overview
-- **Project Name:** iplants
+- **Project Name:** Canopy
 - **Project Type:** Personal Finance Management System
 - **Target Audience:** Dewasa muda dan profesional yang memerlukan manajemen arus kas yang ketat setelah menerima pendapatan (payday).
 - **Technology Stack:** TALL Stack (Tailwind CSS, Alpine.js, Laravel, Livewire).
 
 ## 2. Objective
-Tujuan utama dari **iplants** adalah menyediakan sistem pencatatan keuangan yang disiplin untuk mencegah fenomena "dana menguap" setelah hari gajian. Aplikasi ini memfasilitasi pengguna untuk mengalokasikan pendapatan ke dalam kategori budget tertentu (misal: bulanan atau event khusus) dan melacak setiap pengeluaran secara presisi hingga ke platform pembayaran yang digunakan.
+Tujuan utama dari **Canopy** adalah menyediakan sistem pencatatan keuangan yang disiplin untuk mencegah fenomena "dana menguap" setelah hari gajian. Aplikasi ini memfasilitasi pengguna untuk mengalokasikan pendapatan ke dalam kategori budget tertentu (misal: bulanan atau event khusus) dan melacak setiap pengeluaran secara presisi hingga ke platform pembayaran yang digunakan.
 
 ## 3. User Features
 ### 3.1. Authentication & Security
@@ -33,16 +33,30 @@ Tujuan utama dari **iplants** adalah menyediakan sistem pencatatan keuangan yang
 - Pengguna dapat membuat, mengubah, dan menghapus label transaksi melalui menu Labels.
 - Saat label dihapus, transaksi lama tetap tersimpan dan ditampilkan sebagai transaksi tanpa label sampai diberi label baru.
 
+### 3.6. Platform Management
+- Pengguna dapat membuat, mengubah, dan menghapus platform pembayaran melalui menu Platforms.
+- Platform bersifat per-user sehingga platform yang dibuat satu pengguna tidak muncul di akun pengguna lain.
+- Platform yang sudah dipakai transaksi tidak dapat dihapus untuk menjaga integritas data expense lama.
+
+### 3.7. Status Management
+- Pengguna dapat membuat, mengubah, dan menghapus status transaksi melalui menu Statuses.
+- Status bersifat per-user sehingga workflow alokasi setiap pengguna dapat berbeda.
+- Status yang sudah dipakai transaksi tidak dapat dihapus untuk menjaga integritas data expense lama.
+
+### 3.8. Navigation
+- Sidebar utama menyediakan link: Dashboard (`/`), Budgets (`/budgets`), Labels (`/labels`), Platforms (`/platforms`), Statuses (`/statuses`), Spends (`/spends`), Reports (`/reports`), dan Logout.
+- Semua menu pengaturan menggunakan pola visual yang konsisten: header, form create, table list, inline edit, dan modal delete.
+
 ## 4. Database Schema (Detailed)
 Berdasarkan analisis sistem, berikut adalah struktur tabel yang diimplementasikan:
 
 | Table Name | Columns | Description |
 | :--- | :--- | :--- |
 | **users** | `id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `timestamps` | Menyimpan data otentikasi pengguna. |
-| **budgets** | `id`, `name`, `income`, `created_at`, `updated_at` | Menyimpan kategori budget dan target pendapatan/alokasi dana. |
-| **labels** | `id`, `name`, `created_at`, `updated_at` | Menyimpan label/kategori transaksi seperti Jajan, Elektronik, atau Investasi. |
-| **platforms** | `id`, `name`, `created_at`, `updated_at` | Daftar penyedia layanan keuangan (e.g., Jago, BNI, ShopeePay). |
-| **statuses** | `id`, `body`, `created_at`, `updated_at` | Status transaksi (e.g., Allocated, Withdrawn, Done). |
+| **budgets** | `id`, `user_id`, `name`, `income`, `created_at`, `updated_at` | Menyimpan kategori budget dan target pendapatan/alokasi dana milik pengguna. |
+| **labels** | `id`, `user_id`, `name`, `created_at`, `updated_at` | Menyimpan label/kategori transaksi per pengguna seperti Jajan, Elektronik, atau Investasi. |
+| **platforms** | `id`, `user_id`, `name`, `created_at`, `updated_at` | Daftar penyedia layanan keuangan per pengguna (e.g., Jago, BNI, ShopeePay). |
+| **statuses** | `id`, `user_id`, `body`, `created_at`, `updated_at` | Status transaksi per pengguna (e.g., Allocated, Withdrawn, Done). |
 | **spends** | `id`, `budget_id`, `platform_id`, `status_id`, `label_id`, `name`, `amount`, `created_at`, `updated_at` | Tabel utama transaksi yang menghubungkan budget, platform, status, dan label. |
 
 ## 5. UI/UX Requirements

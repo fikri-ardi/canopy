@@ -24,10 +24,12 @@ class CreateExpense extends Component
 
     public function mount($activeBudgetId = null)
     {
-        $this->platforms = Platform::get(['id', 'name']);
-        $this->selectedPlatform = Platform::first();
-        $this->statuses = Status::get(['id', 'body']);
-        $this->selectedStatus = Status::first();
+        $this->ensureDefaultPlatformsAndStatuses();
+
+        $this->platforms = $this->userPlatformsQuery()->get(['id', 'name']);
+        $this->selectedPlatform = $this->platforms->first();
+        $this->statuses = $this->userStatusesQuery()->get(['id', 'body']);
+        $this->selectedStatus = $this->statuses->first();
         $this->labelsReady = $this->labelsSchemaReady();
         $this->labels = collect();
 
@@ -42,11 +44,19 @@ class CreateExpense extends Component
 
     public function selectPlatform(Platform $platform)
     {
+        if (! $this->platformBelongsToCurrentUser($platform)) {
+            return;
+        }
+
         $this->selectedPlatform = $platform;
     }
 
     public function selectStatus(Status $status)
     {
+        if (! $this->statusBelongsToCurrentUser($status)) {
+            return;
+        }
+
         $this->selectedStatus = $status;
     }
 
@@ -92,6 +102,57 @@ class CreateExpense extends Component
         return Schema::hasTable('labels')
             && Schema::hasColumn('labels', 'user_id')
             && Schema::hasColumn('spends', 'label_id');
+    }
+
+    private function ensureDefaultPlatformsAndStatuses(): void
+    {
+        if ($this->platformsSchemaReady() && ! Platform::where('user_id', auth()->id())->exists()) {
+            collect(['Cash', 'Main Bank', 'E-Wallet'])->each(fn ($platform) => Platform::create([
+                'user_id' => auth()->id(),
+                'name' => $platform,
+            ]));
+        }
+
+        if ($this->statusesSchemaReady() && ! Status::where('user_id', auth()->id())->exists()) {
+            collect(['Unallocated', 'Allocated', 'Withdrawn', 'Done'])->each(fn ($status) => Status::create([
+                'user_id' => auth()->id(),
+                'body' => $status,
+            ]));
+        }
+    }
+
+    private function userPlatformsQuery()
+    {
+        return Platform::query()
+            ->when($this->platformsSchemaReady(), fn ($query) => $query->where('user_id', auth()->id()))
+            ->orderBy('name');
+    }
+
+    private function userStatusesQuery()
+    {
+        return Status::query()
+            ->when($this->statusesSchemaReady(), fn ($query) => $query->where('user_id', auth()->id()))
+            ->orderBy('body');
+    }
+
+    private function platformBelongsToCurrentUser(Platform $platform): bool
+    {
+        return ! $this->platformsSchemaReady() || (int) $platform->user_id === auth()->id();
+    }
+
+    private function statusBelongsToCurrentUser(Status $status): bool
+    {
+        return ! $this->statusesSchemaReady() || (int) $status->user_id === auth()->id();
+    }
+
+    private function platformsSchemaReady(): bool
+    {
+        return Schema::hasColumn('platforms', 'user_id');
+    }
+
+    private function statusesSchemaReady(): bool
+    {
+        return Schema::hasColumn('statuses', 'user_id');
     }
 
     public function render()
