@@ -42,7 +42,7 @@
 
                         <div x-show="selectBudget" x-cloak x-on:click.away="selectBudget = false" x-transition class="select-menu">
                             @foreach ($budgets as $budget)
-                                <button type="button" x-on:click="selectBudget = false" wire:click="selectBudget({{ $budget->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                <button type="button" x-on:click="selectBudget = false" wire:click="selectBudget({{ $budget->id }})" wire:key="budget-picker-option-{{ $budget->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                                     {{ $budget->name }}
                                 </button>
                             @endforeach
@@ -182,7 +182,7 @@
         @if ($activeBudget)
             <section class="summary-grid">
                 @foreach ($summaryCards as $card)
-                    <div class="metric-card">
+                    <div wire:key="budget-summary-card-{{ str($card['label'])->slug() }}" class="metric-card">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
                                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
@@ -224,7 +224,7 @@
 
                     <div class="mt-4 grid gap-3 sm:grid-cols-2">
                         @foreach ($insightCards as $card)
-                            <div class="metric-tile rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                            <div wire:key="budget-insight-card-{{ str($card['label'])->slug() }}" class="metric-tile rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
                                 <div class="metric-value-sm">
                                     {{ $card['format'] === 'money' ? $this->rupiah($card['amount']) : number_format($card['amount'], 0, ',', '.') }}
@@ -247,7 +247,7 @@
 
                     <div class="mt-4 divide-y divide-gray-100 dark:divide-slate-800">
                         @forelse ($topExpenses as $expense)
-                            <div class="flex items-center justify-between gap-3 py-3">
+                            <div wire:key="budget-top-expense-{{ $expense->id }}" class="flex items-center justify-between gap-3 py-3">
                                 <div class="min-w-0">
                                     <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $expense->name }}</div>
                                     <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
@@ -300,7 +300,7 @@
 
                     <div class="mt-3 grid gap-2 sm:grid-cols-2">
                         @forelse ($statusAnalytics as $status)
-                            <div class="rounded-lg bg-gray-50 px-3 py-2 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                            <div wire:key="budget-status-analytic-{{ str($status['name'])->slug() }}" class="rounded-lg bg-gray-50 px-3 py-2 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                                 <div class="flex items-center justify-between gap-2 text-sm">
                                     <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ ucfirst($status['name']) }}</span>
                                     <span class="text-gray-500 dark:text-slate-400">{{ $status['transactions'] }}x</span>
@@ -327,7 +327,7 @@
 
                 <div class="mt-4 space-y-3">
                     @forelse ($platformAnalytics as $platform)
-                        <div>
+                        <div wire:key="budget-platform-analytic-{{ str($platform['name'])->slug() }}">
                             <div class="mb-1 flex items-center justify-between gap-3 text-sm">
                                 <span class="font-semibold text-gray-700 dark:text-slate-200">{{ $platform['name'] }}</span>
                                 <span class="shrink-0 text-gray-500 dark:text-slate-400">{{ $this->rupiah($platform['total']) }} / {{ $platform['percentage'] }}%</span>

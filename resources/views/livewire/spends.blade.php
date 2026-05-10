@@ -51,10 +51,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                     </button>
                     <template x-teleport="body">
-                        <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" class="floating-select-menu">
+                        <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" wire:key="spends-budget-menu" wire:ignore.self class="floating-select-menu">
                             <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All budgets</button>
                             @foreach ($budgets as $budget)
-                                <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', '{{ $budget->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $budget->name }}</button>
+                                <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', '{{ $budget->id }}')" wire:key="spends-budget-option-{{ $budget->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $budget->name }}</button>
                             @endforeach
                         </div>
                     </template>
@@ -67,11 +67,11 @@
                     </button>
                     @if ($labelsReady)
                         <template x-teleport="body">
-                            <div x-ref="labelMenu" x-show="labelMenu.open" x-cloak x-transition x-bind:style="labelMenu.style" x-on:click.outside="labelMenu.close()" x-on:resize.window="labelMenu.close()" class="floating-select-menu">
+                            <div x-ref="labelMenu" x-show="labelMenu.open" x-cloak x-transition x-bind:style="labelMenu.style" x-on:click.outside="labelMenu.close()" x-on:resize.window="labelMenu.close()" wire:key="spends-label-menu" wire:ignore.self class="floating-select-menu">
                                 <button type="button" x-on:click="labelMenu.close()" wire:click="$set('labelId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All labels</button>
                                 <button type="button" x-on:click="labelMenu.close()" wire:click="$set('labelId', 'unlabeled')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">Unlabeled</button>
                                 @foreach ($labels as $label)
-                                    <button type="button" x-on:click="labelMenu.close()" wire:click="$set('labelId', '{{ $label->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label->name }}</button>
+                                    <button type="button" x-on:click="labelMenu.close()" wire:click="$set('labelId', '{{ $label->id }}')" wire:key="spends-label-option-{{ $label->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label->name }}</button>
                                 @endforeach
                             </div>
                         </template>
@@ -84,10 +84,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                     </button>
                     <template x-teleport="body">
-                        <div x-ref="platformMenu" x-show="platformMenu.open" x-cloak x-transition x-bind:style="platformMenu.style" x-on:click.outside="platformMenu.close()" x-on:resize.window="platformMenu.close()" class="floating-select-menu">
+                        <div x-ref="platformMenu" x-show="platformMenu.open" x-cloak x-transition x-bind:style="platformMenu.style" x-on:click.outside="platformMenu.close()" x-on:resize.window="platformMenu.close()" wire:key="spends-platform-menu" wire:ignore.self class="floating-select-menu">
                             <button type="button" x-on:click="platformMenu.close()" wire:click="$set('platformId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All platforms</button>
                             @foreach ($platforms as $platform)
-                                <button type="button" x-on:click="platformMenu.close()" wire:click="$set('platformId', '{{ $platform->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $platform->name }}</button>
+                                <button type="button" x-on:click="platformMenu.close()" wire:click="$set('platformId', '{{ $platform->id }}')" wire:key="spends-platform-option-{{ $platform->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $platform->name }}</button>
                             @endforeach
                         </div>
                     </template>
@@ -100,9 +100,9 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                     </button>
                     <template x-teleport="body">
-                        <div x-ref="sortMenu" x-show="sortMenu.open" x-cloak x-transition x-bind:style="sortMenu.style" x-on:click.outside="sortMenu.close()" x-on:resize.window="sortMenu.close()" class="floating-select-menu">
+                        <div x-ref="sortMenu" x-show="sortMenu.open" x-cloak x-transition x-bind:style="sortMenu.style" x-on:click.outside="sortMenu.close()" x-on:resize.window="sortMenu.close()" wire:key="spends-sort-menu" wire:ignore.self class="floating-select-menu">
                             @foreach ($sortLabels as $value => $label)
-                                <button type="button" x-on:click="sortMenu.close()" wire:click="$set('sort', '{{ $value }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label }}</button>
+                                <button type="button" x-on:click="sortMenu.close()" wire:click="$set('sort', '{{ $value }}')" wire:key="spends-sort-option-{{ $value }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label }}</button>
                             @endforeach
                         </div>
                     </template>
@@ -115,10 +115,10 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                 </button>
                 <template x-teleport="body">
-                    <div x-ref="statusMenu" x-show="statusMenu.open" x-cloak x-transition x-bind:style="statusMenu.style" x-on:click.outside="statusMenu.close()" x-on:resize.window="statusMenu.close()" class="floating-select-menu">
+                    <div x-ref="statusMenu" x-show="statusMenu.open" x-cloak x-transition x-bind:style="statusMenu.style" x-on:click.outside="statusMenu.close()" x-on:resize.window="statusMenu.close()" wire:key="spends-status-menu" wire:ignore.self class="floating-select-menu">
                         <button type="button" x-on:click="statusMenu.close()" wire:click="$set('statusId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All statuses</button>
                         @foreach ($statuses as $status)
-                            <button type="button" x-on:click="statusMenu.close()" wire:click="$set('statusId', '{{ $status->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $status->body }}</button>
+                            <button type="button" x-on:click="statusMenu.close()" wire:click="$set('statusId', '{{ $status->id }}')" wire:key="spends-status-option-{{ $status->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $status->body }}</button>
                         @endforeach
                     </div>
                 </template>
@@ -140,7 +140,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-sm dark:divide-slate-800">
                     @forelse ($spends as $spend)
-                        <tr class="bg-white text-gray-800 transition hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800/60">
+                        <tr wire:key="spends-row-{{ $spend->id }}" class="bg-white text-gray-800 transition hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800/60">
                             <td class="p-3 text-gray-500 dark:text-slate-400">{{ $spend->created_at?->format('d M Y') }}</td>
                             <td class="p-3">
                                 <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $spend->name }}</div>

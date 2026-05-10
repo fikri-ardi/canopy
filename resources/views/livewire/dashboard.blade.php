@@ -111,7 +111,7 @@
 
                 <div class="mt-5 space-y-4">
                     @forelse ($budgetHealth as $budget)
-                        <div>
+                        <div wire:key="dashboard-budget-health-{{ $budget['id'] ?? str($budget['name'])->slug() }}">
                             <div class="mb-2 flex items-center justify-between gap-3 text-sm">
                                 <div class="min-w-0">
                                     <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $budget['name'] }}</div>
@@ -148,7 +148,7 @@
 
                 <div class="mt-4 divide-y divide-gray-100 dark:divide-slate-800">
                     @forelse ($recentExpenses as $expense)
-                        <div class="flex items-center justify-between gap-3 py-3">
+                        <div wire:key="dashboard-recent-expense-{{ $expense->id }}" class="flex items-center justify-between gap-3 py-3">
                             <div class="min-w-0">
                                 <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $expense->name }}</div>
                                 <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
@@ -191,7 +191,7 @@
 
         <section class="space-y-4">
             @forelse ($labelBreakdown as $label)
-                <article class="panel px-4 py-4">
+                <article wire:key="dashboard-label-breakdown-{{ str($label['name'])->slug() }}" class="panel px-4 py-4">
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div class="flex items-center gap-3">
                             <span class="icon-box-muted">
@@ -209,7 +209,7 @@
 
                     <div class="mt-4 space-y-3">
                         @foreach ($label['items'] as $item)
-                            <div>
+                            <div wire:key="dashboard-label-{{ str($label['name'])->slug() }}-item-{{ str($item['name'])->slug() }}">
                                 <div class="mb-1 flex items-center justify-between gap-3 text-sm">
                                     <div class="min-w-0">
                                         <div class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ $item['name'] }}</div>

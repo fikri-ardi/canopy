@@ -42,7 +42,7 @@
 
                         <div x-show="selectLabel" x-cloak x-on:click.away="selectLabel = false" x-transition class="select-menu">
                             @foreach ($labels as $label)
-                                <button type="button" x-on:click="selectLabel = false" wire:click="selectLabel({{ $label->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                <button type="button" x-on:click="selectLabel = false" wire:click="selectLabel({{ $label->id }})" wire:key="create-expense-label-option-{{ $label->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                                     {{ $label->name }}
                                 </button>
                             @endforeach
@@ -61,7 +61,7 @@
 
                     <div x-show="selectPlatform" x-cloak x-on:click.away="selectPlatform = false" x-transition class="select-menu">
                         @foreach ($platforms as $platform)
-                            <button type="button" x-on:click="selectPlatform = false" wire:click="selectPlatform({{ $platform->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                            <button type="button" x-on:click="selectPlatform = false" wire:click="selectPlatform({{ $platform->id }})" wire:key="create-expense-platform-option-{{ $platform->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                                 {{ $platform->name }}
                             </button>
                         @endforeach
@@ -79,7 +79,7 @@
 
                     <div x-show="selectStatus" x-cloak x-on:click.away="selectStatus = false" x-transition class="select-menu">
                         @foreach ($statuses as $status)
-                            <button type="button" x-on:click="selectStatus = false" wire:click="selectStatus({{ $status->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                            <button type="button" x-on:click="selectStatus = false" wire:click="selectStatus({{ $status->id }})" wire:key="create-expense-status-option-{{ $status->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                                 {{ $status->body }}
                             </button>
                         @endforeach

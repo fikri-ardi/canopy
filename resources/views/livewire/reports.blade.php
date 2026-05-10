@@ -16,10 +16,10 @@
                         </svg>
                     </button>
                     <template x-teleport="body">
-                        <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" class="floating-select-menu">
+                        <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" wire:key="reports-budget-menu" wire:ignore.self class="floating-select-menu">
                             <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All budgets</button>
                             @foreach ($budgets as $budget)
-                                <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', '{{ $budget->id }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $budget->name }}</button>
+                                <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', '{{ $budget->id }}')" wire:key="reports-budget-option-{{ $budget->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $budget->name }}</button>
                             @endforeach
                         </div>
                     </template>
@@ -34,9 +34,9 @@
                         </svg>
                     </button>
                     <template x-teleport="body">
-                        <div x-ref="rangeMenu" x-show="rangeMenu.open" x-cloak x-transition x-bind:style="rangeMenu.style" x-on:click.outside="rangeMenu.close()" x-on:resize.window="rangeMenu.close()" class="floating-select-menu">
+                        <div x-ref="rangeMenu" x-show="rangeMenu.open" x-cloak x-transition x-bind:style="rangeMenu.style" x-on:click.outside="rangeMenu.close()" x-on:resize.window="rangeMenu.close()" wire:key="reports-range-menu" wire:ignore.self class="floating-select-menu">
                             @foreach ($rangeLabels as $value => $label)
-                                <button type="button" x-on:click="rangeMenu.close()" wire:click="$set('range', '{{ $value }}')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label }}</button>
+                                <button type="button" x-on:click="rangeMenu.close()" wire:click="$set('range', '{{ $value }}')" wire:key="reports-range-option-{{ $value }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label }}</button>
                             @endforeach
                         </div>
                     </template>
@@ -80,7 +80,7 @@
 
                 <div class="mt-5 space-y-4">
                     @forelse ($budgetProgress as $budget)
-                        <div>
+                        <div wire:key="reports-budget-progress-{{ $budget['id'] ?? str($budget['name'])->slug() }}">
                             <div class="mb-2 flex items-center justify-between gap-3 text-sm">
                                 <div class="min-w-0">
                                     <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $budget['name'] }}</div>
@@ -106,7 +106,7 @@
 
                 <div class="mt-4 divide-y divide-gray-100 dark:divide-slate-800">
                     @forelse ($topExpenses as $expense)
-                        <div class="flex items-center justify-between gap-3 py-3">
+                        <div wire:key="reports-top-expense-{{ $expense->id }}" class="flex items-center justify-between gap-3 py-3">
                             <div class="min-w-0">
                                 <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $expense->name }}</div>
                                 <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
@@ -130,7 +130,7 @@
 
                 <div class="mt-4 space-y-3">
                     @forelse ($labelBreakdown as $label)
-                        <div>
+                        <div wire:key="reports-label-breakdown-{{ str($label['name'])->slug() }}">
                             <div class="mb-1 flex items-center justify-between gap-3 text-sm">
                                 <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ $label['name'] }}</span>
                                 <span class="shrink-0 text-gray-500 dark:text-slate-400">{{ $this->rupiah($label['total']) }}</span>
@@ -153,7 +153,7 @@
 
                 <div class="mt-4 space-y-3">
                     @forelse ($platformBreakdown as $platform)
-                        <div>
+                        <div wire:key="reports-platform-breakdown-{{ str($platform['name'])->slug() }}">
                             <div class="mb-1 flex items-center justify-between gap-3 text-sm">
                                 <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ $platform['name'] }}</span>
                                 <span class="shrink-0 text-gray-500 dark:text-slate-400">{{ $platform['percentage'] }}%</span>
@@ -174,7 +174,7 @@
 
                 <div class="mt-4 grid gap-2">
                     @forelse ($statusBreakdown as $status)
-                        <div class="rounded-lg bg-gray-50 px-3 py-2 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                        <div wire:key="reports-status-breakdown-{{ str($status['name'])->slug() }}" class="rounded-lg bg-gray-50 px-3 py-2 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                             <div class="flex items-center justify-between gap-2 text-sm">
                                 <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ ucfirst($status['name']) }}</span>
                                 <span class="text-gray-500 dark:text-slate-400">{{ $status['transactions'] }}x</span>

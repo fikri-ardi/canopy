@@ -24,10 +24,10 @@
                 </svg>
             </button>
             <template x-teleport="body">
-                <div x-ref="labelMenu" x-show="labelMenu.open" x-cloak x-transition x-bind:style="labelMenu.style" x-on:click.outside="labelMenu.close()" x-on:resize.window="labelMenu.close()" class="floating-select-menu">
+                <div x-ref="labelMenu" x-show="labelMenu.open" x-cloak x-transition x-bind:style="labelMenu.style" x-on:click.outside="labelMenu.close()" x-on:resize.window="labelMenu.close()" wire:key="edit-expense-{{ $spend->id }}-label-menu" wire:ignore.self class="floating-select-menu">
                     <button type="button" x-on:click="labelMenu.close()" wire:click="$set('label_id', '')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">Unlabeled</button>
                     @foreach ($labels as $label)
-                        <button type="button" x-on:click="labelMenu.close()" wire:click="$set('label_id', {{ $label->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                        <button type="button" x-on:click="labelMenu.close()" wire:click="$set('label_id', {{ $label->id }})" wire:key="edit-expense-{{ $spend->id }}-label-option-{{ $label->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                             {{ $label->name }}
                         </button>
                     @endforeach
@@ -45,9 +45,9 @@
             </svg>
         </button>
         <template x-teleport="body">
-            <div x-ref="platformMenu" x-show="platformMenu.open" x-cloak x-transition x-bind:style="platformMenu.style" x-on:click.outside="platformMenu.close()" x-on:resize.window="platformMenu.close()" class="floating-select-menu">
+            <div x-ref="platformMenu" x-show="platformMenu.open" x-cloak x-transition x-bind:style="platformMenu.style" x-on:click.outside="platformMenu.close()" x-on:resize.window="platformMenu.close()" wire:key="edit-expense-{{ $spend->id }}-platform-menu" wire:ignore.self class="floating-select-menu">
                 @foreach ($platforms as $platform)
-                    <button type="button" x-on:click="platformMenu.close()" wire:click="$set('platform_id', {{ $platform->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                    <button type="button" x-on:click="platformMenu.close()" wire:click="$set('platform_id', {{ $platform->id }})" wire:key="edit-expense-{{ $spend->id }}-platform-option-{{ $platform->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                         {{ $platform->name }}
                     </button>
                 @endforeach
@@ -62,9 +62,9 @@
             </svg>
         </button>
         <template x-teleport="body">
-            <div x-ref="statusMenu" x-show="statusMenu.open" x-cloak x-transition x-bind:style="statusMenu.style" x-on:click.outside="statusMenu.close()" x-on:resize.window="statusMenu.close()" class="floating-select-menu">
+            <div x-ref="statusMenu" x-show="statusMenu.open" x-cloak x-transition x-bind:style="statusMenu.style" x-on:click.outside="statusMenu.close()" x-on:resize.window="statusMenu.close()" wire:key="edit-expense-{{ $spend->id }}-status-menu" wire:ignore.self class="floating-select-menu">
                 @foreach ($statuses as $status)
-                    <button type="button" x-on:click="statusMenu.close()" wire:click="$set('status_id', {{ $status->id }})" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                    <button type="button" x-on:click="statusMenu.close()" wire:click="$set('status_id', {{ $status->id }})" wire:key="edit-expense-{{ $spend->id }}-status-option-{{ $status->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                         {{ $status->body }}
                     </button>
                 @endforeach

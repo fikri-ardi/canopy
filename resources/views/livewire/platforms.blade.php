@@ -45,7 +45,7 @@
 
             <div class="min-w-[620px] divide-y divide-gray-100 dark:divide-slate-800">
                 @forelse ($platforms as $platform)
-                    <div class="grid grid-cols-[1fr_120px_140px] items-center gap-3 bg-white px-4 py-3 text-sm transition hover:bg-gray-50 dark:bg-slate-900 dark:hover:bg-slate-800/60">
+                    <div wire:key="platforms-row-{{ $platform->id }}" class="grid grid-cols-[1fr_120px_140px] items-center gap-3 bg-white px-4 py-3 text-sm transition hover:bg-gray-50 dark:bg-slate-900 dark:hover:bg-slate-800/60">
                         <div class="min-w-0">
                             @if ($editingPlatformId === $platform->id)
                                 <input wire:model="editingName" type="text" class="input-field">
