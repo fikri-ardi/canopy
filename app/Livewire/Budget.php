@@ -15,6 +15,7 @@ class Budget extends Component
     public $activeBudgetId;
     public $budgets;
     public $renameBudgetName;
+    public $incomeAmount;
     public $budgetRenderKey = 0;
 
     public function mount()
@@ -54,6 +55,11 @@ class Budget extends Component
         $this->renameBudgetName = $this->activeBudget?->name;
     }
 
+    public function startEditingIncome()
+    {
+        $this->incomeAmount = $this->activeBudget?->income;
+    }
+
     public function renameActiveBudget()
     {
         if (! $this->activeBudget) {
@@ -71,6 +77,24 @@ class Budget extends Component
         $this->setActiveBudget($this->activeBudget->fresh(), false);
         $this->refreshBudgets();
         $this->dispatch('budget-renamed');
+    }
+
+    public function updateActiveBudgetIncome()
+    {
+        if (! $this->activeBudget) {
+            return;
+        }
+
+        $validated = $this->validate([
+            'incomeAmount' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $this->activeBudget->update([
+            'income' => $validated['incomeAmount'],
+        ]);
+
+        $this->setActiveBudget($this->activeBudget->fresh(), false);
+        $this->dispatch('budget-income-updated');
     }
 
     public function deleteActiveBudget()

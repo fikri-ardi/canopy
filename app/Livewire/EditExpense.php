@@ -46,6 +46,11 @@ class EditExpense extends Component
             return;
         }
 
+        if ($name === 'label_id' && $value === '') {
+            $this->label_id = null;
+            $value = null;
+        }
+
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'regex:/^[0-9.]+$/'],

@@ -1,8 +1,9 @@
 <div
-    x-data="{createBudget: false, selectBudget: false, createExpense: false, renameBudget: false, deleteBudget: false}"
+    x-data="{createBudget: false, selectBudget: false, createExpense: false, renameBudget: false, editIncome: false, deleteBudget: false}"
     x-on:saved="createExpense = false"
     x-on:budget-created="createBudget = false; selectBudget = false"
     x-on:budget-renamed="renameBudget = false"
+    x-on:budget-income-updated="editIncome = false"
     x-on:budget-deleted="deleteBudget = false"
     class="min-w-0"
 >
@@ -51,6 +52,12 @@
                     <button type="button" x-on:click="renameBudget = true" wire:click="startRenamingBudget" class="btn-icon" aria-label="Rename budget" title="Rename budget">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.862 4.487Zm0 0L19.5 7.125" />
+                        </svg>
+                    </button>
+
+                    <button type="button" x-on:click="editIncome = true" wire:click="startEditingIncome" class="btn-icon" aria-label="Edit total income" title="Edit total income">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182-.586-.439-1.354-.659-2.121-.659-.768 0-1.536-.22-2.121-.659-1.172-.879-1.172-2.303 0-3.182 1.171-.879 3.07-.879 4.242 0l.879.659" />
                         </svg>
                     </button>
 
@@ -104,6 +111,39 @@
 
                     <div class="flex justify-end gap-2">
                         <button type="button" x-on:click="renameBudget = false" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
+    @if ($activeBudget)
+        <div x-show="editIncome" x-cloak x-transition class="modal-backdrop">
+            <div x-on:click.away="editIncome = false" class="modal-panel">
+                <div class="flex items-center gap-3">
+                    <span class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182-.586-.439-1.354-.659-2.121-.659-.768 0-1.536-.22-2.121-.659-1.172-.879-1.172-2.303 0-3.182 1.171-.879 3.07-.879 4.242 0l.879.659" />
+                        </svg>
+                    </span>
+                    <div>
+                        <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Edit Total Income</div>
+                        <p class="text-sm text-gray-500 dark:text-slate-400">Update the income planned for this budget.</p>
+                    </div>
+                </div>
+
+                <form class="mt-5 space-y-4" wire:submit="updateActiveBudgetIncome">
+                    <div>
+                        <label for="budget-income-edit" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Income</label>
+                        <input wire:model="incomeAmount" type="number" min="0" id="budget-income-edit" class="input-field" placeholder="2000000">
+                        @error('incomeAmount')
+                            <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="flex justify-end gap-2">
+                        <button type="button" x-on:click="editIncome = false" class="btn-secondary">Cancel</button>
                         <button type="submit" class="btn-primary">Save</button>
                     </div>
                 </form>
