@@ -17,7 +17,7 @@
     </header>
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-        <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <section class="summary-grid">
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Filtered Total</div>
                 <div class="metric-value">{{ $this->rupiah($totalAmount) }}</div>

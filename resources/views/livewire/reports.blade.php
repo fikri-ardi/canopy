@@ -46,7 +46,7 @@
     </header>
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-        <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <section class="summary-grid">
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Planned Income</div>
                 <div class="metric-value">{{ $this->rupiah($totalIncome) }}</div>
@@ -57,7 +57,7 @@
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Remaining</div>
-                <div class="mt-4 break-words text-xl font-bold leading-tight {{ $remainingBalance < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}" style="overflow-wrap:anywhere">{{ $this->rupiah($remainingBalance) }}</div>
+                <div class="{{ $remainingBalance < 0 ? 'metric-value-danger' : 'metric-value' }}">{{ $this->rupiah($remainingBalance) }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>

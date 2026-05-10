@@ -180,7 +180,7 @@
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
         @if ($activeBudget)
-            <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <section class="summary-grid">
                 @foreach ($summaryCards as $card)
                     <div class="metric-card">
                         <div class="flex items-start justify-between gap-3">
@@ -224,9 +224,9 @@
 
                     <div class="mt-4 grid gap-3 sm:grid-cols-2">
                         @foreach ($insightCards as $card)
-                            <div class="rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                            <div class="metric-tile rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
-                                <div class="mt-3 break-words text-lg font-bold leading-tight text-gray-950 dark:text-slate-50" style="overflow-wrap:anywhere">
+                                <div class="metric-value-sm">
                                     {{ $card['format'] === 'money' ? $this->rupiah($card['amount']) : number_format($card['amount'], 0, ',', '.') }}
                                 </div>
                             </div>

@@ -27,7 +27,7 @@
     </header>
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-        <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <section class="summary-grid">
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
@@ -58,7 +58,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Remaining</div>
-                        <div class="mt-4 break-words text-xl font-bold leading-tight {{ $remainingBalance < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}" style="overflow-wrap:anywhere">{{ $this->rupiah($remainingBalance) }}</div>
+                        <div class="{{ $remainingBalance < 0 ? 'metric-value-danger' : 'metric-value' }}">{{ $this->rupiah($remainingBalance) }}</div>
                     </div>
                     <span class="{{ $remainingBalance < 0 ? 'inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20' : 'icon-box-muted' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">

@@ -41,16 +41,36 @@
 
     .metric-card {
         @apply panel min-h-28 overflow-hidden px-4 py-4;
+        container-type: inline-size;
+    }
+
+    .summary-grid {
+        @apply grid gap-3;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    }
+
+    .metric-tile {
+        container-type: inline-size;
     }
 
     .metric-value {
-        @apply mt-4 break-words text-xl font-bold leading-tight text-gray-950 dark:text-slate-50;
-        overflow-wrap: anywhere;
+        @apply mt-4 whitespace-nowrap font-bold leading-tight tabular-nums text-gray-950 dark:text-slate-50;
+        font-size: clamp(0.75rem, 7cqw, 1.25rem);
     }
 
     .metric-value-lg {
-        @apply mt-5 break-words text-xl font-bold leading-tight text-gray-950 dark:text-slate-50;
-        overflow-wrap: anywhere;
+        @apply mt-5 whitespace-nowrap font-bold leading-tight tabular-nums text-gray-950 dark:text-slate-50;
+        font-size: clamp(0.75rem, 7cqw, 1.25rem);
+    }
+
+    .metric-value-sm {
+        @apply mt-3 whitespace-nowrap font-bold leading-tight tabular-nums text-gray-950 dark:text-slate-50;
+        font-size: clamp(0.75rem, 6cqw, 1.125rem);
+    }
+
+    .metric-value-danger {
+        @apply mt-4 whitespace-nowrap font-bold leading-tight tabular-nums text-red-500;
+        font-size: clamp(0.75rem, 7cqw, 1.25rem);
     }
 
     .icon-box {
