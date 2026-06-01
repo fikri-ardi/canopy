@@ -248,6 +248,24 @@
                 @endforeach
             </section>
 
+            <section id="expenses" class="min-w-0">
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-950 dark:text-slate-50">Expenses</h2>
+                        <p class="text-sm text-gray-500 dark:text-slate-400">Inline edit any transaction, label, platform, or status.</p>
+                    </div>
+
+                    <button type="button" x-on:click="createExpense = true" class="btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span>New Expense</span>
+                    </button>
+                </div>
+
+                <livewire:show-expense :activeBudgetId="$activeBudgetId" :key="'expenses-'.$budgetRenderKey.'-'.$activeBudgetId" />
+            </section>
+
             <section class="grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(340px,1.1fr)]">
                 <div class="panel px-4 py-4">
                     <div class="flex items-center justify-between gap-3">
@@ -380,24 +398,6 @@
                         <div class="text-sm text-gray-500 dark:text-slate-400">No platform data yet.</div>
                     @endforelse
                 </div>
-            </section>
-
-            <section id="expenses" class="min-w-0">
-                <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-950 dark:text-slate-50">Expenses</h2>
-                        <p class="text-sm text-gray-500 dark:text-slate-400">Inline edit any transaction, label, platform, or status.</p>
-                    </div>
-
-                    <button type="button" x-on:click="createExpense = true" class="btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        <span>New Expense</span>
-                    </button>
-                </div>
-
-                <livewire:show-expense :activeBudgetId="$activeBudgetId" :key="'expenses-'.$budgetRenderKey.'-'.$activeBudgetId" />
             </section>
 
             <livewire:create-expense @saved="$refresh" :activeBudgetId="$activeBudgetId" :key="'create-expense-'.$budgetRenderKey.'-'.$activeBudgetId" />
