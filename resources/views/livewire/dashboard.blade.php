@@ -129,6 +129,151 @@
             </div>
         </section>
 
+        <section
+            class="panel overflow-hidden px-3 py-3 sm:px-4 sm:py-4"
+            x-data="{
+                activeLine: null,
+                tooltip: { show: false, x: 0, y: 0, category: '', period: '', total: '' },
+                showLineTooltip(event, category, points) {
+                    const svg = event.target.ownerSVGElement;
+                    const rect = svg.getBoundingClientRect();
+                    const viewBox = svg.viewBox.baseVal;
+                    const pointerX = (event.clientX - rect.left) * (viewBox.width / rect.width);
+                    const nearest = points.reduce((closest, point) => Math.abs(point.x - pointerX) < Math.abs(closest.x - pointerX) ? point : closest, points[0]);
+
+                    this.activeLine = category;
+                    this.tooltip = {
+                        show: true,
+                        x: event.clientX + 14,
+                        y: event.clientY - 12,
+                        category,
+                        period: nearest.budget,
+                        total: nearest.formatted,
+                    };
+                }
+            }"
+        >
+            <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <div class="eyebrow">Category Flow</div>
+                    <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50 sm:text-lg">Spending by category across budgets</h2>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-slate-400 sm:text-sm">Each line tracks one category total in the selected view.</p>
+                </div>
+                <div class="rounded-lg bg-gray-50 px-2.5 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                    <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Categories</div>
+                    <div class="font-bold text-gray-950 dark:text-slate-50">{{ $categoryBudgetChart['series']->count() }}</div>
+                </div>
+            </div>
+
+            @if (! $categoryBudgetChart['ready'])
+                <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
+                    Add labels to expenses to activate the category chart.
+                </div>
+            @elseif ($categoryBudgetChart['series']->isEmpty())
+                <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
+                    No category spending found for this budget view.
+                </div>
+            @else
+                <div class="mt-3 flex gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
+                    @foreach ($categoryBudgetChart['series'] as $seriesItem)
+                        <div
+                            wire:key="dashboard-chart-legend-{{ str($seriesItem['name'])->slug() }}"
+                            class="inline-flex shrink-0 items-center gap-2 rounded-md bg-gray-50 px-2 py-1 text-[11px] font-semibold text-gray-600 ring-1 ring-gray-100 transition dark:bg-slate-800/70 dark:text-slate-300 dark:ring-slate-700"
+                            x-bind:class="activeLine === @js($seriesItem['name']) ? 'ring-green-200 dark:ring-green-500/30' : ''"
+                            x-on:mouseenter="activeLine = @js($seriesItem['name'])"
+                            x-on:mouseleave="activeLine = null"
+                        >
+                            <span class="size-2 rounded-full" style="background-color: {{ $seriesItem['color'] }}"></span>
+                            <span class="max-w-32 truncate">{{ $seriesItem['label'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-2 overflow-hidden pb-1">
+                    <div class="-mx-3 w-[calc(100%+1.5rem)] sm:mx-auto sm:w-[95%]">
+                        <svg
+                            class="block h-auto w-full"
+                            viewBox="0 0 {{ $categoryBudgetChart['width'] }} {{ $categoryBudgetChart['height'] }}"
+                            role="img"
+                            aria-label="Multi-line chart of spending by category across budgets"
+                        >
+                            @foreach ($categoryBudgetChart['yTicks'] as $tick)
+                                <line x1="{{ $categoryBudgetChart['plot']['left'] }}" y1="{{ $tick['y'] }}" x2="{{ $categoryBudgetChart['plot']['right'] }}" y2="{{ $tick['y'] }}" class="dashboard-chart-grid" />
+                                <text x="12" y="{{ $tick['y'] + 4 }}" class="dashboard-chart-axis-text">{{ $tick['label'] }}</text>
+                            @endforeach
+
+                            @foreach ($categoryBudgetChart['budgets'] as $budget)
+                                <line x1="{{ $budget['x'] }}" y1="{{ $categoryBudgetChart['plot']['top'] }}" x2="{{ $budget['x'] }}" y2="{{ $categoryBudgetChart['plot']['bottom'] }}" class="dashboard-chart-guide" />
+                                <text x="{{ $budget['x'] }}" y="{{ $categoryBudgetChart['height'] - 28 }}" text-anchor="middle" class="dashboard-chart-axis-text">{{ $budget['shortName'] }}</text>
+                            @endforeach
+
+                            @foreach ($categoryBudgetChart['series'] as $seriesItem)
+                                <path
+                                    d="{{ $seriesItem['path'] }}"
+                                    class="dashboard-chart-line"
+                                    x-bind:class="activeLine && activeLine !== @js($seriesItem['name']) ? 'dashboard-chart-line-muted' : (activeLine === @js($seriesItem['name']) ? 'dashboard-chart-line-active' : '')"
+                                    style="stroke: {{ $seriesItem['color'] }}"
+                                ></path>
+                            @endforeach
+
+                            @foreach ($categoryBudgetChart['series'] as $seriesItem)
+                                <path
+                                    d="{{ $seriesItem['path'] }}"
+                                    class="dashboard-chart-hitbox"
+                                    x-on:mouseenter="showLineTooltip($event, @js($seriesItem['name']), @js($seriesItem['points']))"
+                                    x-on:mousemove="showLineTooltip($event, @js($seriesItem['name']), @js($seriesItem['points']))"
+                                    x-on:mouseleave="activeLine = null; tooltip.show = false"
+                                ></path>
+                            @endforeach
+
+                            @foreach ($categoryBudgetChart['series'] as $seriesItem)
+                                @if ($seriesItem['latestPoint'])
+                                    <circle
+                                        cx="{{ $seriesItem['latestPoint']['x'] }}"
+                                        cy="{{ $seriesItem['latestPoint']['y'] }}"
+                                        r="4"
+                                        class="dashboard-chart-marker"
+                                        x-bind:class="activeLine && activeLine !== @js($seriesItem['name']) ? 'dashboard-chart-marker-muted' : ''"
+                                        style="fill: {{ $seriesItem['color'] }}"
+                                    ></circle>
+                                @endif
+                            @endforeach
+
+                            @foreach ($categoryBudgetChart['series'] as $seriesItem)
+                                @foreach ($seriesItem['points'] as $point)
+                                    <circle
+                                        cx="{{ $point['x'] }}"
+                                        cy="{{ $point['y'] }}"
+                                        r="13"
+                                        fill="transparent"
+                                        class="cursor-pointer"
+                                        x-on:mouseenter="activeLine = @js($seriesItem['name']); tooltip = { show: true, x: $event.clientX + 14, y: $event.clientY - 12, category: @js($seriesItem['name']), period: @js($point['budget']), total: @js($point['formatted']) }"
+                                        x-on:mousemove="tooltip.x = $event.clientX + 14; tooltip.y = $event.clientY - 12"
+                                        x-on:mouseleave="activeLine = null; tooltip.show = false"
+                                    ></circle>
+                                @endforeach
+                            @endforeach
+                        </svg>
+                    </div>
+                </div>
+
+                <div
+                    x-show="tooltip.show"
+                    x-cloak
+                    x-transition.opacity
+                    class="pointer-events-none fixed z-[90] rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30"
+                    x-bind:style="`left:${tooltip.x}px;top:${tooltip.y}px;`"
+                >
+                    <div class="text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Kategori</div>
+                    <div class="font-bold text-gray-950 dark:text-slate-50" x-text="tooltip.category"></div>
+                    <div class="mt-2 text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Periode</div>
+                    <div class="text-gray-600 dark:text-slate-300" x-text="tooltip.period"></div>
+                    <div class="mt-2 text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Total pengeluaran</div>
+                    <div class="font-semibold text-green-600 dark:text-green-400" x-text="tooltip.total"></div>
+                </div>
+            @endif
+        </section>
+
         <section class="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)]">
             <div class="panel px-4 py-4">
                 <div class="flex flex-wrap items-start justify-between gap-3">

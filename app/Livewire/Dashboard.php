@@ -218,6 +218,206 @@ class Dashboard extends Component
             ->get();
     }
 
+    private function categoryBudgetChart(): array
+    {
+        if (! $this->labelsSchemaReady()) {
+            return [
+                'ready' => false,
+                'series' => collect(),
+                'budgets' => collect(),
+                'yTicks' => collect(),
+                'width' => 700,
+                'height' => 300,
+            ];
+        }
+
+        $rangeStart = $this->rangeStart();
+
+        $rows = Spend::query()
+            ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
+            ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
+            ->where('budgets.user_id', auth()->id())
+            ->when($this->budgetId !== 'all', fn ($query) => $query->where('spends.budget_id', $this->budgetId))
+            ->when($rangeStart, fn ($query, Carbon $start) => $query->where('spends.created_at', '>=', $start))
+            ->selectRaw("spends.budget_id as budget_id, coalesce(labels.name, 'Unlabeled') as category, sum(spends.amount) as total")
+            ->groupBy('spends.budget_id')
+            ->groupByRaw("coalesce(labels.name, 'Unlabeled')")
+            ->get();
+
+        if ($rows->isEmpty()) {
+            return [
+                'ready' => true,
+                'series' => collect(),
+                'budgets' => collect(),
+                'yTicks' => collect(),
+                'width' => 700,
+                'height' => 300,
+            ];
+        }
+
+        $budgetIds = $rows->pluck('budget_id')->unique()->values();
+        $budgets = Budget::query()
+            ->where('user_id', auth()->id())
+            ->whereIn('id', $budgetIds)
+            ->orderBy('created_at')
+            ->orderBy('id')
+            ->get(['id', 'name'])
+            ->values();
+
+        $width = 700;
+        $height = 300;
+        $padding = ['left' => 48, 'right' => 20, 'top' => 18, 'bottom' => 46];
+        $plotWidth = $width - $padding['left'] - $padding['right'];
+        $plotHeight = $height - $padding['top'] - $padding['bottom'];
+        $xStep = $budgets->count() > 1 ? $plotWidth / ($budgets->count() - 1) : 0;
+
+        $maxValue = max((int) $rows->max('total'), 1);
+        $chartMax = $maxValue;
+        $colors = $this->chartColors();
+
+        $budgetPoints = $budgets->map(function (Budget $budget, int $index) use ($padding, $xStep, $plotWidth) {
+            return [
+                'id' => $budget->id,
+                'name' => $budget->name,
+                'shortName' => str($budget->name)->limit(14)->toString(),
+                'x' => $padding['left'] + ($xStep ? $index * $xStep : $plotWidth / 2),
+            ];
+        });
+
+        $valuesByCategory = $rows
+            ->groupBy('category')
+            ->map(fn ($items) => [
+                'total' => (int) $items->sum('total'),
+                'values' => $items->keyBy('budget_id')->map(fn ($item) => (int) $item->total),
+            ])
+            ->sortByDesc('total');
+
+        $series = $valuesByCategory->values()->map(function (array $category, int $index) use ($budgetPoints, $chartMax, $colors, $padding, $plotHeight) {
+            $points = $budgetPoints->map(function (array $budget) use ($category, $chartMax, $padding, $plotHeight) {
+                $amount = (int) ($category['values']->get($budget['id']) ?? 0);
+                $y = $padding['top'] + $plotHeight - (($amount / $chartMax) * $plotHeight);
+
+                return [
+                    'budget' => $budget['name'],
+                    'amount' => $amount,
+                    'formatted' => $this->rupiah($amount),
+                    'x' => round($budget['x'], 2),
+                    'y' => round($y, 2),
+                ];
+            })->values();
+
+            $latestPoint = $points->filter(fn ($point) => $point['amount'] > 0)->last() ?? $points->last();
+
+            return [
+                'name' => $category['values']->keys()->isNotEmpty() ? $category['values']->keys()->first() : null,
+                'label' => null,
+                'total' => $category['total'],
+                'formattedTotal' => $this->rupiah($category['total']),
+                'color' => $colors[$index % count($colors)],
+                'points' => $points,
+                'path' => $this->smoothPath($points->all()),
+                'latestPoint' => $latestPoint,
+            ];
+        });
+
+        $series = $valuesByCategory->keys()->values()->map(function (string $name, int $index) use ($series) {
+            $item = $series[$index];
+            $item['name'] = $name;
+            $item['label'] = str($name)->limit(18)->toString();
+
+            return $item;
+        });
+
+        $yTicks = collect([0, 0.5, 1])->map(function (float $tick) use ($chartMax, $padding, $plotHeight) {
+            $value = (int) round($chartMax * $tick);
+            $y = $padding['top'] + $plotHeight - (($value / $chartMax) * $plotHeight);
+
+            return [
+                'value' => $value,
+                'label' => $this->compactAxisAmount($value),
+                'y' => round($y, 2),
+            ];
+        })->reverse()->values();
+
+        return [
+            'ready' => true,
+            'series' => $series,
+            'budgets' => $budgetPoints,
+            'yTicks' => $yTicks,
+            'width' => $width,
+            'height' => $height,
+            'plot' => [
+                'left' => $padding['left'],
+                'right' => $width - $padding['right'],
+                'top' => $padding['top'],
+                'bottom' => $height - $padding['bottom'],
+                'height' => $plotHeight,
+            ],
+        ];
+    }
+
+    private function chartColors(): array
+    {
+        return [
+            '#22c55e',
+            '#0ea5e9',
+            '#8b5cf6',
+            '#f59e0b',
+            '#ef4444',
+            '#14b8a6',
+            '#6366f1',
+            '#84cc16',
+            '#ec4899',
+            '#f97316',
+            '#06b6d4',
+            '#64748b',
+        ];
+    }
+
+    private function smoothPath(array $points): string
+    {
+        if (count($points) === 0) {
+            return '';
+        }
+
+        if (count($points) === 1) {
+            return 'M '.$points[0]['x'].' '.$points[0]['y'];
+        }
+
+        $path = 'M '.$points[0]['x'].' '.$points[0]['y'];
+
+        for ($index = 0; $index < count($points) - 1; $index++) {
+            $current = $points[$index];
+            $next = $points[$index + 1];
+            $previous = $points[$index - 1] ?? $current;
+            $afterNext = $points[$index + 2] ?? $next;
+
+            $controlOneX = $current['x'] + ($next['x'] - $previous['x']) / 6;
+            $controlOneY = $current['y'] + ($next['y'] - $previous['y']) / 6;
+            $controlTwoX = $next['x'] - ($afterNext['x'] - $current['x']) / 6;
+            $controlTwoY = $next['y'] - ($afterNext['y'] - $current['y']) / 6;
+
+            $path .= ' C '.round($controlOneX, 2).' '.round($controlOneY, 2).', '.round($controlTwoX, 2).' '.round($controlTwoY, 2).', '.$next['x'].' '.$next['y'];
+        }
+
+        return $path;
+    }
+
+    private function compactAxisAmount(int $amount): string
+    {
+        if ($amount >= 1000000) {
+            $value = $amount / 1000000;
+
+            return number_format($value, $amount % 1000000 === 0 ? 0 : 1, ',', '.').'jt';
+        }
+
+        if ($amount >= 1000) {
+            return number_format($amount / 1000, 0, ',', '.').'rb';
+        }
+
+        return number_format($amount, 0, ',', '.');
+    }
+
     private function rangeStart(): ?Carbon
     {
         return match ($this->range) {
@@ -246,6 +446,7 @@ class Dashboard extends Component
             'platformBreakdown' => $this->platformBreakdown(),
             'statusBreakdown' => $this->statusBreakdown(),
             'topExpenses' => $this->topExpenses(),
+            'categoryBudgetChart' => $this->categoryBudgetChart(),
             'totalIncome' => $totalIncome,
             'totalExpense' => $totalExpense,
             'remainingBalance' => $totalIncome - $totalExpense,

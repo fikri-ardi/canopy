@@ -79,6 +79,66 @@
         @apply inline-flex size-5 shrink-0 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-400 transition hover:border-gray-300 hover:text-gray-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500 dark:hover:border-slate-600 dark:hover:text-slate-200;
     }
 
+    .dashboard-chart-grid {
+        @apply stroke-gray-100 dark:stroke-slate-800;
+        stroke-width: 1;
+    }
+
+    .dashboard-chart-guide {
+        @apply stroke-gray-100/70 dark:stroke-slate-800/70;
+        stroke-width: 1;
+    }
+
+    .dashboard-chart-axis-text {
+        @apply fill-gray-400 text-[9px] font-medium dark:fill-slate-500;
+    }
+
+    .dashboard-chart-line {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2.25;
+        opacity: 0;
+        transform: translateY(4px);
+        transform-box: fill-box;
+        transform-origin: center;
+        vector-effect: non-scaling-stroke;
+        transition: opacity 180ms ease, stroke-width 180ms ease, filter 180ms ease, transform 180ms ease;
+        animation: dashboard-chart-line-in 520ms ease-out forwards;
+    }
+
+    .dashboard-chart-line-active {
+        stroke-width: 3.25;
+        filter: drop-shadow(0 4px 8px rgb(15 23 42 / 0.12));
+    }
+
+    .dashboard-chart-line-muted {
+        opacity: 0.18 !important;
+    }
+
+    .dashboard-chart-hitbox {
+        fill: none;
+        stroke: transparent;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 18;
+        cursor: pointer;
+        pointer-events: stroke;
+    }
+
+    .dashboard-chart-marker {
+        @apply stroke-white dark:stroke-slate-900;
+        stroke-width: 3;
+        transform-box: fill-box;
+        transform-origin: center;
+        vector-effect: non-scaling-stroke;
+        animation: dashboard-chart-marker 420ms ease-out 520ms both;
+    }
+
+    .dashboard-chart-marker-muted {
+        opacity: 0.22;
+    }
+
     .investment-select-menu {
         @apply w-72 p-1.5;
     }
@@ -259,4 +319,28 @@
         }
     }
 
+}
+
+@keyframes dashboard-chart-line-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 0.92;
+        transform: translateY(0);
+    }
+}
+
+@keyframes dashboard-chart-marker {
+    from {
+        opacity: 0;
+        transform: scale(0.75);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
