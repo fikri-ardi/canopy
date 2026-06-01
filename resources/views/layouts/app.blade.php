@@ -36,8 +36,9 @@
     <script>
         window.canopyFormatNumber = function (value) {
             const digits = String(value || '').replace(/\D/g, '');
+            const normalizedDigits = digits.replace(/^0+(?=\d)/, '');
 
-            return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return normalizedDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         };
 
         window.canopyFormatNumberInput = function (input) {

@@ -127,29 +127,47 @@
                 </section>
 
                 <section class="table-shell">
-                    <table class="w-full min-w-[640px] table-fixed">
-                        <thead class="bg-gray-50 text-xs font-semibold uppercase text-gray-500 dark:bg-slate-950 dark:text-slate-400">
+                    <table class="w-full min-w-[390px] table-fixed sm:min-w-[560px] lg:min-w-[620px]">
+                        <colgroup>
+                            <col class="w-[4.25rem] sm:w-28">
+                            <col class="w-[3.75rem] sm:w-28">
+                            <col class="w-[5.25rem] sm:w-[10rem] lg:w-[13rem]">
+                            <col class="w-[6.5rem] sm:w-32">
+                            <col class="w-10 sm:w-20">
+                        </colgroup>
+                        <thead class="bg-gray-50 text-[10px] font-semibold uppercase text-gray-500 dark:bg-slate-950 dark:text-slate-400 sm:text-xs">
                             <tr>
-                                <th class="w-28 p-3 text-left">Date</th>
-                                <th class="w-28 p-3 text-left">Type</th>
-                                <th class="p-3 text-left">Note</th>
-                                <th class="w-32 p-3 text-right">Amount</th>
-                                <th class="w-20 p-3 text-right">Action</th>
+                                <th class="px-2 py-2 text-left sm:p-3">Date</th>
+                                <th class="px-2 py-2 text-left sm:p-3">Type</th>
+                                <th class="px-2 py-2 text-left sm:p-3">Note</th>
+                                <th class="px-2 py-2 text-right sm:p-3">Amount</th>
+                                <th class="px-1.5 py-2 text-right sm:p-3">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 text-sm dark:divide-slate-800">
+                        <tbody class="divide-y divide-gray-100 text-[13px] dark:divide-slate-800 sm:text-sm">
                             @forelse ($movements as $movement)
                                 <tr wire:key="investment-movement-{{ $movement->id }}" class="bg-white text-gray-800 transition hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800/60">
-                                    <td class="p-3 text-gray-500 dark:text-slate-400">{{ $movement->occurred_on?->format('d M Y') }}</td>
-                                    <td class="p-3">
-                                        <span class="inline-flex rounded-md px-2 py-1 text-xs font-semibold {{ $movement->type === 'withdrawal' ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-300' : 'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-300' }}">
-                                            {{ $movement->type === 'withdrawal' ? 'Withdrawal' : 'Top up' }}
+                                    <td class="whitespace-nowrap px-2 py-2 text-xs text-gray-500 dark:text-slate-400 sm:p-3 sm:text-sm">
+                                        <span class="sm:hidden">{{ $movement->occurred_on?->format('d/m/y') }}</span>
+                                        <span class="hidden sm:inline">{{ $movement->occurred_on?->format('d M Y') }}</span>
+                                    </td>
+                                    <td class="px-2 py-2 sm:p-3">
+                                        <span class="inline-flex rounded-md px-1.5 py-0.5 text-[11px] font-semibold sm:px-2 sm:py-1 sm:text-xs {{ $movement->type === 'withdrawal' ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-300' : 'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-300' }}">
+                                            <span class="sm:hidden">{{ $movement->type === 'withdrawal' ? 'Out' : 'In' }}</span>
+                                            <span class="hidden sm:inline">{{ $movement->type === 'withdrawal' ? 'Withdrawal' : 'Top up' }}</span>
                                         </span>
                                     </td>
-                                    <td class="p-3 text-gray-600 dark:text-slate-300">{{ $movement->note ?? '-' }}</td>
-                                    <td class="p-3 text-right font-bold {{ $movement->type === 'withdrawal' ? 'text-red-500' : 'text-green-500' }}">{{ $this->rupiah($movement->amount) }}</td>
-                                    <td class="p-3 text-right">
-                                        <button type="button" x-on:click="deleteMovement = true" wire:click="confirmDeleteMovement({{ $movement->id }})" class="btn-secondary px-3 py-1.5 text-xs">Delete</button>
+                                    <td class="px-2 py-2 text-gray-600 dark:text-slate-300 sm:p-3">
+                                        <div class="max-w-[4.5rem] truncate sm:max-w-[9rem] lg:max-w-[12rem]" title="{{ $movement->note ?? '-' }}">{{ $movement->note ?? '-' }}</div>
+                                    </td>
+                                    <td class="whitespace-nowrap px-2 py-2 text-right font-bold tabular-nums sm:p-3 {{ $movement->type === 'withdrawal' ? 'text-red-500' : 'text-green-500' }}">{{ $this->rupiah($movement->amount) }}</td>
+                                    <td class="px-1.5 py-2 text-right sm:p-3">
+                                        <button type="button" x-on:click="deleteMovement = true" wire:click="confirmDeleteMovement({{ $movement->id }})" class="btn-secondary size-8 px-0 py-0 text-xs sm:h-auto sm:w-auto sm:px-3 sm:py-1.5" aria-label="Delete movement">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4 sm:hidden">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0 1 15.916 21.75H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a49.058 49.058 0 0 0-7.5 0" />
+                                            </svg>
+                                            <span class="hidden sm:inline">Delete</span>
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
