@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Livewire\Budget;
 use App\Livewire\Dashboard;
+use App\Livewire\Investment;
 use App\Livewire\Labels;
 use App\Livewire\Platforms;
 use App\Livewire\Reports;
@@ -23,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', Dashboard::class)->name('dashboard');
     Route::get('/budgets', Budget::class)->name('budgets');
     Route::get('/spends', Spends::class)->name('spends');
+    Route::get('/investment', Investment::class)->name('investment');
     Route::get('/reports', Reports::class)->name('reports');
     Route::get('/labels', Labels::class)->name('labels');
     Route::get('/platforms', Platforms::class)->name('platforms');
