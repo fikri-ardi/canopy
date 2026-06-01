@@ -1,5 +1,5 @@
 <div
-    x-data="{createBudget: false, budgetMenu: canopyDropdown(), investmentMenu: canopyDropdown({ minWidth: 336, maxWidth: 420 }), createExpense: false, renameBudget: false, editIncome: false, deleteBudget: false}"
+    x-data="{createBudget: false, budgetMenu: canopyDropdown(), allocationMenu: canopyDropdown({ minWidth: 300, maxWidth: 380 }), investmentMenu: canopyDropdown({ minWidth: 336, maxWidth: 420 }), createExpense: false, renameBudget: false, editIncome: false, deleteBudget: false}"
     x-on:saved="createExpense = false"
     x-on:budget-created="createBudget = false; budgetMenu.close()"
     x-on:budget-renamed="renameBudget = false"
@@ -189,6 +189,20 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-2">
                                     <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
+                                    @if (($card['key'] ?? null) === 'allocation' && $allocationOptions->isNotEmpty())
+                                        <button
+                                            x-ref="allocationTrigger"
+                                            type="button"
+                                            x-on:click.stop="allocationMenu.toggle($refs.allocationTrigger, $refs.allocationMenu)"
+                                            class="summary-menu-button"
+                                            aria-label="Choose allocation platform"
+                                            title="Choose allocation platform"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </button>
+                                    @endif
                                     @if (($card['key'] ?? null) === 'investment' && $investmentOptions->isNotEmpty())
                                         <button
                                             x-ref="investmentTrigger"
@@ -205,7 +219,7 @@
                                     @endif
                                 </div>
                                 <div class="metric-value-lg">{{ $this->rupiah($card['amount']) }}</div>
-                                @if (($card['key'] ?? null) === 'investment')
+                                @if (in_array(($card['key'] ?? null), ['allocation', 'investment'], true))
                                     <div class="mt-1 truncate text-xs font-medium text-gray-500 dark:text-slate-400">{{ $card['detail'] }}</div>
                                 @endif
                             </div>
@@ -214,8 +228,8 @@
                                     @case('TOTAL INCOME')
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182-.586-.439-1.354-.659-2.121-.659-.768 0-1.536-.22-2.121-.659-1.172-.879-1.172-2.303 0-3.182 1.171-.879 3.07-.879 4.242 0l.879.659" /></svg>
                                         @break
-                                    @case('TOTAL EXPENSE')
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125h17.25c.621 0 1.125.504 1.125 1.125V6m-19.5 0v9m19.5-9v9m0 0v.375c0 .621-.504 1.125-1.125 1.125H3.375A1.125 1.125 0 0 1 2.25 15.375V15m19.5 0h-.75a.75.75 0 0 0-.75.75v.75" /></svg>
+                                    @case('ALLOCATION')
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 8.25h16.5m-16.5 7.5h16.5M6.75 3.75h10.5A2.25 2.25 0 0 1 19.5 6v12a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 18V6a2.25 2.25 0 0 1 2.25-2.25Z" /></svg>
                                         @break
                                     @case('REMAINING')
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
@@ -228,6 +242,22 @@
                                 @endswitch
                             </span>
                         </div>
+
+                        @if (($card['key'] ?? null) === 'allocation' && $allocationOptions->isNotEmpty())
+                            <template x-teleport="body">
+                                <div x-ref="allocationMenu" x-show="allocationMenu.open" x-cloak x-transition x-bind:style="allocationMenu.style" x-on:click.outside="allocationMenu.close()" x-on:resize.window="allocationMenu.close()" wire:key="budget-allocation-menu" wire:ignore.self class="floating-select-menu investment-select-menu">
+                                    @foreach ($allocationOptions as $option)
+                                        <button type="button" x-on:click="allocationMenu.close()" wire:click="selectAllocationPlatform({{ $option['id'] }})" wire:key="budget-allocation-option-{{ $option['id'] }}" class="investment-option {{ (int) $selectedAllocationPlatformId === $option['id'] ? 'investment-option-active' : '' }}">
+                                            <span class="min-w-0">
+                                                <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
+                                                <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi</span>
+                                            </span>
+                                            <span class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </template>
+                        @endif
 
                         @if (($card['key'] ?? null) === 'investment' && $investmentOptions->isNotEmpty())
                             <template x-teleport="body">

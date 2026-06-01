@@ -19,6 +19,7 @@ class Budget extends Component
     public $incomeAmount;
     public $budgetRenderKey = 0;
     public $selectedInvestmentName;
+    public $selectedAllocationPlatformId;
 
     public function mount()
     {
@@ -166,6 +167,17 @@ class Budget extends Component
         $this->selectedInvestmentName = $option['key'];
     }
 
+    public function selectAllocationPlatform(int $platformId): void
+    {
+        $option = $this->allocationOptions()->firstWhere('id', $platformId);
+
+        if (! $option) {
+            return;
+        }
+
+        $this->selectedAllocationPlatformId = $option['id'];
+    }
+
     private function refreshBudgets()
     {
         $this->budgets = $this->userBudgetsQuery()->get(['id', 'name']);
@@ -203,22 +215,26 @@ class Budget extends Component
         return $copyName;
     }
 
-    private function summaryCards(?array $investment = null): array
+    private function summaryCards(?array $investment = null, ?array $allocation = null): array
     {
         if (! $this->activeBudget) {
             return [
                 ['label' => 'TOTAL INCOME', 'amount' => 0, 'key' => 'income'],
-                ['label' => 'TOTAL EXPENSE', 'amount' => 0, 'key' => 'expense'],
+                ['label' => 'ALLOCATION', 'amount' => 0, 'key' => 'allocation', 'detail' => 'No platform allocation'],
                 ['label' => 'REMAINING', 'amount' => 0, 'key' => 'remaining'],
                 ['label' => 'MAIN BANK', 'amount' => 0, 'key' => 'main_bank'],
                 ['label' => 'INVESTMENT', 'amount' => 0, 'key' => 'investment', 'detail' => 'No investment spend'],
             ];
         }
 
-        $totalExpense = $this->totalExpense();
         return [
             ['label' => 'TOTAL INCOME', 'amount' => (int) $this->activeBudget->income, 'key' => 'income'],
-            ['label' => 'TOTAL EXPENSE', 'amount' => (int) $totalExpense, 'key' => 'expense'],
+            [
+                'label' => 'ALLOCATION',
+                'amount' => (int) ($allocation['amount'] ?? 0),
+                'key' => 'allocation',
+                'detail' => $allocation['name'] ?? 'No platform allocation',
+            ],
             ['label' => 'REMAINING', 'amount' => $this->remainingBalance(), 'key' => 'remaining'],
             ['label' => 'MAIN BANK', 'amount' => $this->mainBankBalance(), 'key' => 'main_bank'],
             [
@@ -391,6 +407,42 @@ class Budget extends Component
         return $selected;
     }
 
+    private function selectedAllocationOption($options): ?array
+    {
+        if ($options->isEmpty()) {
+            return null;
+        }
+
+        $selected = $this->selectedAllocationPlatformId
+            ? $options->firstWhere('id', (int) $this->selectedAllocationPlatformId)
+            : null;
+
+        $selected ??= $options->first();
+
+        return $selected;
+    }
+
+    private function allocationOptions()
+    {
+        if (! $this->activeBudget) {
+            return collect();
+        }
+
+        return Spend::query()
+            ->join('platforms', 'spends.platform_id', '=', 'platforms.id')
+            ->where('spends.budget_id', $this->activeBudget->id)
+            ->selectRaw('platforms.id as id, platforms.name as name, sum(spends.amount) as total, count(*) as transactions')
+            ->groupBy('platforms.id', 'platforms.name')
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn ($platform) => [
+                'id' => (int) $platform->id,
+                'name' => $platform->name,
+                'amount' => (int) $platform->total,
+                'transactions' => (int) $platform->transactions,
+            ]);
+    }
+
     private function investmentOptions()
     {
         if (! $this->labelsSchemaReady()) {
@@ -458,11 +510,13 @@ class Budget extends Component
 
     public function render()
     {
+        $allocationOptions = $this->allocationOptions();
+        $selectedAllocation = $this->selectedAllocationOption($allocationOptions);
         $investmentOptions = $this->investmentOptions();
         $selectedInvestment = $this->selectedInvestmentOption($investmentOptions);
 
         return view('livewire.budget', [
-            'summaryCards' => $this->summaryCards($selectedInvestment),
+            'summaryCards' => $this->summaryCards($selectedInvestment, $selectedAllocation),
             'insightCards' => [
                 ['label' => 'TRANSACTIONS', 'amount' => $this->transactionCount(), 'format' => 'number'],
                 ['label' => 'AVG EXPENSE', 'amount' => $this->averageExpense(), 'format' => 'money'],
@@ -472,6 +526,8 @@ class Budget extends Component
             'platformAnalytics' => $this->platformAnalytics(),
             'statusAnalytics' => $this->statusAnalytics(),
             'topExpenses' => $this->topExpenses(),
+            'allocationOptions' => $allocationOptions,
+            'selectedAllocationPlatformId' => $selectedAllocation['id'] ?? null,
             'investmentOptions' => $investmentOptions,
             'selectedInvestmentKey' => $selectedInvestment['key'] ?? null,
             'spendProgress' => $this->spendProgress(),
