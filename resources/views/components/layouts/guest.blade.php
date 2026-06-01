@@ -10,7 +10,7 @@
 </head>
 
 <body class="h-full font-sans">
-    <main class="flex min-h-full items-center justify-center px-4 py-10">
+    <main class="relative z-10 flex min-h-full items-center justify-center px-4 py-10">
         <div class="w-full max-w-md">
             <a href="/" class="mb-8 flex items-center justify-center gap-3">
                 <span class="inline-flex size-11 items-center justify-center rounded-lg bg-green-50 text-green-500 ring-1 ring-green-100 dark:bg-green-500/10 dark:ring-green-500/20">

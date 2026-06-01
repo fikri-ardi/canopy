@@ -6,7 +6,9 @@
             <p class="page-subtitle">Buat akun supaya budget dan expense hanya terlihat olehmu.</p>
         </div>
 
-        <form method="POST" action="{{ route('register') }}" class="mt-6 space-y-4">
+        @include('auth.partials.social-buttons')
+
+        <form method="POST" action="{{ route('register') }}" class="space-y-4">
             @csrf
 
             <div>

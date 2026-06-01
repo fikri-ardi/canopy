@@ -6,7 +6,9 @@
             <p class="page-subtitle">Masuk untuk membuka budget management milikmu.</p>
         </div>
 
-        <form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4">
+        @include('auth.partials.social-buttons')
+
+        <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
 
             <div>
