@@ -95,6 +95,80 @@ class EditExpense extends Component
         return view('livewire.edit-expense');
     }
 
+    public function amountToneClass(): string
+    {
+        $amount = (int) str_replace('.', '', (string) $this->amount);
+
+        if ($amount >= 1000000) {
+            return 'expense-tone-rose';
+        }
+
+        if ($amount >= 500000) {
+            return 'expense-tone-amber';
+        }
+
+        if ($amount >= 100000) {
+            return 'expense-tone-indigo';
+        }
+
+        return 'expense-tone-emerald';
+    }
+
+    public function labelToneClass(): string
+    {
+        return $this->toneFromText($this->spend->label?->name, 'expense-tone-slate');
+    }
+
+    public function platformToneClass(): string
+    {
+        $platform = strtolower($this->spend->platform?->name ?? '');
+
+        if (str_contains($platform, 'cash')) {
+            return 'expense-tone-emerald';
+        }
+
+        if (str_contains($platform, 'bank') || str_contains($platform, 'bri') || str_contains($platform, 'bni') || str_contains($platform, 'jago') || str_contains($platform, 'seabank')) {
+            return 'expense-tone-sky';
+        }
+
+        if (str_contains($platform, 'pay') || str_contains($platform, 'wallet') || str_contains($platform, 'gopay') || str_contains($platform, 'shopee')) {
+            return 'expense-tone-violet';
+        }
+
+        return $this->toneFromText($platform, 'expense-tone-slate');
+    }
+
+    public function statusToneClass(): string
+    {
+        $status = strtolower($this->spend->status?->body ?? '');
+
+        return match (true) {
+            str_contains($status, 'done'), str_contains($status, 'paid'), str_contains($status, 'complete') => 'expense-tone-emerald',
+            str_contains($status, 'allocated') && ! str_contains($status, 'unallocated') => 'expense-tone-sky',
+            str_contains($status, 'withdraw') => 'expense-tone-amber',
+            str_contains($status, 'unallocated'), str_contains($status, 'unalocated') => 'expense-tone-rose',
+            default => $this->toneFromText($status, 'expense-tone-slate'),
+        };
+    }
+
+    private function toneFromText(?string $text, string $fallback): string
+    {
+        if (! $text) {
+            return $fallback;
+        }
+
+        $tones = [
+            'expense-tone-teal',
+            'expense-tone-violet',
+            'expense-tone-sky',
+            'expense-tone-amber',
+            'expense-tone-indigo',
+            'expense-tone-emerald',
+        ];
+
+        return $tones[abs(crc32(strtolower($text))) % count($tones)];
+    }
+
     private function labelsSchemaReady(): bool
     {
         return Schema::hasTable('labels')

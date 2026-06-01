@@ -49,6 +49,10 @@
         grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
     }
 
+    .sticky-summary {
+        @apply sticky top-0 z-30 -mx-4 border-b border-gray-200 bg-gray-50/95 px-4 py-3 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8;
+    }
+
     .metric-tile {
         container-type: inline-size;
     }
@@ -119,5 +123,73 @@
 
     .table-shell {
         @apply min-w-0 overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm shadow-gray-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20;
+    }
+
+    .expense-table-head {
+        @apply sticky top-0 z-10 bg-gray-50 text-xs font-semibold uppercase text-gray-500 dark:bg-slate-950 dark:text-slate-400;
+    }
+
+    .sort-button {
+        @apply inline-flex max-w-full items-center gap-1.5 rounded-md px-2 py-1 text-xs font-bold uppercase tracking-normal text-gray-500 transition hover:bg-white hover:text-gray-950 hover:shadow-sm dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-50;
+    }
+
+    .sort-button-active {
+        @apply bg-white text-gray-950 shadow-sm ring-1 ring-gray-200 dark:bg-slate-900 dark:text-slate-50 dark:ring-slate-700;
+    }
+
+    .expense-name-input {
+        @apply w-full min-w-0 rounded-lg bg-transparent px-3 py-2 text-sm font-semibold text-gray-900 outline-none transition hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200 dark:text-slate-100 dark:hover:bg-slate-800 dark:hover:ring-slate-700;
+    }
+
+    .expense-amount-input {
+        @apply w-full min-w-0 rounded-lg px-3 py-2 text-sm font-bold tabular-nums outline-none ring-1 transition placeholder:text-current hover:shadow-sm;
+    }
+
+    .expense-pill {
+        @apply inline-flex min-w-36 w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold ring-1 transition hover:brightness-95 dark:hover:brightness-110;
+    }
+
+    .expense-tone-emerald {
+        @apply bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:ring-emerald-500/25;
+    }
+
+    .expense-tone-rose {
+        @apply bg-rose-50 text-rose-700 ring-rose-200 dark:bg-rose-500/10 dark:text-rose-200 dark:ring-rose-500/25;
+    }
+
+    .expense-tone-amber {
+        @apply bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:ring-amber-500/25;
+    }
+
+    .expense-tone-sky {
+        @apply bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-500/10 dark:text-sky-200 dark:ring-sky-500/25;
+    }
+
+    .expense-tone-violet {
+        @apply bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-500/10 dark:text-violet-200 dark:ring-violet-500/25;
+    }
+
+    .expense-tone-indigo {
+        @apply bg-indigo-50 text-indigo-700 ring-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-200 dark:ring-indigo-500/25;
+    }
+
+    .expense-tone-teal {
+        @apply bg-teal-50 text-teal-700 ring-teal-200 dark:bg-teal-500/10 dark:text-teal-200 dark:ring-teal-500/25;
+    }
+
+    .expense-tone-slate {
+        @apply bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-700;
+    }
+
+    @media (max-width: 639px) {
+        .sticky-summary.summary-grid {
+            @apply auto-cols-[minmax(11rem,72vw)] grid-flow-col overflow-x-auto overscroll-x-contain;
+            grid-template-columns: none;
+            scroll-snap-type: x proximity;
+        }
+
+        .sticky-summary .metric-card {
+            scroll-snap-align: start;
+        }
     }
 }

@@ -1,19 +1,37 @@
 <div class="table-shell">
-    <table class="w-full min-w-[900px] table-fixed">
-        <thead class="bg-gray-50 text-xs font-semibold uppercase text-gray-500 dark:bg-slate-950 dark:text-slate-400">
+    @php($sortColumns = [
+        'number' => ['label' => '#', 'class' => 'w-16 px-3 py-3 text-center'],
+        'name' => ['label' => 'Pengeluaran', 'class' => 'p-3 text-left'],
+        'amount' => ['label' => 'Jumlah', 'class' => 'p-3 text-left'],
+        'label' => ['label' => 'Label', 'class' => 'p-3 text-left'],
+        'platform' => ['label' => 'Platform', 'class' => 'p-3 text-left'],
+        'status' => ['label' => 'Status', 'class' => 'p-3 text-left'],
+    ])
+
+    <table class="w-full min-w-[840px] table-fixed">
+        <thead class="expense-table-head">
             <tr>
-                <th class="w-14 px-3 py-3 text-center">#</th>
-                <th class="p-3 text-left">Pengeluaran</th>
-                <th class="p-3 text-left">Jumlah</th>
-                <th class="p-3 text-left">Label</th>
-                <th class="p-3 text-left">Platform</th>
-                <th class="p-3 text-left">Status</th>
+                @foreach ($sortColumns as $column => $config)
+                    <th class="{{ $config['class'] }}">
+                        <button
+                            type="button"
+                            wire:click="sort('{{ $column }}')"
+                            class="sort-button {{ $this->sortIcon($column) !== 'idle' ? 'sort-button-active' : '' }} {{ $column === 'number' ? 'mx-auto justify-center' : '' }}"
+                            aria-label="Sort by {{ $config['label'] }}"
+                        >
+                            <span>{{ $config['label'] }}</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5 transition {{ $this->sortIcon($column) === 'asc' ? 'rotate-180' : '' }} {{ $this->sortIcon($column) === 'idle' ? 'opacity-35' : 'opacity-100' }}">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 8.25 7.5 7.5 7.5-7.5" />
+                            </svg>
+                        </button>
+                    </th>
+                @endforeach
                 <th class="w-20 p-3 text-center">Action</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 text-sm dark:divide-slate-800">
             @forelse($spends as $spend)
-                <livewire:edit-expense :spend="$spend" :iteration="$loop->iteration" :key="'edit-expense-'.$spend->id" />
+                <livewire:edit-expense :spend="$spend" :iteration="$loop->iteration" :key="'edit-expense-'.$spend->id.'-'.$sortBy.'-'.$sortDirection.'-'.$loop->iteration" />
             @empty
                 <tr>
                     <td colspan="7" class="px-3 py-12 text-center">

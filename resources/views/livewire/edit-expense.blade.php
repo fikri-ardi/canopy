@@ -4,20 +4,20 @@
 >
     <td class="px-3 py-3 text-center text-gray-400 dark:text-slate-500">{{ $iteration }}</td>
     <td class="p-2">
-        <input wire:model.blur="name" type="text" class="w-full min-w-0 rounded-lg bg-transparent px-3 py-2 outline-none transition hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200 dark:hover:bg-slate-800 dark:hover:ring-slate-700" />
+        <input wire:model.blur="name" type="text" class="expense-name-input" />
         @error('name')
             <div class="px-2 text-xs text-red-500">{{ $message }}</div>
         @enderror
     </td>
     <td class="p-2">
-        <input wire:model.blur="amount" type="text" inputmode="numeric" class="w-full min-w-0 rounded-lg bg-transparent px-3 py-2 outline-none transition hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200 dark:hover:bg-slate-800 dark:hover:ring-slate-700" />
+        <input wire:model.blur="amount" type="text" inputmode="numeric" class="expense-amount-input {{ $this->amountToneClass() }}" />
         @error('amount')
             <div class="px-2 text-xs text-red-500">{{ $message }}</div>
         @enderror
     </td>
     <td class="p-2">
         @if ($labelsReady)
-            <button x-ref="labelTrigger" type="button" x-on:click.stop="labelMenu.toggle($refs.labelTrigger, $refs.labelMenu)" class="btn-secondary min-w-40 w-full justify-between">
+            <button x-ref="labelTrigger" type="button" x-on:click.stop="labelMenu.toggle($refs.labelTrigger, $refs.labelMenu)" class="expense-pill {{ $this->labelToneClass() }}">
                 <span class="truncate">{{ $spend->label?->name ?? 'Unlabeled' }}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -38,7 +38,7 @@
         @endif
     </td>
     <td class="p-2">
-        <button x-ref="platformTrigger" type="button" x-on:click.stop="platformMenu.toggle($refs.platformTrigger, $refs.platformMenu)" class="btn-secondary min-w-40 w-full justify-between">
+        <button x-ref="platformTrigger" type="button" x-on:click.stop="platformMenu.toggle($refs.platformTrigger, $refs.platformMenu)" class="expense-pill {{ $this->platformToneClass() }}">
             <span class="truncate">{{ $spend->platform->name }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -55,7 +55,7 @@
         </template>
     </td>
     <td class="p-2">
-        <button x-ref="statusTrigger" type="button" x-on:click.stop="statusMenu.toggle($refs.statusTrigger, $refs.statusMenu)" class="btn-secondary min-w-40 w-full justify-between">
+        <button x-ref="statusTrigger" type="button" x-on:click.stop="statusMenu.toggle($refs.statusTrigger, $refs.statusMenu)" class="expense-pill {{ $this->statusToneClass() }}">
             <span class="truncate">{{ $spend->status->body }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />

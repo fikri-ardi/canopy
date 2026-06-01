@@ -180,7 +180,7 @@
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
         @if ($activeBudget)
-            <section class="summary-grid">
+            <section class="sticky-summary summary-grid">
                 @foreach ($summaryCards as $card)
                     <div wire:key="budget-summary-card-{{ str($card['label'])->slug() }}" class="metric-card">
                         <div class="flex items-start justify-between gap-3">
