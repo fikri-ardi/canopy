@@ -13,7 +13,14 @@
     </td>
     <td class="expense-cell" data-tone="{{ $this->amountToneClass() }}">
         <div class="expense-field expense-amount-field {{ $this->amountToneClass() }}" style="{{ $this->toneStyle($this->amountToneClass()) }}">
-            <input wire:model.blur="amount" type="text" inputmode="numeric" class="expense-amount-input" />
+            <input
+                wire:model.blur="amount"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                class="expense-amount-input"
+                data-number-format="live"
+            />
         </div>
         @error('amount')
             <div class="px-2 text-xs text-red-500">{{ $message }}</div>

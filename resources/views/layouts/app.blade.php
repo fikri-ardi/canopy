@@ -34,6 +34,66 @@
         </main>
     </div>
     <script>
+        window.canopyFormatNumber = function (value) {
+            const digits = String(value || '').replace(/\D/g, '');
+
+            return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        };
+
+        window.canopyFormatNumberInput = function (input) {
+            if (!input) {
+                return;
+            }
+
+            const previousValue = input.value;
+            const previousCaret = input.selectionStart ?? previousValue.length;
+            const digitsBeforeCaret = previousValue.slice(0, previousCaret).replace(/\D/g, '').length;
+            const formattedValue = window.canopyFormatNumber(previousValue);
+
+            input.value = formattedValue;
+
+            if (document.activeElement !== input || typeof input.setSelectionRange !== 'function') {
+                return;
+            }
+
+            if (digitsBeforeCaret === 0) {
+                input.setSelectionRange(0, 0);
+                return;
+            }
+
+            let seenDigits = 0;
+            let nextCaret = formattedValue.length;
+
+            for (let index = 0; index < formattedValue.length; index += 1) {
+                if (/\d/.test(formattedValue[index])) {
+                    seenDigits += 1;
+                }
+
+                if (seenDigits >= digitsBeforeCaret) {
+                    nextCaret = index + 1;
+                    break;
+                }
+            }
+
+            input.setSelectionRange(nextCaret, nextCaret);
+        };
+
+        document.addEventListener('input', function (event) {
+            if (!(event.target instanceof HTMLInputElement) || !event.target.matches('[data-number-format="live"]')) {
+                return;
+            }
+
+            window.canopyFormatNumberInput(event.target);
+        }, true);
+
+        document.addEventListener('blur', function (event) {
+            if (!(event.target instanceof HTMLInputElement) || !event.target.matches('[data-number-format="live"]')) {
+                return;
+            }
+
+            window.canopyFormatNumberInput(event.target);
+        }, true);
+
         window.canopyDropdown = function (options = {}) {
             return {
                 open: false,
