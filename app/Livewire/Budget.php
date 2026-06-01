@@ -392,18 +392,16 @@ class Budget extends Component
 
     private function investmentOptions()
     {
-        if (! $this->activeBudget || ! $this->labelsSchemaReady()) {
+        if (! $this->labelsSchemaReady()) {
             return collect();
         }
 
         return Spend::query()
+            ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
             ->join('labels', 'spends.label_id', '=', 'labels.id')
-            ->where('spends.budget_id', $this->activeBudget->id)
-            ->where(function ($query) {
-                $query->whereRaw('lower(labels.name) like ?', ['%invest%'])
-                    ->orWhereRaw('lower(labels.name) like ?', ['%investasi%']);
-            })
-            ->selectRaw('lower(trim(spends.name)) as investment_key, min(spends.name) as name, sum(spends.amount) as total, count(*) as transactions')
+            ->where('budgets.user_id', auth()->id())
+            ->whereIn(DB::raw('lower(trim(labels.name))'), ['investment', 'investasi'])
+            ->selectRaw('lower(trim(spends.name)) as investment_key, min(spends.name) as name, sum(spends.amount) as total, count(*) as transactions, count(distinct spends.budget_id) as budgets_count')
             ->groupByRaw('lower(trim(spends.name))')
             ->orderByDesc('total')
             ->get()
@@ -412,6 +410,7 @@ class Budget extends Component
                 'name' => $spend->name,
                 'amount' => (int) $spend->total,
                 'transactions' => (int) $spend->transactions,
+                'budgets' => (int) $spend->budgets_count,
             ]);
     }
 

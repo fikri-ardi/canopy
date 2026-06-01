@@ -1,5 +1,5 @@
 <div
-    x-data="{createBudget: false, budgetMenu: canopyDropdown(), investmentMenu: canopyDropdown(), createExpense: false, renameBudget: false, editIncome: false, deleteBudget: false}"
+    x-data="{createBudget: false, budgetMenu: canopyDropdown(), investmentMenu: canopyDropdown({ minWidth: 336, maxWidth: 420 }), createExpense: false, renameBudget: false, editIncome: false, deleteBudget: false}"
     x-on:saved="createExpense = false"
     x-on:budget-created="createBudget = false; budgetMenu.close()"
     x-on:budget-renamed="renameBudget = false"
@@ -236,7 +236,7 @@
                                         <button type="button" x-on:click="investmentMenu.close()" wire:click="selectInvestment(@js($option['key']))" wire:key="budget-investment-option-{{ str($option['key'])->slug() }}" class="investment-option {{ $selectedInvestmentKey === $option['key'] ? 'investment-option-active' : '' }}">
                                             <span class="min-w-0">
                                                 <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
-                                                <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi</span>
+                                                <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi dari {{ $option['budgets'] }} budget</span>
                                             </span>
                                             <span class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
                                         </button>
