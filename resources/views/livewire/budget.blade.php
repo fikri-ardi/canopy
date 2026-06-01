@@ -182,7 +182,19 @@
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
         @if ($activeBudget)
-            <section class="sticky-summary summary-grid">
+            <section
+                class="sticky-summary summary-grid"
+                x-data="{
+                    stuck: false,
+                    updateStickyState() {
+                        this.stuck = window.scrollY > 0 && this.$el.getBoundingClientRect().top <= 1;
+                    },
+                }"
+                x-init="updateStickyState()"
+                x-on:scroll.window.throttle.50ms="updateStickyState()"
+                x-on:resize.window="updateStickyState()"
+                x-bind:class="stuck ? 'sticky-summary-stuck' : ''"
+            >
                 @foreach ($summaryCards as $card)
                     <div wire:key="budget-summary-card-{{ str($card['label'])->slug() }}" class="metric-card">
                         <div class="flex items-start justify-between gap-3">

@@ -24,7 +24,7 @@
         });
     "
 >
-    <div class="flex min-h-full">
+    <div class="relative z-10 flex min-h-full">
         <livewire:sidebar />
 
         <main class="min-w-0 flex-1 pb-24 md:pb-0">

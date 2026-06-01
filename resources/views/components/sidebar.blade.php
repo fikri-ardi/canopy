@@ -1,4 +1,4 @@
-<nav class="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur md:sticky md:top-0 md:h-screen md:w-56 md:shrink-0 md:border-r md:border-t-0 md:shadow-sm md:shadow-gray-200/60 dark:border-slate-800 dark:bg-slate-950/95 dark:shadow-black/20">
+<nav class="fixed inset-x-0 bottom-0 z-40 border-t border-white/45 bg-white/[0.58] shadow-[0_-8px_24px_rgba(15,23,42,0.06)] backdrop-blur-2xl md:sticky md:top-0 md:h-screen md:w-56 md:shrink-0 md:border-r md:border-t-0 md:shadow-sm md:shadow-gray-200/35 dark:border-slate-800/60 dark:bg-slate-950/[0.48] dark:shadow-black/20">
     <div class="mx-auto h-[4.75rem] max-w-7xl px-2 md:h-screen md:px-4">
         <div class="h-full md:flex md:flex-col">
             <a href="/" class="hidden items-center justify-center py-5 md:flex md:justify-start md:space-x-2">

@@ -9,18 +9,44 @@
 
     body {
         @apply overflow-x-hidden bg-gray-50 text-gray-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+        position: relative;
+        isolation: isolate;
         background-image:
-            linear-gradient(135deg, rgb(236 253 245 / 0.55), transparent 34%),
-            linear-gradient(225deg, rgb(219 234 254 / 0.42), transparent 30%),
-            linear-gradient(180deg, rgb(249 250 251), rgb(243 244 246));
+            radial-gradient(circle at 50% -12%, rgb(220 252 231 / 0.36), transparent 34rem),
+            linear-gradient(180deg, rgb(248 250 252), rgb(241 245 249));
         background-attachment: fixed;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        left: 50%;
+        top: -14rem;
+        width: min(52rem, 92vw);
+        height: 24rem;
+        z-index: 0;
+        pointer-events: none;
+        border-radius: 9999px;
+        background:
+            radial-gradient(circle at 46% 58%, rgb(34 197 94 / 0.20), transparent 58%),
+            radial-gradient(circle at 60% 46%, rgb(14 165 233 / 0.12), transparent 62%);
+        filter: blur(34px);
+        opacity: 0.48;
+        transform: translateX(-50%) translateZ(0);
     }
 
     .dark body {
         background-image:
-            linear-gradient(135deg, rgb(20 83 45 / 0.22), transparent 34%),
-            linear-gradient(225deg, rgb(30 41 59 / 0.58), transparent 32%),
-            linear-gradient(180deg, rgb(2 6 23), rgb(15 23 42));
+            radial-gradient(circle at 50% -14%, rgb(20 83 45 / 0.20), transparent 31rem),
+            linear-gradient(180deg, rgb(2 6 23), rgb(8 13 26) 52%, rgb(2 6 23));
+    }
+
+    .dark body::before {
+        background:
+            radial-gradient(circle at 46% 58%, rgb(34 197 94 / 0.13), transparent 58%),
+            radial-gradient(circle at 60% 46%, rgb(56 189 248 / 0.08), transparent 62%);
+        filter: blur(40px);
+        opacity: 0.56;
     }
 
     input,
@@ -32,7 +58,7 @@
 
 @layer components {
     .app-header {
-        @apply border-b border-white/70 bg-white/85 px-4 py-5 text-sm shadow-sm shadow-gray-200/40 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/[0.82] dark:shadow-black/20 sm:px-6 lg:px-8;
+        @apply border-b border-white/45 bg-white/[0.58] px-4 py-5 text-sm shadow-sm shadow-gray-200/30 backdrop-blur-2xl dark:border-slate-800/60 dark:bg-slate-950/[0.46] dark:shadow-black/20 sm:px-6 lg:px-8;
     }
 
     .eyebrow {
@@ -66,7 +92,11 @@
     }
 
     .sticky-summary {
-        @apply sticky top-0 z-30 -mx-4 border-b border-gray-200 bg-gray-50/95 px-4 py-2.5 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8;
+        @apply sticky top-0 z-30 -mx-4 border-b border-transparent bg-transparent px-4 py-2.5 transition-all duration-200 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8;
+    }
+
+    .sticky-summary-stuck {
+        @apply border-white/35 bg-white/[0.42] shadow-sm shadow-slate-900/5 backdrop-blur-2xl dark:border-slate-800/45 dark:bg-slate-950/[0.38] dark:shadow-black/10;
     }
 
     .summary-grid::-webkit-scrollbar {
