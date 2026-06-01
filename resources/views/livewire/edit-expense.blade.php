@@ -2,7 +2,7 @@
     x-data="{deleteExpense: false, labelMenu: canopyDropdown(), platformMenu: canopyDropdown(), statusMenu: canopyDropdown()}"
     class="bg-white text-gray-800 transition hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800/60"
 >
-    <td class="px-3 py-3 text-center text-gray-400 dark:text-slate-500">{{ $iteration }}</td>
+    <td class="px-2 py-2 text-center text-xs text-gray-400 dark:text-slate-500 sm:px-3 sm:py-3 sm:text-sm">{{ $iteration }}</td>
     <td class="expense-cell">
         <div class="expense-name-field">
             <input wire:model.blur="name" type="text" class="expense-name-input" />
@@ -75,11 +75,11 @@
             </div>
         </template>
     </td>
-    <td class="p-2 text-center">
+    <td class="p-1.5 text-center sm:p-2">
         <button
             type="button"
             x-on:click="deleteExpense = true"
-            class="inline-flex size-9 items-center justify-center rounded-lg bg-red-50 text-red-600 transition hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20"
+            class="inline-flex size-8 items-center justify-center rounded-md bg-red-50 text-red-600 transition hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 sm:size-9 sm:rounded-lg"
             aria-label="Delete expense"
         >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">

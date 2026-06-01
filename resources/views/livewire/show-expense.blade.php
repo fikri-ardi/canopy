@@ -1,14 +1,14 @@
 <div class="table-shell">
     @php($sortColumns = [
-        'number' => ['label' => '#', 'class' => 'w-16 px-3 py-3 text-center'],
-        'name' => ['label' => 'Pengeluaran', 'class' => 'p-3 text-left'],
-        'amount' => ['label' => 'Jumlah', 'class' => 'p-3 text-left'],
-        'label' => ['label' => 'Label', 'class' => 'p-3 text-left'],
-        'platform' => ['label' => 'Platform', 'class' => 'p-3 text-left'],
-        'status' => ['label' => 'Status', 'class' => 'p-3 text-left'],
+        'number' => ['label' => '#', 'class' => 'w-10 px-2 py-2 text-center sm:w-16 sm:px-3 sm:py-3'],
+        'name' => ['label' => 'Pengeluaran', 'class' => 'p-2 text-left sm:p-3'],
+        'amount' => ['label' => 'Jumlah', 'class' => 'p-2 text-left sm:p-3'],
+        'label' => ['label' => 'Label', 'class' => 'p-2 text-left sm:p-3'],
+        'platform' => ['label' => 'Platform', 'class' => 'p-2 text-left sm:p-3'],
+        'status' => ['label' => 'Status', 'class' => 'p-2 text-left sm:p-3'],
     ])
 
-    <table class="w-full min-w-[840px] table-fixed">
+    <table class="w-full min-w-[700px] table-fixed sm:min-w-[840px]">
         <thead class="expense-table-head">
             <tr>
                 @foreach ($sortColumns as $column => $config)
@@ -26,10 +26,10 @@
                         </button>
                     </th>
                 @endforeach
-                <th class="w-20 p-3 text-center">Action</th>
+                <th class="w-14 p-2 text-center sm:w-20 sm:p-3">Action</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100 text-sm dark:divide-slate-800">
+        <tbody class="divide-y divide-gray-100 text-[13px] dark:divide-slate-800 sm:text-sm">
             @forelse($spends as $spend)
                 <livewire:edit-expense :spend="$spend" :iteration="$loop->iteration" :maxAmount="$maxAmount" :key="'edit-expense-'.$spend->id.'-'.$sortBy.'-'.$sortDirection.'-'.$maxAmount.'-'.$loop->iteration" />
             @empty

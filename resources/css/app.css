@@ -233,4 +233,30 @@
         @apply min-w-0 flex-1 text-left;
     }
 
+    @media (max-width: 639px) {
+        .sort-button {
+            @apply gap-1 px-1.5 py-1 text-[11px];
+        }
+
+        .expense-name-input {
+            @apply px-2 py-1.5 text-[13px];
+        }
+
+        .expense-field {
+            @apply min-w-28 text-[13px];
+        }
+
+        .expense-amount-input {
+            @apply py-1.5 pl-2 pr-1.5 text-[13px];
+        }
+
+        .expense-cell {
+            @apply p-1.5;
+        }
+
+        .expense-select-field {
+            @apply gap-1.5 px-2 py-1.5 text-[13px];
+        }
+    }
+
 }
