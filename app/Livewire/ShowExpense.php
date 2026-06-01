@@ -15,7 +15,7 @@ class ShowExpense extends Component
     public $activeBudgetId;
 
     public $sortBy = 'created_at';
-    public $sortDirection = 'desc';
+    public $sortDirection = 'asc';
 
     #[On('saved')]
     #[On('expense-updated')]
@@ -38,7 +38,7 @@ class ShowExpense extends Component
         }
 
         $this->sortBy = $column;
-        $this->sortDirection = in_array($column, ['created_at', 'amount'], true) ? 'desc' : 'asc';
+        $this->sortDirection = $column === 'amount' ? 'desc' : 'asc';
     }
 
     public function sortIcon(string $column): string
