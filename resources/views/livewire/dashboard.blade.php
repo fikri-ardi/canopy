@@ -330,8 +330,8 @@
                                     {{ $budget['percentage'] }}%
                                 </div>
                             </div>
-                            <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
-                                <div class="h-full rounded-full {{ $budget['tone'] === 'danger' ? 'bg-red-500' : ($budget['tone'] === 'warning' ? 'bg-amber-500' : 'bg-green-500') }}" style="width: {{ $budget['percentage'] }}%"></div>
+                            <div class="progress-track h-2">
+                                <div class="progress-fill" style="--progress: {{ $budget['percentage'] }}%; --progress-color: {{ $budget['tone'] === 'danger' ? '#ef4444' : ($budget['tone'] === 'warning' ? '#f59e0b' : '#22c55e') }}"></div>
                             </div>
                         </div>
                     @empty
@@ -419,8 +419,8 @@
                                 <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ $platform['name'] }}</span>
                                 <span class="shrink-0 text-gray-500 dark:text-slate-400">{{ $platform['percentage'] }}%</span>
                             </div>
-                            <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
-                                <div class="h-full rounded-full bg-green-500" style="width: {{ $platform['percentage'] }}%"></div>
+                            <div class="progress-track h-2">
+                                <div class="progress-fill" style="--progress: {{ $platform['percentage'] }}%; --progress-color: #22c55e"></div>
                             </div>
                         </div>
                     @empty
@@ -490,8 +490,8 @@
                                     </div>
                                     <div class="shrink-0 font-semibold text-gray-950 dark:text-slate-50">{{ $this->rupiah($item['total']) }}</div>
                                 </div>
-                                <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
-                                    <div class="h-full rounded-full bg-green-500" style="width: {{ $item['percentage'] }}%"></div>
+                                <div class="progress-track h-2">
+                                    <div class="progress-fill" style="--progress: {{ $item['percentage'] }}%; --progress-color: #22c55e"></div>
                                 </div>
                             </div>
                         @endforeach

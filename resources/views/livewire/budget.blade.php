@@ -355,14 +355,12 @@
 
             <section id="reports" class="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
                 <div class="panel px-4 py-4">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <span class="icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                                </svg>
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex min-w-0 items-center gap-3">
+                            <span class="progress-circle size-16" style="--progress: {{ $spendProgress }}; --progress-color: {{ $remainingBalance < 0 ? '#ef4444' : '#22c55e' }}">
+                                <span class="progress-circle-value">{{ min(999, $spendProgress) }}%</span>
                             </span>
-                            <div>
+                            <div class="min-w-0">
                                 <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Budget Pulse</h2>
                                 <p class="text-xs text-gray-500 dark:text-slate-400">{{ $spendProgress }}% used</p>
                             </div>
@@ -370,9 +368,6 @@
                         <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} text-sm font-semibold">
                             {{ $this->rupiah($remainingBalance) }}
                         </div>
-                    </div>
-                    <div class="mt-5 h-3 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
-                        <div class="h-full rounded-full {{ $remainingBalance < 0 ? 'bg-red-500' : 'bg-green-500' }}" style="width: {{ $spendProgress }}%"></div>
                     </div>
                 </div>
 
@@ -420,8 +415,8 @@
                                 <span class="font-semibold text-gray-700 dark:text-slate-200">{{ $platform['name'] }}</span>
                                 <span class="shrink-0 text-gray-500 dark:text-slate-400">{{ $this->rupiah($platform['total']) }} / {{ $platform['percentage'] }}%</span>
                             </div>
-                            <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
-                                <div class="h-full rounded-full bg-green-500" style="width: {{ $platform['percentage'] }}%"></div>
+                            <div class="progress-track h-2">
+                                <div class="progress-fill" style="--progress: {{ $platform['percentage'] }}%; --progress-color: #22c55e"></div>
                             </div>
                         </div>
                     @empty

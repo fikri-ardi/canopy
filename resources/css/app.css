@@ -9,6 +9,18 @@
 
     body {
         @apply overflow-x-hidden bg-gray-50 text-gray-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+        background-image:
+            linear-gradient(135deg, rgb(236 253 245 / 0.55), transparent 34%),
+            linear-gradient(225deg, rgb(219 234 254 / 0.42), transparent 30%),
+            linear-gradient(180deg, rgb(249 250 251), rgb(243 244 246));
+        background-attachment: fixed;
+    }
+
+    .dark body {
+        background-image:
+            linear-gradient(135deg, rgb(20 83 45 / 0.22), transparent 34%),
+            linear-gradient(225deg, rgb(30 41 59 / 0.58), transparent 32%),
+            linear-gradient(180deg, rgb(2 6 23), rgb(15 23 42));
     }
 
     input,
@@ -20,7 +32,7 @@
 
 @layer components {
     .app-header {
-        @apply border-b border-gray-200 bg-white/90 px-4 py-5 text-sm shadow-sm shadow-gray-200/40 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90 dark:shadow-black/20 sm:px-6 lg:px-8;
+        @apply border-b border-white/70 bg-white/85 px-4 py-5 text-sm shadow-sm shadow-gray-200/40 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/[0.82] dark:shadow-black/20 sm:px-6 lg:px-8;
     }
 
     .eyebrow {
@@ -36,7 +48,7 @@
     }
 
     .panel {
-        @apply rounded-lg border border-gray-200 bg-white shadow-sm shadow-gray-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20;
+        @apply rounded-lg border border-white/70 bg-white/[0.92] shadow-sm shadow-gray-200/60 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/[0.88] dark:shadow-black/20;
     }
 
     .metric-card {
@@ -152,6 +164,46 @@
 
     .dashboard-chart-marker-muted {
         opacity: 0.22;
+    }
+
+    .progress-track {
+        @apply overflow-hidden rounded-full bg-gray-100 ring-1 ring-gray-200/70 dark:bg-slate-800 dark:ring-slate-700/70;
+    }
+
+    .progress-fill {
+        width: var(--progress, 0%);
+        background: linear-gradient(90deg, color-mix(in srgb, var(--progress-color, #22c55e) 72%, white 28%), var(--progress-color, #22c55e));
+        @apply h-full rounded-full transition-all duration-500;
+    }
+
+    .progress-circle {
+        --progress: 0;
+        --progress-color: #22c55e;
+        --track-color: rgb(229 231 235);
+        background:
+            conic-gradient(var(--progress-color) calc(var(--progress) * 1%), var(--track-color) 0);
+        @apply relative grid shrink-0 place-items-center rounded-full shadow-inner;
+    }
+
+    .dark .progress-circle {
+        --track-color: rgb(30 41 59);
+    }
+
+    .progress-circle::after {
+        content: "";
+        @apply absolute inset-[7px] rounded-full bg-white shadow-sm dark:bg-slate-900;
+    }
+
+    .progress-circle-value {
+        @apply relative z-10 text-center text-xs font-bold tabular-nums text-gray-950 dark:text-slate-50;
+    }
+
+    .progress-circle-compact::after {
+        @apply inset-[5px];
+    }
+
+    .progress-circle-compact .progress-circle-value {
+        @apply text-[10px] leading-none;
     }
 
     .investment-select-menu {

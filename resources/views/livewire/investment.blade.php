@@ -43,14 +43,9 @@
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target Progress</div>
                         <div class="metric-value">{{ $summary['progress'] === null ? '0%' : $summary['progress'].'%' }}</div>
                     </div>
-                    <span class="icon-box-muted">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 4.5h10.5m-10.5-9h16.5" />
-                        </svg>
+                    <span class="progress-circle size-14" style="--progress: {{ $summary['progressWidth'] }}; --progress-color: #22c55e">
+                        <span class="progress-circle-value">{{ $summary['progress'] === null ? '0' : min(999, $summary['progress']) }}%</span>
                     </span>
-                </div>
-                <div class="mt-3 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
-                    <div class="h-full rounded-full bg-green-500 transition-all" style="width: {{ $summary['progressWidth'] }}%"></div>
                 </div>
             </div>
         </section>
@@ -77,14 +72,14 @@
                                     <div class="mt-1 text-xs text-gray-400 dark:text-slate-500">balance</div>
                                 </div>
                             </div>
-                            <div class="mt-3">
-                                <div class="mb-1 flex items-center justify-between gap-3 text-xs">
-                                    <span class="text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? ($group['targetProgress'].'% reached') : 'No target yet' }}</span>
-                                    <span class="shrink-0 font-medium text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? $this->rupiah($group['target']) : 'Set target' }}</span>
+                            <div class="mt-3 flex items-center justify-between gap-3">
+                                <div class="min-w-0 text-xs">
+                                    <div class="text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? ($group['targetProgress'].'% reached') : 'No target yet' }}</div>
+                                    <div class="mt-0.5 truncate font-medium text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? $this->rupiah($group['target']) : 'Set target' }}</div>
                                 </div>
-                                <div class="h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
-                                    <div class="h-full rounded-full {{ $group['target'] > 0 ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-700' }} transition-all" style="width: {{ $group['targetProgressWidth'] }}%"></div>
-                                </div>
+                                <span class="progress-circle progress-circle-compact size-10" style="--progress: {{ $group['targetProgressWidth'] }}; --progress-color: {{ $group['target'] > 0 ? '#22c55e' : '#94a3b8' }}">
+                                    <span class="progress-circle-value">{{ $group['target'] > 0 ? min(999, $group['targetProgress']) : '0' }}%</span>
+                                </span>
                             </div>
                         </button>
                     @empty
@@ -131,24 +126,26 @@
                     </div>
 
                     @if ($selected)
-                        <div class="mt-4 rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
-                            <div class="flex flex-wrap items-end justify-between gap-3">
-                                <div class="min-w-0">
-                                    <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target progress</div>
-                                    <div class="mt-1 text-sm font-semibold text-gray-950 dark:text-slate-50">
-                                        {{ $selected['targetProgress'] === null ? 'Set a target to track progress' : $selected['targetProgress'].'% reached' }}
+                        <div class="mt-4 rounded-lg bg-gray-50/80 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <div class="flex min-w-0 items-center gap-3">
+                                    <span class="progress-circle size-16" style="--progress: {{ $selected['targetProgressWidth'] }}; --progress-color: #22c55e">
+                                        <span class="progress-circle-value">{{ $selected['targetProgress'] === null ? '0' : min(999, $selected['targetProgress']) }}%</span>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target progress</div>
+                                        <div class="mt-1 text-sm font-semibold text-gray-950 dark:text-slate-50">
+                                            {{ $selected['targetProgress'] === null ? 'Set a target to track progress' : $selected['targetProgress'].'% reached' }}
+                                        </div>
+                                        @if ($selected['target'] > 0)
+                                            <div class="mt-1 text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($selected['remainingToTarget']) }} left to target</div>
+                                        @endif
                                     </div>
-                                    @if ($selected['target'] > 0)
-                                        <div class="mt-1 text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($selected['remainingToTarget']) }} left to target</div>
-                                    @endif
                                 </div>
                                 <form wire:submit="saveTarget" class="flex w-full min-w-0 gap-2 sm:w-auto">
                                     <input wire:model="targetAmount" data-number-format="live" type="text" inputmode="numeric" placeholder="Target" @disabled(! $targetsReady) class="input-field w-full sm:w-40">
                                     <button type="submit" @disabled(! $targetsReady) class="btn-secondary shrink-0 px-3 py-2 text-xs">Save</button>
                                 </form>
-                            </div>
-                            <div class="mt-3 h-2 overflow-hidden rounded-full bg-white ring-1 ring-gray-100 dark:bg-slate-900 dark:ring-slate-700">
-                                <div class="h-full rounded-full bg-green-500 transition-all" style="width: {{ $selected['targetProgressWidth'] }}%"></div>
                             </div>
                             @error('targetAmount')
                                 <div class="mt-2 text-xs text-red-500">{{ $message }}</div>
