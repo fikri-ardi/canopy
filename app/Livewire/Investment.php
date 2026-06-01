@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\InvestmentMovement;
+use App\Models\InvestmentTarget;
 use App\Models\Spend;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -17,11 +18,18 @@ class Investment extends Component
     public $movementAmount = '';
     public $movementDate;
     public $movementNote = '';
+    public $targetAmount = '';
     public $deleteMovementId;
 
     public function mount(): void
     {
         $this->movementDate = now()->toDateString();
+        $selected = $this->selectedInvestment();
+
+        if ($selected) {
+            $this->selectedInvestmentKey = $selected['key'];
+            $this->targetAmount = $this->editableAmount($selected['target']);
+        }
     }
 
     public function selectInvestment(string $investmentKey): void
@@ -31,6 +39,39 @@ class Investment extends Component
         }
 
         $this->selectedInvestmentKey = $investmentKey;
+        $this->targetAmount = $this->editableAmount((int) ($this->investmentGroups()->firstWhere('key', $investmentKey)['target'] ?? 0));
+    }
+
+    public function saveTarget(): void
+    {
+        if (! $this->targetsSchemaReady()) {
+            return;
+        }
+
+        $selected = $this->selectedInvestment();
+
+        if (! $selected) {
+            return;
+        }
+
+        $validated = $this->validate([
+            'targetAmount' => ['nullable', 'regex:/^[0-9.]*$/'],
+        ]);
+
+        $target = $this->rawAmount($validated['targetAmount'] ?: '0');
+
+        InvestmentTarget::updateOrCreate(
+            [
+                'user_id' => auth()->id(),
+                'investment_key' => $selected['key'],
+            ],
+            [
+                'investment_name' => $selected['name'],
+                'target_amount' => $target,
+            ]
+        );
+
+        $this->targetAmount = $this->editableAmount($target);
     }
 
     public function storeMovement(): void
@@ -101,6 +142,7 @@ class Investment extends Component
 
         return view('livewire.investment', [
             'schemaReady' => $this->labelsSchemaReady() && $this->movementsSchemaReady(),
+            'targetsReady' => $this->targetsSchemaReady(),
             'groups' => $groups,
             'selected' => $selected,
             'movements' => $movements,
@@ -112,6 +154,9 @@ class Investment extends Component
                 'withdrawn' => (int) $groups->sum('withdrawn'),
                 'deposit' => (int) $groups->sum('deposit'),
                 'balance' => (int) $groups->sum('balance'),
+                'target' => (int) $groups->sum('target'),
+                'progress' => $this->progressPercent((int) $groups->sum('balance'), (int) $groups->sum('target')),
+                'progressWidth' => $this->progressWidth((int) $groups->sum('balance'), (int) $groups->sum('target')),
             ],
         ]);
     }
@@ -155,12 +200,21 @@ class Investment extends Component
                 ->keyBy('investment_key')
             : collect();
 
+        $targets = $this->targetsSchemaReady()
+            ? InvestmentTarget::query()
+                ->where('user_id', auth()->id())
+                ->get(['investment_key', 'target_amount'])
+                ->keyBy('investment_key')
+            : collect();
+
         return $principals
-            ->map(function ($principal, $key) use ($movementTotals) {
+            ->map(function ($principal, $key) use ($movementTotals, $targets) {
                 $movement = $movementTotals->get($key);
+                $target = (int) ($targets->get($key)->target_amount ?? 0);
                 $withdrawn = (int) ($movement->withdrawn ?? 0);
                 $deposit = (int) ($movement->deposit ?? 0);
                 $principalAmount = (int) $principal->principal;
+                $balance = $principalAmount + $deposit - $withdrawn;
 
                 return [
                     'key' => $key,
@@ -168,7 +222,11 @@ class Investment extends Component
                     'principal' => $principalAmount,
                     'withdrawn' => $withdrawn,
                     'deposit' => $deposit,
-                    'balance' => $principalAmount + $deposit - $withdrawn,
+                    'balance' => $balance,
+                    'target' => $target,
+                    'targetProgress' => $this->progressPercent($balance, $target),
+                    'targetProgressWidth' => $this->progressWidth($balance, $target),
+                    'remainingToTarget' => max(0, $target - $balance),
                     'transactions' => (int) $principal->transactions,
                     'budgets' => (int) $principal->budgets_count,
                     'movements' => (int) ($movement->movements_count ?? 0),
@@ -197,6 +255,25 @@ class Investment extends Component
         return (int) str_replace('.', '', $amount);
     }
 
+    private function editableAmount(int $amount): string
+    {
+        return $amount > 0 ? number_format($amount, 0, ',', '.') : '';
+    }
+
+    private function progressPercent(int $balance, int $target): ?int
+    {
+        if ($target <= 0) {
+            return null;
+        }
+
+        return max(0, (int) round(($balance / $target) * 100));
+    }
+
+    private function progressWidth(int $balance, int $target): int
+    {
+        return min(100, $this->progressPercent($balance, $target) ?? 0);
+    }
+
     private function labelsSchemaReady(): bool
     {
         return Schema::hasTable('labels')
@@ -207,5 +284,10 @@ class Investment extends Component
     private function movementsSchemaReady(): bool
     {
         return Schema::hasTable('investment_movements');
+    }
+
+    private function targetsSchemaReady(): bool
+    {
+        return Schema::hasTable('investment_targets');
     }
 }

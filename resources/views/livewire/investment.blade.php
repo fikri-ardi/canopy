@@ -10,7 +10,7 @@
     </header>
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-        @unless ($schemaReady)
+        @unless ($schemaReady && $targetsReady)
             <section class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">
                 Investment ledger is not migrated yet. Run <span class="font-semibold">php artisan migrate</span> to activate this menu.
             </section>
@@ -32,6 +32,26 @@
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Current Balance</div>
                 <div class="metric-value">{{ $this->rupiah($summary['balance']) }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target</div>
+                <div class="metric-value">{{ $this->rupiah($summary['target']) }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target Progress</div>
+                        <div class="metric-value">{{ $summary['progress'] === null ? '0%' : $summary['progress'].'%' }}</div>
+                    </div>
+                    <span class="icon-box-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 4.5h10.5m-10.5-9h16.5" />
+                        </svg>
+                    </span>
+                </div>
+                <div class="mt-3 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
+                    <div class="h-full rounded-full bg-green-500 transition-all" style="width: {{ $summary['progressWidth'] }}%"></div>
+                </div>
             </div>
         </section>
 
@@ -57,6 +77,15 @@
                                     <div class="mt-1 text-xs text-gray-400 dark:text-slate-500">balance</div>
                                 </div>
                             </div>
+                            <div class="mt-3">
+                                <div class="mb-1 flex items-center justify-between gap-3 text-xs">
+                                    <span class="text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? ($group['targetProgress'].'% reached') : 'No target yet' }}</span>
+                                    <span class="shrink-0 font-medium text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? $this->rupiah($group['target']) : 'Set target' }}</span>
+                                </div>
+                                <div class="h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
+                                    <div class="h-full rounded-full {{ $group['target'] > 0 ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-700' }} transition-all" style="width: {{ $group['targetProgressWidth'] }}%"></div>
+                                </div>
+                            </div>
                         </button>
                     @empty
                         <div class="px-4 py-12 text-center text-sm">
@@ -80,7 +109,7 @@
                             <h2 class="mt-1 truncate text-lg font-bold text-gray-950 dark:text-slate-50">{{ $selected['name'] ?? 'No investment selected' }}</h2>
                         </div>
                         @if ($selected)
-                            <div class="grid w-full min-w-0 grid-cols-3 gap-2 text-left text-xs sm:w-auto sm:text-right">
+                            <div class="grid w-full min-w-0 grid-cols-2 gap-2 text-left text-xs sm:w-auto sm:grid-cols-4 sm:text-right">
                                 <div>
                                     <div class="text-gray-400 dark:text-slate-500">Original</div>
                                     <div class="mt-1 truncate font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($selected['principal']) }}</div>
@@ -93,9 +122,39 @@
                                     <div class="text-gray-400 dark:text-slate-500">Balance</div>
                                     <div class="mt-1 truncate font-bold {{ $selected['balance'] < 0 ? 'text-red-500' : 'text-green-500' }}">{{ $this->rupiah($selected['balance']) }}</div>
                                 </div>
+                                <div>
+                                    <div class="text-gray-400 dark:text-slate-500">Target</div>
+                                    <div class="mt-1 truncate font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($selected['target']) }}</div>
+                                </div>
                             </div>
                         @endif
                     </div>
+
+                    @if ($selected)
+                        <div class="mt-4 rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                            <div class="flex flex-wrap items-end justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target progress</div>
+                                    <div class="mt-1 text-sm font-semibold text-gray-950 dark:text-slate-50">
+                                        {{ $selected['targetProgress'] === null ? 'Set a target to track progress' : $selected['targetProgress'].'% reached' }}
+                                    </div>
+                                    @if ($selected['target'] > 0)
+                                        <div class="mt-1 text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($selected['remainingToTarget']) }} left to target</div>
+                                    @endif
+                                </div>
+                                <form wire:submit="saveTarget" class="flex w-full min-w-0 gap-2 sm:w-auto">
+                                    <input wire:model="targetAmount" data-number-format="live" type="text" inputmode="numeric" placeholder="Target" @disabled(! $targetsReady) class="input-field w-full sm:w-40">
+                                    <button type="submit" @disabled(! $targetsReady) class="btn-secondary shrink-0 px-3 py-2 text-xs">Save</button>
+                                </form>
+                            </div>
+                            <div class="mt-3 h-2 overflow-hidden rounded-full bg-white ring-1 ring-gray-100 dark:bg-slate-900 dark:ring-slate-700">
+                                <div class="h-full rounded-full bg-green-500 transition-all" style="width: {{ $selected['targetProgressWidth'] }}%"></div>
+                            </div>
+                            @error('targetAmount')
+                                <div class="mt-2 text-xs text-red-500">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    @endif
 
                     <form wire:submit="storeMovement" class="investment-movement-form mt-4 grid min-w-0 max-w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-12">
                         <div class="min-w-0 lg:col-span-3 xl:col-span-2">
