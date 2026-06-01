@@ -22,12 +22,14 @@ class EditExpense extends Component
     public $statuses;
     public $labels;
     public $labelsReady = false;
+    public $maxAmount = 0;
 
-    public function mount($spend = null, $iteration = null)
+    public function mount($spend = null, $iteration = null, $maxAmount = 0)
     {
         abort_unless($spend && $spend->budget()->where('user_id', auth()->id())->exists(), 404);
 
         $this->iteration = $iteration;
+        $this->maxAmount = (int) $maxAmount;
         $this->spend = $spend;
         $this->name = $spend->name;
         $this->amount = $spend->amount;
@@ -98,20 +100,17 @@ class EditExpense extends Component
     public function amountToneClass(): string
     {
         $amount = (int) str_replace('.', '', (string) $this->amount);
+        $maxAmount = max((int) $this->maxAmount, $amount, 1);
+        $tier = max(1, min(10, (int) ceil(($amount / $maxAmount) * 10)));
 
-        if ($amount >= 1000000) {
-            return 'expense-tone-rose';
-        }
+        return 'expense-amount-tier-'.$tier;
+    }
 
-        if ($amount >= 500000) {
-            return 'expense-tone-amber';
-        }
+    public function toneStyle(string $tone): string
+    {
+        [$background, $text, $border, $accent] = $this->tonePalette()[$tone] ?? $this->tonePalette()['expense-tone-slate'];
 
-        if ($amount >= 100000) {
-            return 'expense-tone-indigo';
-        }
-
-        return 'expense-tone-emerald';
+        return "--chip-bg: {$background}; --chip-text: {$text}; --chip-border: {$border}; --chip-accent: {$accent};";
     }
 
     public function labelToneClass(): string
@@ -144,9 +143,9 @@ class EditExpense extends Component
 
         return match (true) {
             str_contains($status, 'done'), str_contains($status, 'paid'), str_contains($status, 'complete') => 'expense-tone-emerald',
-            str_contains($status, 'allocated') && ! str_contains($status, 'unallocated') => 'expense-tone-sky',
-            str_contains($status, 'withdraw') => 'expense-tone-amber',
             str_contains($status, 'unallocated'), str_contains($status, 'unalocated') => 'expense-tone-rose',
+            str_contains($status, 'allocated'), str_contains($status, 'allcoated') => 'expense-tone-sky',
+            str_contains($status, 'withdraw') => 'expense-tone-blue',
             default => $this->toneFromText($status, 'expense-tone-slate'),
         };
     }
@@ -167,6 +166,31 @@ class EditExpense extends Component
         ];
 
         return $tones[abs(crc32(strtolower($text))) % count($tones)];
+    }
+
+    private function tonePalette(): array
+    {
+        return [
+            'expense-tone-emerald' => ['rgba(16, 185, 129, 0.14)', '#34d399', 'rgba(16, 185, 129, 0.28)', '#10b981'],
+            'expense-tone-rose' => ['rgba(244, 63, 94, 0.14)', '#fb7185', 'rgba(244, 63, 94, 0.28)', '#f43f5e'],
+            'expense-tone-blue' => ['rgba(37, 99, 235, 0.15)', '#93c5fd', 'rgba(37, 99, 235, 0.30)', '#2563eb'],
+            'expense-tone-amber' => ['rgba(245, 158, 11, 0.14)', '#fbbf24', 'rgba(245, 158, 11, 0.28)', '#f59e0b'],
+            'expense-tone-sky' => ['rgba(14, 165, 233, 0.14)', '#38bdf8', 'rgba(14, 165, 233, 0.28)', '#0ea5e9'],
+            'expense-tone-violet' => ['rgba(139, 92, 246, 0.14)', '#c4b5fd', 'rgba(139, 92, 246, 0.28)', '#8b5cf6'],
+            'expense-tone-indigo' => ['rgba(99, 102, 241, 0.14)', '#a5b4fc', 'rgba(99, 102, 241, 0.28)', '#6366f1'],
+            'expense-tone-teal' => ['rgba(20, 184, 166, 0.14)', '#5eead4', 'rgba(20, 184, 166, 0.28)', '#14b8a6'],
+            'expense-tone-slate' => ['rgba(148, 163, 184, 0.12)', '#cbd5e1', 'rgba(148, 163, 184, 0.22)', '#94a3b8'],
+            'expense-amount-tier-1' => ['rgba(16, 185, 129, 0.14)', '#34d399', 'rgba(16, 185, 129, 0.28)', '#10b981'],
+            'expense-amount-tier-2' => ['rgba(34, 197, 94, 0.14)', '#4ade80', 'rgba(34, 197, 94, 0.28)', '#22c55e'],
+            'expense-amount-tier-3' => ['rgba(132, 204, 22, 0.14)', '#a3e635', 'rgba(132, 204, 22, 0.28)', '#84cc16'],
+            'expense-amount-tier-4' => ['rgba(234, 179, 8, 0.14)', '#facc15', 'rgba(234, 179, 8, 0.28)', '#eab308'],
+            'expense-amount-tier-5' => ['rgba(245, 158, 11, 0.14)', '#fbbf24', 'rgba(245, 158, 11, 0.28)', '#f59e0b'],
+            'expense-amount-tier-6' => ['rgba(249, 115, 22, 0.14)', '#fb923c', 'rgba(249, 115, 22, 0.28)', '#f97316'],
+            'expense-amount-tier-7' => ['rgba(239, 68, 68, 0.14)', '#f87171', 'rgba(239, 68, 68, 0.28)', '#ef4444'],
+            'expense-amount-tier-8' => ['rgba(244, 63, 94, 0.14)', '#fb7185', 'rgba(244, 63, 94, 0.28)', '#f43f5e'],
+            'expense-amount-tier-9' => ['rgba(225, 29, 72, 0.16)', '#fda4af', 'rgba(225, 29, 72, 0.30)', '#e11d48'],
+            'expense-amount-tier-10' => ['rgba(220, 38, 38, 0.18)', '#fca5a5', 'rgba(220, 38, 38, 0.34)', '#dc2626'],
+        ];
     }
 
     private function labelsSchemaReady(): bool

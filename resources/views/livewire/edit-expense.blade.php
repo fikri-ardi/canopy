@@ -3,21 +3,25 @@
     class="bg-white text-gray-800 transition hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800/60"
 >
     <td class="px-3 py-3 text-center text-gray-400 dark:text-slate-500">{{ $iteration }}</td>
-    <td class="p-2">
-        <input wire:model.blur="name" type="text" class="expense-name-input" />
+    <td class="expense-cell">
+        <div class="expense-name-field">
+            <input wire:model.blur="name" type="text" class="expense-name-input" />
+        </div>
         @error('name')
             <div class="px-2 text-xs text-red-500">{{ $message }}</div>
         @enderror
     </td>
-    <td class="p-2">
-        <input wire:model.blur="amount" type="text" inputmode="numeric" class="expense-amount-input {{ $this->amountToneClass() }}" />
+    <td class="expense-cell" data-tone="{{ $this->amountToneClass() }}">
+        <div class="expense-field expense-amount-field {{ $this->amountToneClass() }}" style="{{ $this->toneStyle($this->amountToneClass()) }}">
+            <input wire:model.blur="amount" type="text" inputmode="numeric" class="expense-amount-input" />
+        </div>
         @error('amount')
             <div class="px-2 text-xs text-red-500">{{ $message }}</div>
         @enderror
     </td>
-    <td class="p-2">
+    <td class="expense-cell" data-tone="{{ $this->labelToneClass() }}">
         @if ($labelsReady)
-            <button x-ref="labelTrigger" type="button" x-on:click.stop="labelMenu.toggle($refs.labelTrigger, $refs.labelMenu)" class="expense-pill {{ $this->labelToneClass() }}">
+            <button x-ref="labelTrigger" type="button" x-on:click.stop="labelMenu.toggle($refs.labelTrigger, $refs.labelMenu)" class="expense-field expense-select-field {{ $this->labelToneClass() }}" style="{{ $this->toneStyle($this->labelToneClass()) }}">
                 <span class="truncate">{{ $spend->label?->name ?? 'Unlabeled' }}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -34,11 +38,11 @@
                 </div>
             </template>
         @else
-            <span class="block rounded-lg bg-gray-50 px-3 py-2 text-gray-400 ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">Pending migration</span>
+            <span class="expense-field border-l-gray-300 text-gray-400 dark:border-l-slate-600">Pending migration</span>
         @endif
     </td>
-    <td class="p-2">
-        <button x-ref="platformTrigger" type="button" x-on:click.stop="platformMenu.toggle($refs.platformTrigger, $refs.platformMenu)" class="expense-pill {{ $this->platformToneClass() }}">
+    <td class="expense-cell" data-tone="{{ $this->platformToneClass() }}">
+        <button x-ref="platformTrigger" type="button" x-on:click.stop="platformMenu.toggle($refs.platformTrigger, $refs.platformMenu)" class="expense-field expense-select-field {{ $this->platformToneClass() }}" style="{{ $this->toneStyle($this->platformToneClass()) }}">
             <span class="truncate">{{ $spend->platform->name }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -54,8 +58,8 @@
             </div>
         </template>
     </td>
-    <td class="p-2">
-        <button x-ref="statusTrigger" type="button" x-on:click.stop="statusMenu.toggle($refs.statusTrigger, $refs.statusMenu)" class="expense-pill {{ $this->statusToneClass() }}">
+    <td class="expense-cell" data-tone="{{ $this->statusToneClass() }}">
+        <button x-ref="statusTrigger" type="button" x-on:click.stop="statusMenu.toggle($refs.statusTrigger, $refs.statusMenu)" class="expense-field expense-select-field {{ $this->statusToneClass() }}" style="{{ $this->toneStyle($this->statusToneClass()) }}">
             <span class="truncate">{{ $spend->status->body }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />

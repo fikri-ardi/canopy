@@ -31,7 +31,7 @@
         </thead>
         <tbody class="divide-y divide-gray-100 text-sm dark:divide-slate-800">
             @forelse($spends as $spend)
-                <livewire:edit-expense :spend="$spend" :iteration="$loop->iteration" :key="'edit-expense-'.$spend->id.'-'.$sortBy.'-'.$sortDirection.'-'.$loop->iteration" />
+                <livewire:edit-expense :spend="$spend" :iteration="$loop->iteration" :maxAmount="$maxAmount" :key="'edit-expense-'.$spend->id.'-'.$sortBy.'-'.$sortDirection.'-'.$maxAmount.'-'.$loop->iteration" />
             @empty
                 <tr>
                     <td colspan="7" class="px-3 py-12 text-center">

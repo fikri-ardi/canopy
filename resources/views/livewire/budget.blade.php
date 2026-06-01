@@ -1,7 +1,7 @@
 <div
-    x-data="{createBudget: false, selectBudget: false, createExpense: false, renameBudget: false, editIncome: false, deleteBudget: false}"
+    x-data="{createBudget: false, budgetMenu: canopyDropdown(), investmentMenu: canopyDropdown(), createExpense: false, renameBudget: false, editIncome: false, deleteBudget: false}"
     x-on:saved="createExpense = false"
-    x-on:budget-created="createBudget = false; selectBudget = false"
+    x-on:budget-created="createBudget = false; budgetMenu.close()"
     x-on:budget-renamed="renameBudget = false"
     x-on:budget-income-updated="editIncome = false"
     x-on:budget-deleted="deleteBudget = false"
@@ -33,20 +33,22 @@
 
                 @if ($activeBudget)
                     <div class="relative min-w-0 flex-1 sm:min-w-48 sm:flex-none">
-                        <button type="button" x-on:click="selectBudget = true" class="btn-secondary w-full justify-between">
+                        <button x-ref="budgetTrigger" type="button" x-on:click.stop="budgetMenu.toggle($refs.budgetTrigger, $refs.budgetMenu)" class="btn-secondary w-full justify-between">
                             <span class="truncate">{{ $activeBudget->name }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
                         </button>
 
-                        <div x-show="selectBudget" x-cloak x-on:click.away="selectBudget = false" x-transition class="select-menu">
-                            @foreach ($budgets as $budget)
-                                <button type="button" x-on:click="selectBudget = false" wire:click="selectBudget({{ $budget->id }})" wire:key="budget-picker-option-{{ $budget->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                                    {{ $budget->name }}
-                                </button>
-                            @endforeach
-                        </div>
+                        <template x-teleport="body">
+                            <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" wire:key="budget-picker-menu" wire:ignore.self class="floating-select-menu">
+                                @foreach ($budgets as $budget)
+                                    <button type="button" x-on:click="budgetMenu.close()" wire:click="selectBudget({{ $budget->id }})" wire:key="budget-picker-option-{{ $budget->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                        {{ $budget->name }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </template>
                     </div>
 
                     <button type="button" x-on:click="renameBudget = true" wire:click="startRenamingBudget" class="btn-icon" aria-label="Rename budget" title="Rename budget">
@@ -185,8 +187,27 @@
                     <div wire:key="budget-summary-card-{{ str($card['label'])->slug() }}" class="metric-card">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
-                                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
+                                <div class="flex items-center gap-2">
+                                    <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
+                                    @if (($card['key'] ?? null) === 'investment' && $investmentOptions->isNotEmpty())
+                                        <button
+                                            x-ref="investmentTrigger"
+                                            type="button"
+                                            x-on:click.stop="investmentMenu.toggle($refs.investmentTrigger, $refs.investmentMenu)"
+                                            class="summary-menu-button"
+                                            aria-label="Choose investment spend"
+                                            title="Choose investment spend"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </button>
+                                    @endif
+                                </div>
                                 <div class="metric-value-lg">{{ $this->rupiah($card['amount']) }}</div>
+                                @if (($card['key'] ?? null) === 'investment')
+                                    <div class="mt-1 truncate text-xs font-medium text-gray-500 dark:text-slate-400">{{ $card['detail'] }}</div>
+                                @endif
                             </div>
                             <span class="icon-box">
                                 @switch($card['label'])
@@ -199,11 +220,30 @@
                                     @case('REMAINING')
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                                         @break
+                                    @case('INVESTMENT')
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
+                                        @break
                                     @default
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 12m18 0v6.75A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V12m18 0V8.25A2.25 2.25 0 0 0 18.75 6H5.25A2.25 2.25 0 0 0 3 8.25V12" /></svg>
                                 @endswitch
                             </span>
                         </div>
+
+                        @if (($card['key'] ?? null) === 'investment' && $investmentOptions->isNotEmpty())
+                            <template x-teleport="body">
+                                <div x-ref="investmentMenu" x-show="investmentMenu.open" x-cloak x-transition x-bind:style="investmentMenu.style" x-on:click.outside="investmentMenu.close()" x-on:resize.window="investmentMenu.close()" wire:key="budget-investment-menu" wire:ignore.self class="floating-select-menu investment-select-menu">
+                                    @foreach ($investmentOptions as $option)
+                                        <button type="button" x-on:click="investmentMenu.close()" wire:click="selectInvestment(@js($option['key']))" wire:key="budget-investment-option-{{ str($option['key'])->slug() }}" class="investment-option {{ $selectedInvestmentKey === $option['key'] ? 'investment-option-active' : '' }}">
+                                            <span class="min-w-0">
+                                                <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
+                                                <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi</span>
+                                            </span>
+                                            <span class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </template>
+                        @endif
                     </div>
                 @endforeach
             </section>

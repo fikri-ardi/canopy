@@ -18,6 +18,7 @@ class ShowExpense extends Component
     public $sortDirection = 'desc';
 
     #[On('saved')]
+    #[On('expense-updated')]
     #[On('expense-deleted')]
     public function refreshExpenses()
     {
@@ -60,15 +61,18 @@ class ShowExpense extends Component
             $relations[] = 'label';
         }
 
+        $spends = $this->sortedSpendQuery(
+            Spend::query()
+                ->select('spends.*')
+                ->with($relations)
+                ->where('budget_id', $this->activeBudgetId)
+                ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id())),
+            $labelsReady
+        )->get();
+
         return view('livewire.show-expense', [
-            'spends' => $this->sortedSpendQuery(
-                Spend::query()
-                    ->select('spends.*')
-                    ->with($relations)
-                    ->where('budget_id', $this->activeBudgetId)
-                    ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id())),
-                $labelsReady
-            )->get(),
+            'spends' => $spends,
+            'maxAmount' => (int) $spends->max(fn ($spend) => (int) $spend->getRawOriginal('amount')),
         ]);
     }
 
