@@ -7,7 +7,6 @@ use App\Livewire\Dashboard;
 use App\Livewire\Investment;
 use App\Livewire\Labels;
 use App\Livewire\Platforms;
-use App\Livewire\Reports;
 use App\Livewire\Spends;
 use App\Livewire\Statuses;
 use Illuminate\Support\Facades\Route;
@@ -25,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/budgets', Budget::class)->name('budgets');
     Route::get('/spends', Spends::class)->name('spends');
     Route::get('/investment', Investment::class)->name('investment');
-    Route::get('/reports', Reports::class)->name('reports');
+    Route::redirect('/reports', '/')->name('reports');
     Route::get('/labels', Labels::class)->name('labels');
     Route::get('/platforms', Platforms::class)->name('platforms');
     Route::get('/statuses', Statuses::class)->name('statuses');

@@ -1,4 +1,4 @@
-<div class="min-w-0">
+<div class="min-w-0" x-data="{budgetMenu: canopyDropdown(), rangeMenu: canopyDropdown()}">
     <header class="app-header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -7,7 +7,41 @@
                 <p class="page-subtitle">A quick read on income, spending pressure, budgets, and recent movement.</p>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+                <div class="min-w-0 flex-1 sm:w-44 sm:flex-none">
+                    <button x-ref="budgetTrigger" type="button" x-on:click.stop="budgetMenu.toggle($refs.budgetTrigger, $refs.budgetMenu)" class="btn-secondary w-full justify-between">
+                        <span class="truncate">{{ $budgetId === 'all' ? 'All budgets' : $budgets->firstWhere('id', (int) $budgetId)?->name }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <template x-teleport="body">
+                        <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" wire:key="dashboard-budget-menu" wire:ignore.self class="floating-select-menu">
+                            <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All budgets</button>
+                            @foreach ($budgets as $budget)
+                                <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', '{{ $budget->id }}')" wire:key="dashboard-budget-option-{{ $budget->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $budget->name }}</button>
+                            @endforeach
+                        </div>
+                    </template>
+                </div>
+
+                <div class="min-w-0 flex-1 sm:w-40 sm:flex-none">
+                    @php($rangeLabels = ['all' => 'All time', '30' => 'Last 30 days', '90' => 'Last 90 days', '365' => 'Last year'])
+                    <button x-ref="rangeTrigger" type="button" x-on:click.stop="rangeMenu.toggle($refs.rangeTrigger, $refs.rangeMenu)" class="btn-secondary w-full justify-between">
+                        <span class="truncate">{{ $rangeLabels[$range] ?? 'All time' }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <template x-teleport="body">
+                        <div x-ref="rangeMenu" x-show="rangeMenu.open" x-cloak x-transition x-bind:style="rangeMenu.style" x-on:click.outside="rangeMenu.close()" x-on:resize.window="rangeMenu.close()" wire:key="dashboard-range-menu" wire:ignore.self class="floating-select-menu">
+                            @foreach ($rangeLabels as $value => $label)
+                                <button type="button" x-on:click="rangeMenu.close()" wire:click="$set('range', '{{ $value }}')" wire:key="dashboard-range-option-{{ $value }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label }}</button>
+                            @endforeach
+                        </div>
+                    </template>
+                </div>
+
                 <a href="{{ route('budgets') }}" class="btn-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -173,6 +207,70 @@
                         </div>
                     </div>
                 @endif
+            </div>
+        </section>
+
+        <section class="grid gap-4 xl:grid-cols-3">
+            <div class="panel px-4 py-4">
+                <div class="eyebrow">Top Expenses</div>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Highest-impact transactions</h2>
+
+                <div class="mt-4 divide-y divide-gray-100 dark:divide-slate-800">
+                    @forelse ($topExpenses as $expense)
+                        <div wire:key="dashboard-top-expense-{{ $expense->id }}" class="flex items-center justify-between gap-3 py-3">
+                            <div class="min-w-0">
+                                <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $expense->name }}</div>
+                                <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
+                                    <span>{{ $expense->budget?->name }}</span>
+                                    <span>{{ $expense->label?->name ?? 'Unlabeled' }}</span>
+                                </div>
+                            </div>
+                            <div class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
+                        </div>
+                    @empty
+                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No expenses in this view.</div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="panel px-4 py-4">
+                <div class="eyebrow">Platforms</div>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Payment mix</h2>
+
+                <div class="mt-4 space-y-3">
+                    @forelse ($platformBreakdown as $platform)
+                        <div wire:key="dashboard-platform-breakdown-{{ str($platform['name'])->slug() }}">
+                            <div class="mb-1 flex items-center justify-between gap-3 text-sm">
+                                <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ $platform['name'] }}</span>
+                                <span class="shrink-0 text-gray-500 dark:text-slate-400">{{ $platform['percentage'] }}%</span>
+                            </div>
+                            <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-800">
+                                <div class="h-full rounded-full bg-green-500" style="width: {{ $platform['percentage'] }}%"></div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No platform data yet.</div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="panel px-4 py-4">
+                <div class="eyebrow">Status</div>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Allocation state</h2>
+
+                <div class="mt-4 grid gap-2">
+                    @forelse ($statusBreakdown as $status)
+                        <div wire:key="dashboard-status-breakdown-{{ str($status['name'])->slug() }}" class="rounded-lg bg-gray-50 px-3 py-2 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
+                            <div class="flex items-center justify-between gap-2 text-sm">
+                                <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ ucfirst($status['name']) }}</span>
+                                <span class="text-gray-500 dark:text-slate-400">{{ $status['transactions'] }}x</span>
+                            </div>
+                            <div class="mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
+                        </div>
+                    @empty
+                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No status data yet.</div>
+                    @endforelse
+                </div>
             </div>
         </section>
 

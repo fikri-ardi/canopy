@@ -57,12 +57,6 @@
                         </svg>
                         <span class="truncate">Statuses</span>
                     </a>
-                    <a href="{{ route('reports') }}" aria-label="Reports" class="flex min-w-20 flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-[11px] font-semibold transition md:min-w-0 md:flex-row md:justify-start md:gap-2 md:px-3 md:py-2.5 md:text-sm{{ request()->routeIs('reports') ? ' bg-green-50 text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20' : ' text-gray-600 hover:bg-green-50 hover:text-green-600 dark:text-slate-400 dark:hover:bg-green-500/10 dark:hover:text-green-300' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 shrink-0">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5V4.5m0 15h15M8.25 16.5v-5.25m4.5 5.25V8.25m4.5 8.25V6" />
-                        </svg>
-                        <span class="truncate">Reports</span>
-                    </a>
                     <form method="POST" action="{{ route('logout') }}" class="min-w-20 md:min-w-0">
                         @csrf
                         <button type="submit" aria-label="Logout" class="flex w-full flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-[11px] font-semibold text-gray-600 transition hover:bg-red-50 hover:text-red-600 md:flex-row md:justify-start md:gap-2 md:px-3 md:py-2.5 md:text-sm dark:text-slate-400 dark:hover:bg-red-500/10 dark:hover:text-red-300">

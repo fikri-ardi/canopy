@@ -430,7 +430,9 @@ class Budget extends Component
 
         return Spend::query()
             ->join('platforms', 'spends.platform_id', '=', 'platforms.id')
+            ->join('statuses', 'spends.status_id', '=', 'statuses.id')
             ->where('spends.budget_id', $this->activeBudget->id)
+            ->whereIn(DB::raw('lower(trim(statuses.body))'), ['allocated', 'allcoated'])
             ->selectRaw('platforms.id as id, platforms.name as name, sum(spends.amount) as total, count(*) as transactions')
             ->groupBy('platforms.id', 'platforms.name')
             ->orderByDesc('total')
