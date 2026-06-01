@@ -107,6 +107,21 @@
         animation: dashboard-chart-line-in 520ms ease-out forwards;
     }
 
+    .dashboard-chart-area {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease;
+        animation: dashboard-chart-area-in 620ms ease-out 120ms forwards;
+    }
+
+    .dashboard-chart-area-active {
+        opacity: 1 !important;
+    }
+
+    .dashboard-chart-area-muted {
+        opacity: 0.04 !important;
+    }
+
     .dashboard-chart-line-active {
         stroke-width: 3.25;
         filter: drop-shadow(0 4px 8px rgb(15 23 42 / 0.12));
@@ -330,6 +345,16 @@
     to {
         opacity: 0.92;
         transform: translateY(0);
+    }
+}
+
+@keyframes dashboard-chart-area-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 0.72;
     }
 }
 

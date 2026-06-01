@@ -134,7 +134,12 @@
             x-data="{
                 activeLine: null,
                 tooltip: { show: false, x: 0, y: 0, category: '', period: '', total: '' },
+                closeTooltip() {
+                    this.activeLine = null;
+                    this.tooltip.show = false;
+                },
                 showLineTooltip(event, category, points) {
+                    event.stopPropagation();
                     const svg = event.target.ownerSVGElement;
                     const rect = svg.getBoundingClientRect();
                     const viewBox = svg.viewBox.baseVal;
@@ -152,6 +157,7 @@
                     };
                 }
             }"
+            x-on:click.self="closeTooltip()"
         >
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -196,7 +202,20 @@
                             viewBox="0 0 {{ $categoryBudgetChart['width'] }} {{ $categoryBudgetChart['height'] }}"
                             role="img"
                             aria-label="Multi-line chart of spending by category across budgets"
+                            x-on:click.self="closeTooltip()"
                         >
+                            <defs>
+                                @foreach ($categoryBudgetChart['series'] as $seriesIndex => $seriesItem)
+                                    <linearGradient id="dashboard-chart-gradient-{{ $seriesIndex }}" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0%" stop-color="{{ $seriesItem['color'] }}" stop-opacity="0.22" />
+                                        <stop offset="70%" stop-color="{{ $seriesItem['color'] }}" stop-opacity="0.06" />
+                                        <stop offset="100%" stop-color="{{ $seriesItem['color'] }}" stop-opacity="0" />
+                                    </linearGradient>
+                                @endforeach
+                            </defs>
+
+                            <rect x="0" y="0" width="{{ $categoryBudgetChart['width'] }}" height="{{ $categoryBudgetChart['height'] }}" fill="transparent" x-on:click="closeTooltip()"></rect>
+
                             @foreach ($categoryBudgetChart['yTicks'] as $tick)
                                 <line x1="{{ $categoryBudgetChart['plot']['left'] }}" y1="{{ $tick['y'] }}" x2="{{ $categoryBudgetChart['plot']['right'] }}" y2="{{ $tick['y'] }}" class="dashboard-chart-grid" />
                                 <text x="12" y="{{ $tick['y'] + 4 }}" class="dashboard-chart-axis-text">{{ $tick['label'] }}</text>
@@ -205,6 +224,15 @@
                             @foreach ($categoryBudgetChart['budgets'] as $budget)
                                 <line x1="{{ $budget['x'] }}" y1="{{ $categoryBudgetChart['plot']['top'] }}" x2="{{ $budget['x'] }}" y2="{{ $categoryBudgetChart['plot']['bottom'] }}" class="dashboard-chart-guide" />
                                 <text x="{{ $budget['x'] }}" y="{{ $categoryBudgetChart['height'] - 28 }}" text-anchor="middle" class="dashboard-chart-axis-text">{{ $budget['shortName'] }}</text>
+                            @endforeach
+
+                            @foreach ($categoryBudgetChart['series'] as $seriesIndex => $seriesItem)
+                                <path
+                                    d="{{ $seriesItem['areaPath'] }}"
+                                    class="dashboard-chart-area"
+                                    x-bind:class="activeLine && activeLine !== @js($seriesItem['name']) ? 'dashboard-chart-area-muted' : (activeLine === @js($seriesItem['name']) ? 'dashboard-chart-area-active' : '')"
+                                    fill="url(#dashboard-chart-gradient-{{ $seriesIndex }})"
+                                ></path>
                             @endforeach
 
                             @foreach ($categoryBudgetChart['series'] as $seriesItem)
@@ -222,7 +250,8 @@
                                     class="dashboard-chart-hitbox"
                                     x-on:mouseenter="showLineTooltip($event, @js($seriesItem['name']), @js($seriesItem['points']))"
                                     x-on:mousemove="showLineTooltip($event, @js($seriesItem['name']), @js($seriesItem['points']))"
-                                    x-on:mouseleave="activeLine = null; tooltip.show = false"
+                                    x-on:mouseleave="if (!window.matchMedia('(pointer: coarse)').matches) closeTooltip()"
+                                    x-on:click="showLineTooltip($event, @js($seriesItem['name']), @js($seriesItem['points']))"
                                 ></path>
                             @endforeach
 
@@ -249,7 +278,8 @@
                                         class="cursor-pointer"
                                         x-on:mouseenter="activeLine = @js($seriesItem['name']); tooltip = { show: true, x: $event.clientX + 14, y: $event.clientY - 12, category: @js($seriesItem['name']), period: @js($point['budget']), total: @js($point['formatted']) }"
                                         x-on:mousemove="tooltip.x = $event.clientX + 14; tooltip.y = $event.clientY - 12"
-                                        x-on:mouseleave="activeLine = null; tooltip.show = false"
+                                        x-on:mouseleave="if (!window.matchMedia('(pointer: coarse)').matches) closeTooltip()"
+                                        x-on:click.stop="activeLine = @js($seriesItem['name']); tooltip = { show: true, x: $event.clientX + 14, y: $event.clientY - 12, category: @js($seriesItem['name']), period: @js($point['budget']), total: @js($point['formatted']) }"
                                     ></circle>
                                 @endforeach
                             @endforeach

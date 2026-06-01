@@ -316,6 +316,7 @@ class Dashboard extends Component
                 'color' => $colors[$index % count($colors)],
                 'points' => $points,
                 'path' => $this->smoothPath($points->all()),
+                'areaPath' => $this->areaPath($points->all(), $padding['top'] + $plotHeight),
                 'latestPoint' => $latestPoint,
             ];
         });
@@ -401,6 +402,19 @@ class Dashboard extends Component
         }
 
         return $path;
+    }
+
+    private function areaPath(array $points, float $baseline): string
+    {
+        if (count($points) === 0) {
+            return '';
+        }
+
+        $linePath = $this->smoothPath($points);
+        $last = $points[count($points) - 1];
+        $first = $points[0];
+
+        return $linePath.' L '.$last['x'].' '.round($baseline, 2).' L '.$first['x'].' '.round($baseline, 2).' Z';
     }
 
     private function compactAxisAmount(int $amount): string
