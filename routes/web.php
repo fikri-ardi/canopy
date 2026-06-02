@@ -10,6 +10,8 @@ use App\Livewire\Labels;
 use App\Livewire\Platforms;
 use App\Livewire\Spends;
 use App\Livewire\Statuses;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -29,6 +31,31 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', fn () => view('auth.verify-email'))
+        ->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+
+        return redirect()
+            ->intended(route('dashboard', absolute: false))
+            ->with('status', 'email-verified');
+    })->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->intended(route('dashboard', absolute: false));
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('status', 'verification-link-sent');
+    })->middleware('throttle:6,1')->name('verification.send');
+
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', Dashboard::class)->name('dashboard');
     Route::get('/budgets', Budget::class)->name('budgets');
     Route::get('/spends', Spends::class)->name('spends');
@@ -37,5 +64,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/labels', Labels::class)->name('labels');
     Route::get('/platforms', Platforms::class)->name('platforms');
     Route::get('/statuses', Statuses::class)->name('statuses');
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });

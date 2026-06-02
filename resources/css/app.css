@@ -329,6 +329,41 @@
         @apply cursor-not-allowed opacity-55 hover:translate-y-0 hover:border-white/60 hover:bg-white/[0.72] hover:text-gray-700 hover:shadow-sm dark:hover:border-slate-700/70 dark:hover:bg-slate-900/[0.62] dark:hover:text-slate-200;
     }
 
+    .flash-notification {
+        width: min(calc(100vw - 1.5rem), 28rem);
+        @apply fixed left-1/2 top-3 z-[120] flex -translate-x-1/2 items-start gap-3 overflow-hidden rounded-2xl border border-white/70 bg-white/[0.78] px-3.5 py-3 text-gray-900 shadow-2xl shadow-slate-900/10 backdrop-blur-2xl ring-1 ring-slate-900/5 dark:border-white/10 dark:bg-slate-950/[0.72] dark:text-slate-50 dark:shadow-black/30 dark:ring-white/10 sm:top-4 sm:px-4;
+        animation: flash-slide-down 420ms cubic-bezier(.2, .9, .24, 1) both;
+    }
+
+    .flash-notification::after {
+        content: "";
+        @apply absolute inset-x-5 bottom-0 h-px bg-gradient-to-r from-transparent via-green-400/70 to-transparent;
+    }
+
+    .flash-notification.is-leaving {
+        animation: flash-slide-up 240ms ease-in forwards;
+    }
+
+    .flash-icon {
+        @apply mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-xl bg-green-500/10 text-green-600 ring-1 ring-green-500/20 dark:bg-green-400/10 dark:text-green-300;
+    }
+
+    .flash-notification-error .flash-icon {
+        @apply bg-red-500/10 text-red-600 ring-red-500/20 dark:bg-red-400/10 dark:text-red-300;
+    }
+
+    .flash-title {
+        @apply truncate text-sm font-semibold leading-5 text-gray-950 dark:text-white;
+    }
+
+    .flash-message {
+        @apply mt-0.5 text-xs leading-5 text-gray-500 dark:text-slate-300;
+    }
+
+    .flash-close {
+        @apply -mr-1 inline-flex size-8 shrink-0 items-center justify-center rounded-full text-gray-400 transition hover:bg-slate-950/5 hover:text-gray-700 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-200;
+    }
+
     .input-field {
         @apply w-full min-w-0 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition placeholder:text-gray-400 hover:border-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600;
     }
@@ -473,5 +508,29 @@
     to {
         opacity: 1;
         transform: scale(1);
+    }
+}
+
+@keyframes flash-slide-down {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -1rem) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+}
+
+@keyframes flash-slide-up {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate(-50%, -1rem) scale(.98);
     }
 }

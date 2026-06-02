@@ -24,6 +24,8 @@
         });
     "
 >
+    <x-flash-banner />
+
     <div class="relative z-10 flex min-h-full">
         <livewire:sidebar />
 

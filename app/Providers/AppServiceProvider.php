@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+            $appName = config('app.name', 'Canopy');
+            $displayName = trim((string) ($notifiable->name ?? '')) ?: 'teman';
+            $firstName = strtok($displayName, ' ') ?: $displayName;
+            $expireMinutes = config('auth.verification.expire', 60);
+
+            return (new MailMessage)
+                ->subject("Verifikasi email {$appName} kamu")
+                ->markdown('mail.auth.verify-email', [
+                    'appName' => $appName,
+                    'displayName' => $firstName,
+                    'url' => $url,
+                    'expireMinutes' => $expireMinutes,
+                ]);
+        });
     }
 }
