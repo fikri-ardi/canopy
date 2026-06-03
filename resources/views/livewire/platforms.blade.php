@@ -1,10 +1,18 @@
 <div class="min-w-0" x-data="{deletePlatform: false}">
     <header class="app-header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <div class="eyebrow">Settings</div>
-                <h1 class="page-title">Platforms</h1>
-                <p class="page-subtitle">Manage payment sources, wallets, banks, and cash accounts for your expenses.</p>
+        <div class="page-header-layout">
+            <div class="page-header-copy">
+                <span class="page-hero-icon page-hero-icon-teal">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 12m18 0v6.75A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V12m18 0V8.25A2.25 2.25 0 0 0 18.75 6H5.25A2.25 2.25 0 0 0 3 8.25V12" />
+                    </svg>
+                </span>
+
+                <div class="min-w-0">
+                    <div class="eyebrow">Settings</div>
+                    <h1 class="page-title">Platforms</h1>
+                    <p class="page-subtitle max-w-2xl">Manage payment sources, wallets, banks, and cash accounts for your expenses.</p>
+                </div>
             </div>
         </div>
     </header>

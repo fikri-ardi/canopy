@@ -8,14 +8,22 @@
     class="min-w-0"
 >
     <header class="app-header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <div class="eyebrow">Active Budget</div>
-                <h1 class="page-title">{{ $activeBudget?->name ?? 'No budget yet' }}</h1>
-                <p class="page-subtitle">Track income, allocations, and spending health in one place.</p>
+        <div class="page-header-layout">
+            <div class="page-header-copy">
+                <span class="page-hero-icon page-hero-icon-amber">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m19.5 0h-.75a.75.75 0 0 1-.75-.75V4.5m0 0H3.75m16.5 0c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125H3.75A1.125 1.125 0 0 1 2.625 15.375v-9.75C2.625 5.004 3.129 4.5 3.75 4.5" />
+                    </svg>
+                </span>
+
+                <div class="min-w-0">
+                    <div class="eyebrow">Active Budget</div>
+                    <h1 class="page-title">{{ $activeBudget?->name ?? 'No budget yet' }}</h1>
+                    <p class="page-subtitle max-w-2xl">Track income, allocations, and spending health in one place.</p>
+                </div>
             </div>
 
-            <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+            <div class="page-header-actions">
                 <button
                     type="button"
                     x-on:click="theme = theme === 'dark' ? 'light' : 'dark'"

@@ -1,10 +1,19 @@
 <div class="min-w-0" x-data="{deleteLabel: false}">
     <header class="app-header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <div class="eyebrow">Settings</div>
-                <h1 class="page-title">Labels</h1>
-                <p class="page-subtitle">Organize expenses into clean spending categories.</p>
+        <div class="page-header-layout">
+            <div class="page-header-copy">
+                <span class="page-hero-icon page-hero-icon-violet">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+                    </svg>
+                </span>
+
+                <div class="min-w-0">
+                    <div class="eyebrow">Settings</div>
+                    <h1 class="page-title">Labels</h1>
+                    <p class="page-subtitle max-w-2xl">Organize expenses into clean spending categories.</p>
+                </div>
             </div>
         </div>
     </header>

@@ -1,10 +1,31 @@
 <div class="min-w-0" x-data="{deleteMovement: false}">
     <header class="app-header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <div class="eyebrow">Investment</div>
-                <h1 class="page-title">Investment Ledger</h1>
-                <p class="page-subtitle">Track investment balances without changing the original expense records.</p>
+        <div class="page-header-layout">
+            <div class="page-header-copy">
+                <span class="page-hero-icon page-hero-icon-sky">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 6.75 6.11 2.067-2.067 6.11" />
+                    </svg>
+                </span>
+
+                <div class="min-w-0">
+                    <div class="eyebrow">Investment</div>
+                    <h1 class="page-title">Investment Ledger</h1>
+                    <p class="page-subtitle max-w-2xl">Track investment balances without changing the original expense records.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 sm:flex sm:items-center lg:justify-end">
+                <div class="header-balance-chip">
+                    <span class="text-gray-400 dark:text-slate-500">Balance</span>
+                    <span class="font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($summary['balance']) }}</span>
+                </div>
+
+                <div class="header-balance-chip">
+                    <span class="text-gray-400 dark:text-slate-500">Progress</span>
+                    <span class="font-bold text-green-600 dark:text-green-300">{{ $summary['progress'] === null ? '0%' : $summary['progress'].'%' }}</span>
+                </div>
             </div>
         </div>
     </header>
@@ -18,24 +39,70 @@
 
         <section class="summary-grid">
             <div class="metric-card">
-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Original Investment</div>
-                <div class="metric-value">{{ $this->rupiah($summary['principal']) }}</div>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Original Investment</div>
+                        <div class="metric-value">{{ $this->rupiah($summary['principal']) }}</div>
+                    </div>
+                    <span class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 6.75 6.11 2.067-2.067 6.11" />
+                        </svg>
+                    </span>
+                </div>
             </div>
             <div class="metric-card">
-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Withdrawn</div>
-                <div class="metric-value">{{ $this->rupiah($summary['withdrawn']) }}</div>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Withdrawn</div>
+                        <div class="metric-value">{{ $this->rupiah($summary['withdrawn']) }}</div>
+                    </div>
+                    <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0-5.25-5.25M12 19.5l5.25-5.25" />
+                        </svg>
+                    </span>
+                </div>
             </div>
             <div class="metric-card">
-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Top Up</div>
-                <div class="metric-value">{{ $this->rupiah($summary['deposit']) }}</div>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Top Up</div>
+                        <div class="metric-value">{{ $this->rupiah($summary['deposit']) }}</div>
+                    </div>
+                    <span class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0L6.75 9.75M12 4.5l5.25 5.25" />
+                        </svg>
+                    </span>
+                </div>
             </div>
             <div class="metric-card">
-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Current Balance</div>
-                <div class="metric-value">{{ $this->rupiah($summary['balance']) }}</div>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Current Balance</div>
+                        <div class="metric-value">{{ $this->rupiah($summary['balance']) }}</div>
+                    </div>
+                    <span class="icon-box-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 12m18 0v6.75A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V12m18 0V8.25A2.25 2.25 0 0 0 18.75 6H5.25A2.25 2.25 0 0 0 3 8.25V12" />
+                        </svg>
+                    </span>
+                </div>
             </div>
             <div class="metric-card">
-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target</div>
-                <div class="metric-value">{{ $this->rupiah($summary['target']) }}</div>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target</div>
+                        <div class="metric-value">{{ $this->rupiah($summary['target']) }}</div>
+                    </div>
+                    <span class="icon-box-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.63 8.41m5.96 5.96a14.98 14.98 0 0 1-5.96 2.58m0-8.54a6 6 0 0 0-7.38 5.84h4.8m2.58-5.84a14.98 14.98 0 0 0-2.58 5.84m2.58 2.7L7.05 14.25" />
+                        </svg>
+                    </span>
+                </div>
             </div>
             <div class="metric-card">
                 <div class="flex items-center justify-between gap-3">

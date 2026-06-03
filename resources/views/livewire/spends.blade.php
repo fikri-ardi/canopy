@@ -1,38 +1,91 @@
 <div class="min-w-0" x-data="{budgetMenu: canopyDropdown(), labelMenu: canopyDropdown(), platformMenu: canopyDropdown(), sortMenu: canopyDropdown(), statusMenu: canopyDropdown()}">
     <header class="app-header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <div class="eyebrow">Spends</div>
-                <h1 class="page-title">Transaction Explorer</h1>
-                <p class="page-subtitle">Search, filter, and inspect every expense across your budgets.</p>
+        <div class="page-header-layout">
+            <div class="page-header-copy">
+                <span class="page-hero-icon page-hero-icon-emerald">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5A3.375 3.375 0 0 0 10.125 2.25H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 13.5h7.5M8.25 16.5h5.25M8.25 10.5h2.25" />
+                    </svg>
+                </span>
+
+                <div class="min-w-0">
+                    <div class="eyebrow">Spends</div>
+                    <h1 class="page-title">Transaction Explorer</h1>
+                    <p class="page-subtitle max-w-2xl">Search, filter, and inspect every expense across your budgets.</p>
+                </div>
             </div>
 
-            <a href="{{ route('budgets') }}#expenses" class="btn-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                <span>Add Expense</span>
-            </a>
+            <div class="page-header-actions">
+                <div class="header-insight-chip">
+                    <span class="header-insight-dot bg-green-500"></span>
+                    <span class="truncate">{{ number_format($transactionCount, 0, ',', '.') }} transactions</span>
+                </div>
+
+                <a href="{{ route('budgets') }}#expenses" class="btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span>Add Expense</span>
+                </a>
+            </div>
         </div>
     </header>
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
         <section class="summary-grid">
             <div class="metric-card">
-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Filtered Total</div>
-                <div class="metric-value">{{ $this->rupiah($totalAmount) }}</div>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Filtered Total</div>
+                        <div class="metric-value">{{ $this->rupiah($totalAmount) }}</div>
+                    </div>
+                    <span class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182-.586-.439-1.354-.659-2.121-.659-.768 0-1.536-.22-2.121-.659-1.172-.879-1.172-2.303 0-3.182 1.171-.879 3.07-.879 4.242 0l.879.659" />
+                        </svg>
+                    </span>
+                </div>
             </div>
             <div class="metric-card">
-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>
-                <div class="metric-value">{{ number_format($transactionCount, 0, ',', '.') }}</div>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>
+                        <div class="metric-value">{{ number_format($transactionCount, 0, ',', '.') }}</div>
+                    </div>
+                    <span class="icon-box-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5A3.375 3.375 0 0 0 10.125 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                    </span>
+                </div>
             </div>
             <div class="metric-card">
-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Average Spend</div>
-                <div class="metric-value">{{ $this->rupiah($averageAmount) }}</div>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Average Spend</div>
+                        <div class="metric-value">{{ $this->rupiah($averageAmount) }}</div>
+                    </div>
+                    <span class="icon-box-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125C16.5 3.504 17.004 3 17.625 3h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </span>
+                </div>
             </div>
             <div class="metric-card">
-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Largest Spend</div>
-                <div class="metric-value">{{ $this->rupiah($largestAmount) }}</div>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Largest Spend</div>
+                        <div class="metric-value">{{ $this->rupiah($largestAmount) }}</div>
+                    </div>
+                    <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 ring-1 ring-amber-100 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 18 9-13.5 9 13.5H2.25Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3h.008v.008H12v-.008Z" />
+                        </svg>
+                    </span>
+                </div>
             </div>
         </section>
 

@@ -1,13 +1,22 @@
 <div class="min-w-0" x-data="{budgetMenu: canopyDropdown(), rangeMenu: canopyDropdown()}">
     <header class="app-header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <div class="eyebrow">Dashboard</div>
-                <h1 class="page-title">Financial Command Center</h1>
-                <p class="page-subtitle">A quick read on income, spending pressure, budgets, and recent movement.</p>
+        <div class="page-header-layout">
+            <div class="page-header-copy">
+                <span class="page-hero-icon page-hero-icon-emerald">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5 10.5 6.75l3.75 3.75L20.25 4.5" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5h15M6 16.5v3m4.5-6v6m4.5-4.5v4.5m4.5-9v9" />
+                    </svg>
+                </span>
+
+                <div class="min-w-0">
+                    <div class="eyebrow">Dashboard</div>
+                    <h1 class="page-title">Financial Command Center</h1>
+                    <p class="page-subtitle max-w-2xl">A quick read on income, spending pressure, budgets, and recent movement.</p>
+                </div>
             </div>
 
-            <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+            <div class="page-header-actions">
                 <div class="min-w-0 flex-1 sm:w-44 sm:flex-none">
                     <button x-ref="budgetTrigger" type="button" x-on:click.stop="budgetMenu.toggle($refs.budgetTrigger, $refs.budgetMenu)" class="btn-secondary w-full justify-between">
                         <span class="truncate">{{ $budgetId === 'all' ? 'All budgets' : $budgets->firstWhere('id', (int) $budgetId)?->name }}</span>

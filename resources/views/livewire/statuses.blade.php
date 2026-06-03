@@ -1,10 +1,19 @@
 <div class="min-w-0" x-data="{deleteStatus: false}">
     <header class="app-header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <div class="eyebrow">Settings</div>
-                <h1 class="page-title">Statuses</h1>
-                <p class="page-subtitle">Manage allocation states for planning, withdrawals, and completed expenses.</p>
+        <div class="page-header-layout">
+            <div class="page-header-copy">
+                <span class="page-hero-icon page-hero-icon-slate">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </span>
+
+                <div class="min-w-0">
+                    <div class="eyebrow">Settings</div>
+                    <h1 class="page-title">Statuses</h1>
+                    <p class="page-subtitle max-w-2xl">Manage allocation states for planning, withdrawals, and completed expenses.</p>
+                </div>
             </div>
         </div>
     </header>
