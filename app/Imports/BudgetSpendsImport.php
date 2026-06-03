@@ -281,14 +281,13 @@ class InvestmentMovementRowsImport extends CanopyRowsImport
                 'note' => blank($row->get('note')) ? null : (string) $row->get('note'),
             ];
 
-            $movement = $this->ownedMovement((int) $row->get('movement_id'));
-            $movement ? $movement->update($payload) : InvestmentMovement::create($payload);
-        }
-    }
+            InvestmentMovement::where('user_id', $this->user->id)
+                ->where('investment_key', $key)
+                ->where('investment_name', $name)
+                ->delete();
 
-    private function ownedMovement(int $id): ?InvestmentMovement
-    {
-        return $id > 0 ? InvestmentMovement::where('user_id', $this->user->id)->find($id) : null;
+            InvestmentMovement::create($payload);
+        }
     }
 }
 

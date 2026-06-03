@@ -2,6 +2,7 @@
 
 use App\Imports\BudgetSpendsImport;
 use App\Models\Budget;
+use App\Models\InvestmentMovement;
 use App\Models\Platform;
 use App\Models\Spend;
 use App\Models\Status;
@@ -58,6 +59,50 @@ it('replaces an existing spend with the same name in the same budget during impo
 
         expect($spends)->toHaveCount(1)
             ->and((int) $spends->first()->getRawOriginal('amount'))->toBe(25000);
+    } finally {
+        DB::rollBack();
+    }
+});
+
+it('replaces an existing investment movement with the same investment key and name during import', function () {
+    DB::beginTransaction();
+
+    try {
+        $user = User::factory()->create();
+
+        InvestmentMovement::create([
+            'user_id' => $user->id,
+            'investment_key' => 'bbri',
+            'investment_name' => 'BBRI',
+            'type' => 'deposit',
+            'amount' => 10000,
+            'occurred_on' => now()->toDateString(),
+            'note' => 'Old row',
+        ]);
+
+        new BudgetSpendsImport($user);
+
+        $import = new App\Imports\InvestmentMovementRowsImport($user);
+        $import->collection(collect([
+            collect([
+                'investment_key' => 'bbri',
+                'investment_name' => 'BBRI',
+                'movement_type' => 'withdrawal',
+                'movement_amount' => '25000',
+                'occurred_on' => now()->toDateString(),
+                'note' => 'New row',
+            ]),
+        ]));
+
+        $movements = InvestmentMovement::where('user_id', $user->id)
+            ->where('investment_key', 'bbri')
+            ->where('investment_name', 'BBRI')
+            ->get();
+
+        expect($movements)->toHaveCount(1)
+            ->and($movements->first()->type)->toBe('withdrawal')
+            ->and($movements->first()->amount)->toBe(25000)
+            ->and($movements->first()->note)->toBe('New row');
     } finally {
         DB::rollBack();
     }

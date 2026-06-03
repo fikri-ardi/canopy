@@ -65,11 +65,12 @@
                     </div>
 
                     <div class="sm:col-span-2">
-                        <button type="submit" class="btn-primary">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="updateProfile" class="btn-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
-                            Save Profile
+                            <span wire:loading.remove wire:target="updateProfile">Save Profile</span>
+                            <span wire:loading wire:target="updateProfile">Saving...</span>
                         </button>
                     </div>
                 </form>
@@ -77,20 +78,24 @@
 
             <section id="security" class="panel scroll-mt-5 p-4 sm:p-5">
                 <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Security</h2>
-                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Change the password used for email sign in.</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+                    {{ $hasPassword ? 'Change the password used for email sign in.' : 'Create a password so this social account can also sign in with email.' }}
+                </p>
 
                 <form wire:submit="updatePassword" class="mt-4 grid gap-4 sm:grid-cols-3">
-                    <div>
-                        <label for="settings-current-password" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">Current Password</label>
-                        <input id="settings-current-password" wire:model="currentPassword" type="password" class="input-field mt-1">
-                        @error('currentPassword')
-                            <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    @if ($hasPassword)
+                        <div>
+                            <label for="settings-current-password" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">Current Password</label>
+                            <input id="settings-current-password" wire:model="currentPassword" type="password" autocomplete="current-password" class="input-field mt-1">
+                            @error('currentPassword')
+                                <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    @endif
 
                     <div>
-                        <label for="settings-password" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">New Password</label>
-                        <input id="settings-password" wire:model="password" type="password" class="input-field mt-1">
+                        <label for="settings-password" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">{{ $hasPassword ? 'New Password' : 'Password' }}</label>
+                        <input id="settings-password" wire:model="password" type="password" autocomplete="new-password" class="input-field mt-1">
                         @error('password')
                             <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                         @enderror
@@ -102,11 +107,12 @@
                     </div>
 
                     <div class="sm:col-span-3">
-                        <button type="submit" class="btn-primary">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="updatePassword" class="btn-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 0h10.5A2.25 2.25 0 0 1 19.5 12.75v6A2.25 2.25 0 0 1 17.25 21H6.75A2.25 2.25 0 0 1 4.5 18.75v-6A2.25 2.25 0 0 1 6.75 10.5Z" />
                             </svg>
-                            Update Password
+                            <span wire:loading.remove wire:target="updatePassword">{{ $hasPassword ? 'Update Password' : 'Set Password' }}</span>
+                            <span wire:loading wire:target="updatePassword">Saving...</span>
                         </button>
                     </div>
                 </form>

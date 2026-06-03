@@ -28,15 +28,20 @@ class Settings extends Component
 
     public string $deletePassword = '';
 
+    public bool $hasPassword = false;
+
     public ?TemporaryUploadedFile $importFile = null;
 
     public function mount(): void
     {
-        $this->name = auth()->user()->name;
-        $this->email = auth()->user()->email;
+        $user = auth()->user();
+
+        $this->name = $user->name;
+        $this->email = $user->email;
+        $this->hasPassword = filled($user->getAuthPassword());
     }
 
-    public function updateProfile()
+    public function updateProfile(): void
     {
         $user = auth()->user();
 
@@ -57,23 +62,42 @@ class Settings extends Component
             $user->sendEmailVerificationNotification();
         }
 
-        return redirect()->route('settings')->with('success', $emailChanged
-            ? 'Profile updated. Verification email sudah dikirim ke alamat baru.'
-            : 'Profile updated.');
+        $this->dispatch(
+            'canopy-flash',
+            tone: 'success',
+            title: 'Berhasil',
+            message: $emailChanged
+                ? 'Profile updated. Verification email sudah dikirim ke alamat baru.'
+                : 'Profile updated.',
+        );
     }
 
-    public function updatePassword()
+    public function updatePassword(): void
     {
-        $validated = $this->validate([
-            'currentPassword' => ['required', 'current_password'],
+        $wasPasswordless = ! $this->hasPassword;
+        $rules = [
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        ];
+
+        if ($this->hasPassword) {
+            $rules['currentPassword'] = ['required', 'current_password'];
+        }
+
+        $validated = $this->validate($rules);
 
         auth()->user()->forceFill([
             'password' => Hash::make($validated['password']),
         ])->save();
 
-        return redirect()->route('settings')->with('success', 'Password updated.');
+        $this->reset(['currentPassword', 'password', 'password_confirmation']);
+        $this->hasPassword = true;
+
+        $this->dispatch(
+            'canopy-flash',
+            tone: 'success',
+            title: 'Berhasil',
+            message: $wasPasswordless ? 'Password berhasil dibuat.' : 'Password updated.',
+        );
     }
 
     public function importData(): void

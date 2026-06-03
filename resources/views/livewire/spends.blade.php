@@ -222,7 +222,7 @@
         </section>
 
         <div>
-            {{ $spends->links() }}
+            {{ $spends->links('components.spends-pagination') }}
         </div>
     </main>
 </div>

@@ -87,7 +87,7 @@ class SocialAuthController extends Controller
             $user = User::create([
                 'name' => $socialUser->getName() ?: $socialUser->getNickname() ?: Str::before($email, '@'),
                 'email' => $email,
-                'password' => Str::password(32),
+                'password' => null,
                 'email_verified_at' => now(),
             ]);
 
