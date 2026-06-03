@@ -76,7 +76,7 @@ class Settings extends Component
         return redirect()->route('settings')->with('success', 'Password updated.');
     }
 
-    public function importData()
+    public function importData(): void
     {
         $this->validate([
             'importFile' => ['required', 'file', 'mimes:csv,txt,xlsx,ods', 'max:5120'],
@@ -85,8 +85,7 @@ class Settings extends Component
         Excel::import(new BudgetSpendsImport(auth()->user()), $this->importFile);
 
         $this->reset('importFile');
-
-        return redirect()->route('settings')->with('success', 'Import finished.');
+        $this->dispatch('canopy-flash', tone: 'success', title: 'Berhasil', message: 'Import finished.');
     }
 
     public function deleteAccount()

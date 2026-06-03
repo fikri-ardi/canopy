@@ -196,9 +196,11 @@ class ExpenseRowsImport extends CanopyRowsImport
                 $payload['created_at'] = $createdAt;
             }
 
-            $spend = $this->ownedSpend((int) $row->get('expense_id'));
+            Spend::where('budget_id', $budget->id)
+                ->where('name', $expenseName)
+                ->delete();
 
-            $spend ? $spend->update($payload) : Spend::create($payload);
+            Spend::create($payload);
         }
     }
 
@@ -245,17 +247,6 @@ class ExpenseRowsImport extends CanopyRowsImport
         }
 
         return Label::firstOrCreate($this->userScopedAttributes('labels', ['name' => $name]));
-    }
-
-    private function ownedSpend(int $id): ?Spend
-    {
-        if ($id < 1) {
-            return null;
-        }
-
-        return Spend::whereKey($id)
-            ->whereHas('budget', fn ($query) => $query->where('user_id', $this->user->id))
-            ->first();
     }
 
     private function labelsReady(): bool

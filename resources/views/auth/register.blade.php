@@ -45,7 +45,7 @@
 
         <p class="mt-5 text-center text-sm text-gray-500 dark:text-slate-400">
             Sudah punya akun?
-            <a href="{{ route('login') }}" class="font-semibold text-green-600 hover:text-green-700 dark:text-green-400">Login</a>
+            <a href="{{ route('login') }}" wire:navigate class="font-semibold text-green-600 hover:text-green-700 dark:text-green-400">Login</a>
         </p>
     </section>
 </x-layouts.guest>
