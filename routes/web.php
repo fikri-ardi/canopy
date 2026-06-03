@@ -22,11 +22,11 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
     Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
-        ->whereIn('provider', ['google', 'facebook', 'github'])
+        ->whereIn('provider', ['google', 'github'])
         ->name('social.redirect');
 
     Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])
-        ->whereIn('provider', ['google', 'facebook', 'github'])
+        ->whereIn('provider', ['google', 'github'])
         ->name('social.callback');
 });
 

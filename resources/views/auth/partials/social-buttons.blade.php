@@ -5,11 +5,6 @@
             'class' => 'social-auth-google',
             'configured' => filled(config('services.google.client_id')) && filled(config('services.google.client_secret')),
         ],
-        'facebook' => [
-            'label' => 'Facebook',
-            'class' => 'social-auth-facebook',
-            'configured' => filled(config('services.facebook.client_id')) && filled(config('services.facebook.client_secret')),
-        ],
         'github' => [
             'label' => 'GitHub',
             'class' => 'social-auth-github',
@@ -39,13 +34,6 @@
                                 <path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.62-2.25l-3.24-2.51c-.9.6-2.04.96-3.38.96-2.6 0-4.8-1.76-5.59-4.12H3.06v2.59A9.996 9.996 0 0 0 12 22Z" />
                                 <path fill="#FBBC05" d="M6.41 14.08A6.01 6.01 0 0 1 6.1 12c0-.72.12-1.42.31-2.08V7.33H3.06A9.996 9.996 0 0 0 2 12c0 1.61.39 3.14 1.06 4.67l3.35-2.59Z" />
                                 <path fill="#EA4335" d="M12 5.8c1.47 0 2.78.5 3.82 1.5l2.87-2.87C16.96 2.82 14.7 2 12 2a9.996 9.996 0 0 0-8.94 5.33l3.35 2.59C7.2 7.56 9.4 5.8 12 5.8Z" />
-                            </svg>
-                            @break
-
-                        @case('facebook')
-                            <svg viewBox="0 0 24 24" class="size-4">
-                                <path fill="#1877F2" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.03 1.79-4.7 4.53-4.7 1.31 0 2.68.23 2.68.23v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.27h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07Z" />
-                                <path fill="#FFFFFF" d="m16.67 15.56.53-3.49h-3.33V9.8c0-.96.47-1.89 1.96-1.89h1.51V4.94s-1.37-.23-2.68-.23c-2.74 0-4.53 1.67-4.53 4.7v2.66H7.08v3.49h3.05V24a12.16 12.16 0 0 0 3.74 0v-8.44h2.8Z" />
                             </svg>
                             @break
 

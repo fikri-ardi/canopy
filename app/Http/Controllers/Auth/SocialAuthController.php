@@ -16,7 +16,7 @@ class SocialAuthController extends Controller
 {
     use InitializesUserAccount;
 
-    private const PROVIDERS = ['google', 'facebook', 'github'];
+    private const PROVIDERS = ['google', 'github'];
 
     public function redirect(string $provider): RedirectResponse
     {
@@ -122,7 +122,6 @@ class SocialAuthController extends Controller
         $driver = Socialite::driver($provider);
 
         return match ($provider) {
-            'facebook' => $driver->scopes(['email']),
             'github' => $driver->scopes(['read:user', 'user:email']),
             default => $driver,
         };
