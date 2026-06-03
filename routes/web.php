@@ -3,11 +3,13 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\DataExportController;
 use App\Livewire\Budget;
 use App\Livewire\Dashboard;
 use App\Livewire\Investment;
 use App\Livewire\Labels;
 use App\Livewire\Platforms;
+use App\Livewire\Settings;
 use App\Livewire\Spends;
 use App\Livewire\Statuses;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -64,4 +66,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/labels', Labels::class)->name('labels');
     Route::get('/platforms', Platforms::class)->name('platforms');
     Route::get('/statuses', Statuses::class)->name('statuses');
+    Route::get('/settings', Settings::class)->name('settings');
+    Route::get('/settings/export/budgets', [DataExportController::class, 'budgets'])->name('settings.export.budgets');
 });
