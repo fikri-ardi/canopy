@@ -64,15 +64,6 @@
                         </svg>
                         <span class="truncate">Settings</span>
                     </a>
-                    <form method="POST" action="{{ route('logout') }}" class="min-w-20 md:min-w-0">
-                        @csrf
-                        <button type="submit" aria-label="Logout" class="flex w-full flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-[11px] font-semibold text-gray-600 transition hover:bg-red-50 hover:text-red-600 md:flex-row md:justify-start md:gap-2 md:px-3 md:py-2.5 md:text-sm dark:text-slate-400 dark:hover:bg-red-500/10 dark:hover:text-red-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 shrink-0">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                            </svg>
-                            <span class="truncate">Logout</span>
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>

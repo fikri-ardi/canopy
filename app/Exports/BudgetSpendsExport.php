@@ -4,7 +4,6 @@ namespace App\Exports;
 
 use App\Models\Budget;
 use App\Models\User;
-use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -16,6 +15,7 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithProperties;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -23,7 +23,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class BudgetSpendsExport implements FromCollection, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomCsvSettings, WithEvents, WithHeadings, WithProperties, WithStyles
+class BudgetSpendsExport implements FromCollection, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomCsvSettings, WithEvents, WithHeadings, WithProperties, WithStyles, WithTitle
 {
     /**
      * @param  array<int>  $budgetIds
@@ -31,9 +31,12 @@ class BudgetSpendsExport implements FromCollection, ShouldAutoSize, WithColumnFo
     public function __construct(
         private readonly User $user,
         private readonly array $budgetIds = [],
-        private readonly ?CarbonImmutable $dateFrom = null,
-        private readonly ?CarbonImmutable $dateTo = null,
     ) {}
+
+    public function title(): string
+    {
+        return 'Expenses';
+    }
 
     public function collection(): Collection
     {
@@ -209,8 +212,6 @@ class BudgetSpendsExport implements FromCollection, ShouldAutoSize, WithColumnFo
         $relations = [
             'spends' => function ($query) {
                 $query
-                    ->when($this->dateFrom, fn ($query) => $query->where('created_at', '>=', $this->dateFrom->startOfDay()))
-                    ->when($this->dateTo, fn ($query) => $query->where('created_at', '<=', $this->dateTo->endOfDay()))
                     ->orderBy('created_at')
                     ->orderBy('id');
             },

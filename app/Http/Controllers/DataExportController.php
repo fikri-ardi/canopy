@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exports\BudgetSpendsExport;
+use App\Exports\CanopyDataExport;
 use App\Models\Budget;
-use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Excel as ExcelWriter;
@@ -21,8 +21,6 @@ class DataExportController extends Controller
                 'integer',
                 Rule::exists('budgets', 'id')->where('user_id', $request->user()->id),
             ],
-            'date_from' => ['nullable', 'date'],
-            'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
         ]);
 
         $budgetIds = collect($validated['budgets'] ?? [])
@@ -46,12 +44,9 @@ class DataExportController extends Controller
         $headers = $format === 'csv' ? ['Content-Type' => 'text/csv'] : [];
 
         return Excel::download(
-            new BudgetSpendsExport(
-                user: $request->user(),
-                budgetIds: $budgetIds,
-                dateFrom: filled($validated['date_from'] ?? null) ? CarbonImmutable::parse($validated['date_from']) : null,
-                dateTo: filled($validated['date_to'] ?? null) ? CarbonImmutable::parse($validated['date_to']) : null,
-            ),
+            $format === 'csv'
+                ? new BudgetSpendsExport($request->user(), $budgetIds)
+                : new CanopyDataExport($request->user(), $budgetIds),
             $fileName,
             $writerType,
             $headers,

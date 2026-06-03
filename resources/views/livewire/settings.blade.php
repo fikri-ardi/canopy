@@ -26,6 +26,7 @@
                     ['href' => '#security', 'label' => 'Security'],
                     ['href' => '#data', 'label' => 'Export / Import'],
                     ['href' => '#delete-account', 'label' => 'Delete Account'],
+                    ['href' => '#logout', 'label' => 'Logout'],
                 ] as $item)
                     <a href="{{ $item['href'] }}" class="flex items-center justify-between rounded-md px-3 py-2 text-sm font-semibold text-gray-600 transition hover:bg-green-50 hover:text-green-600 dark:text-slate-300 dark:hover:bg-green-500/10 dark:hover:text-green-300">
                         <span>{{ $item['label'] }}</span>
@@ -38,18 +39,6 @@
         </aside>
 
         <div class="min-w-0 space-y-5">
-            @if (session('success'))
-                <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-300">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
-                    {{ session('error') }}
-                </div>
-            @endif
-
             <section id="profile" class="panel scroll-mt-5 p-4 sm:p-5">
                 <div class="flex items-start justify-between gap-4">
                     <div>
@@ -128,7 +117,7 @@
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                             <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Export Data</h2>
-                            <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Download budgets with matching expenses in a spreadsheet-ready file.</p>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Download budgets, expenses, and related account data. Excel and spreadsheet formats include every backup sheet.</p>
                         </div>
                         <span class="inline-flex w-fit items-center rounded-md bg-green-50 px-2.5 py-1 text-xs font-bold uppercase text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">Ready</span>
                     </div>
@@ -136,9 +125,9 @@
                     <form method="GET" action="{{ route('settings.export.budgets') }}" class="mt-5 space-y-5">
                         <div class="grid gap-3 sm:grid-cols-3">
                             @foreach ([
-                                ['value' => 'csv', 'label' => 'CSV', 'note' => 'Universal'],
-                                ['value' => 'xlsx', 'label' => 'Excel', 'note' => '.xlsx'],
-                                ['value' => 'ods', 'label' => 'Spreadsheet', 'note' => '.ods'],
+                                ['value' => 'csv', 'label' => 'CSV', 'note' => 'Expenses rows'],
+                                ['value' => 'xlsx', 'label' => 'Excel', 'note' => 'Full backup'],
+                                ['value' => 'ods', 'label' => 'Spreadsheet', 'note' => 'Full backup'],
                             ] as $format)
                                 <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white/70 p-3 text-sm shadow-sm transition hover:border-green-200 hover:bg-green-50/50 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-green-500/30 dark:hover:bg-green-500/10">
                                     <input type="radio" name="format" value="{{ $format['value'] }}" @checked($format['value'] === 'xlsx') class="size-4 border-gray-300 text-green-500 focus:ring-green-400">
@@ -190,23 +179,6 @@
                             <div class="text-xs text-red-500">{{ $message }}</div>
                         @enderror
 
-                        <div class="grid gap-3 sm:grid-cols-2">
-                            <div>
-                                <label for="export-date-from" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">From</label>
-                                <input id="export-date-from" name="date_from" type="date" value="{{ old('date_from') }}" class="input-field mt-1">
-                                @error('date_from')
-                                    <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div>
-                                <label for="export-date-to" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">To</label>
-                                <input id="export-date-to" name="date_to" type="date" value="{{ old('date_to') }}" class="input-field mt-1">
-                                @error('date_to')
-                                    <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
                         <button type="submit" @disabled($budgets->isEmpty()) class="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M7.5 10.5 12 15m0 0 4.5-4.5M12 15V3" />
@@ -244,6 +216,24 @@
                     <button type="button" x-on:click="deleteAccount = true" class="btn-danger w-full sm:w-auto">
                         Delete Account
                     </button>
+                </div>
+            </section>
+
+            <section id="logout" class="panel scroll-mt-5 p-4 sm:p-5">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Logout</h2>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">End this session and return to the login screen.</p>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}" class="w-full sm:w-auto">
+                        @csrf
+                        <button type="submit" class="btn-secondary w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-500/20 dark:text-red-300 dark:hover:bg-red-500/10 sm:w-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                            </svg>
+                            Logout
+                        </button>
+                    </form>
                 </div>
             </section>
         </div>

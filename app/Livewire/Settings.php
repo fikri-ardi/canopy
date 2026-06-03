@@ -36,7 +36,7 @@ class Settings extends Component
         $this->email = auth()->user()->email;
     }
 
-    public function updateProfile(): void
+    public function updateProfile()
     {
         $user = auth()->user();
 
@@ -57,12 +57,12 @@ class Settings extends Component
             $user->sendEmailVerificationNotification();
         }
 
-        session()->flash('success', $emailChanged
+        return redirect()->route('settings')->with('success', $emailChanged
             ? 'Profile updated. Verification email sudah dikirim ke alamat baru.'
             : 'Profile updated.');
     }
 
-    public function updatePassword(): void
+    public function updatePassword()
     {
         $validated = $this->validate([
             'currentPassword' => ['required', 'current_password'],
@@ -73,11 +73,10 @@ class Settings extends Component
             'password' => Hash::make($validated['password']),
         ])->save();
 
-        $this->reset(['currentPassword', 'password', 'password_confirmation']);
-        session()->flash('success', 'Password updated.');
+        return redirect()->route('settings')->with('success', 'Password updated.');
     }
 
-    public function importData(): void
+    public function importData()
     {
         $this->validate([
             'importFile' => ['required', 'file', 'mimes:csv,txt,xlsx,ods', 'max:5120'],
@@ -86,7 +85,8 @@ class Settings extends Component
         Excel::import(new BudgetSpendsImport(auth()->user()), $this->importFile);
 
         $this->reset('importFile');
-        session()->flash('success', 'Import finished.');
+
+        return redirect()->route('settings')->with('success', 'Import finished.');
     }
 
     public function deleteAccount()
