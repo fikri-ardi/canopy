@@ -64,13 +64,13 @@ it('replaces an existing spend with the same name in the same budget during impo
     }
 });
 
-it('replaces an existing investment movement with the same investment key and name during import', function () {
+it('syncs investment movements by imported ids during import', function () {
     DB::beginTransaction();
 
     try {
         $user = User::factory()->create();
 
-        InvestmentMovement::create([
+        $existingMovement = InvestmentMovement::create([
             'user_id' => $user->id,
             'investment_key' => 'bbri',
             'investment_name' => 'BBRI',
@@ -80,17 +80,37 @@ it('replaces an existing investment movement with the same investment key and na
             'note' => 'Old row',
         ]);
 
+        $untouchedMovement = InvestmentMovement::create([
+            'user_id' => $user->id,
+            'investment_key' => 'bbri',
+            'investment_name' => 'BBRI',
+            'type' => 'deposit',
+            'amount' => 12000,
+            'occurred_on' => now()->subDay()->toDateString(),
+            'note' => 'Untouched row',
+        ]);
+
         new BudgetSpendsImport($user);
 
         $import = new App\Imports\InvestmentMovementRowsImport($user);
         $import->collection(collect([
             collect([
+                'movement_id' => $existingMovement->id,
                 'investment_key' => 'bbri',
                 'investment_name' => 'BBRI',
                 'movement_type' => 'withdrawal',
                 'movement_amount' => '25000',
                 'occurred_on' => now()->toDateString(),
-                'note' => 'New row',
+                'note' => 'Updated row',
+            ]),
+            collect([
+                'movement_id' => 999999,
+                'investment_key' => 'bbri',
+                'investment_name' => 'BBRI',
+                'movement_type' => 'deposit',
+                'movement_amount' => '50000',
+                'occurred_on' => now()->toDateString(),
+                'note' => 'Inserted row',
             ]),
         ]));
 
@@ -99,10 +119,12 @@ it('replaces an existing investment movement with the same investment key and na
             ->where('investment_name', 'BBRI')
             ->get();
 
-        expect($movements)->toHaveCount(1)
-            ->and($movements->first()->type)->toBe('withdrawal')
-            ->and($movements->first()->amount)->toBe(25000)
-            ->and($movements->first()->note)->toBe('New row');
+        expect($movements)->toHaveCount(2)
+            ->and($existingMovement->fresh()->type)->toBe('withdrawal')
+            ->and($existingMovement->fresh()->amount)->toBe(25000)
+            ->and($existingMovement->fresh()->note)->toBe('Updated row')
+            ->and($untouchedMovement->fresh())->toBeNull()
+            ->and($movements->firstWhere('note', 'Inserted row')->amount)->toBe(50000);
     } finally {
         DB::rollBack();
     }

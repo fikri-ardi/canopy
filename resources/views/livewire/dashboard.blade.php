@@ -147,6 +147,29 @@
                     this.activeLine = null;
                     this.tooltip.show = false;
                 },
+                placeTooltip(event) {
+                    const offsetX = 8;
+                    const offsetY = 8;
+
+                    return {
+                        x: Math.round(event.clientX + offsetX),
+                        y: Math.round(event.clientY + offsetY),
+                    };
+                },
+                showPointTooltip(event, category, point) {
+                    event.stopPropagation();
+                    const position = this.placeTooltip(event);
+
+                    this.activeLine = category;
+                    this.tooltip = {
+                        show: true,
+                        x: position.x,
+                        y: position.y,
+                        category,
+                        period: point.budget,
+                        total: point.formatted,
+                    };
+                },
                 showLineTooltip(event, category, points) {
                     event.stopPropagation();
                     const svg = event.target.ownerSVGElement;
@@ -154,12 +177,13 @@
                     const viewBox = svg.viewBox.baseVal;
                     const pointerX = (event.clientX - rect.left) * (viewBox.width / rect.width);
                     const nearest = points.reduce((closest, point) => Math.abs(point.x - pointerX) < Math.abs(closest.x - pointerX) ? point : closest, points[0]);
+                    const position = this.placeTooltip(event);
 
                     this.activeLine = category;
                     this.tooltip = {
                         show: true,
-                        x: event.clientX + 14,
-                        y: event.clientY - 12,
+                        x: position.x,
+                        y: position.y,
                         category,
                         period: nearest.budget,
                         total: nearest.formatted,
@@ -285,10 +309,10 @@
                                         r="13"
                                         fill="transparent"
                                         class="cursor-pointer"
-                                        x-on:mouseenter="activeLine = @js($seriesItem['name']); tooltip = { show: true, x: $event.clientX + 14, y: $event.clientY - 12, category: @js($seriesItem['name']), period: @js($point['budget']), total: @js($point['formatted']) }"
-                                        x-on:mousemove="tooltip.x = $event.clientX + 14; tooltip.y = $event.clientY - 12"
+                                        x-on:mouseenter="showPointTooltip($event, @js($seriesItem['name']), @js($point))"
+                                        x-on:mousemove="showPointTooltip($event, @js($seriesItem['name']), @js($point))"
                                         x-on:mouseleave="if (!window.matchMedia('(pointer: coarse)').matches) closeTooltip()"
-                                        x-on:click.stop="activeLine = @js($seriesItem['name']); tooltip = { show: true, x: $event.clientX + 14, y: $event.clientY - 12, category: @js($seriesItem['name']), period: @js($point['budget']), total: @js($point['formatted']) }"
+                                        x-on:click.stop="showPointTooltip($event, @js($seriesItem['name']), @js($point))"
                                     ></circle>
                                 @endforeach
                             @endforeach
@@ -296,20 +320,22 @@
                     </div>
                 </div>
 
-                <div
-                    x-show="tooltip.show"
-                    x-cloak
-                    x-transition.opacity
-                    class="pointer-events-none fixed z-[90] rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30"
-                    x-bind:style="`left:${tooltip.x}px;top:${tooltip.y}px;`"
-                >
-                    <div class="text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Kategori</div>
-                    <div class="font-bold text-gray-950 dark:text-slate-50" x-text="tooltip.category"></div>
-                    <div class="mt-2 text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Periode</div>
-                    <div class="text-gray-600 dark:text-slate-300" x-text="tooltip.period"></div>
-                    <div class="mt-2 text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Total pengeluaran</div>
-                    <div class="font-semibold text-green-600 dark:text-green-400" x-text="tooltip.total"></div>
-                </div>
+                <template x-teleport="body">
+                    <div
+                        x-show="tooltip.show"
+                        x-cloak
+                        x-transition.opacity
+                        class="pointer-events-none fixed z-[90] rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30"
+                        x-bind:style="`left:${tooltip.x}px;top:${tooltip.y}px;`"
+                    >
+                        <div class="text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Kategori</div>
+                        <div class="font-bold text-gray-950 dark:text-slate-50" x-text="tooltip.category"></div>
+                        <div class="mt-2 text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Periode</div>
+                        <div class="text-gray-600 dark:text-slate-300" x-text="tooltip.period"></div>
+                        <div class="mt-2 text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Total pengeluaran</div>
+                        <div class="font-semibold text-green-600 dark:text-green-400" x-text="tooltip.total"></div>
+                    </div>
+                </template>
             @endif
         </section>
 

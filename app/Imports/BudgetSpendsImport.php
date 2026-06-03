@@ -263,6 +263,8 @@ class InvestmentMovementRowsImport extends CanopyRowsImport
             return;
         }
 
+        $importedMovementIds = [];
+
         foreach ($rows as $row) {
             $key = trim((string) $row->get('investment_key'));
             $name = trim((string) $row->get('investment_name'));
@@ -281,13 +283,27 @@ class InvestmentMovementRowsImport extends CanopyRowsImport
                 'note' => blank($row->get('note')) ? null : (string) $row->get('note'),
             ];
 
-            InvestmentMovement::where('user_id', $this->user->id)
-                ->where('investment_key', $key)
-                ->where('investment_name', $name)
-                ->delete();
+            $movement = $this->ownedMovement((int) $row->get('movement_id'));
 
-            InvestmentMovement::create($payload);
+            if ($movement) {
+                $movement->update($payload);
+            } else {
+                $movement = InvestmentMovement::create($payload);
+            }
+
+            $importedMovementIds[] = $movement->id;
         }
+
+        $query = InvestmentMovement::where('user_id', $this->user->id);
+
+        $importedMovementIds === []
+            ? $query->delete()
+            : $query->whereNotIn('id', $importedMovementIds)->delete();
+    }
+
+    private function ownedMovement(int $id): ?InvestmentMovement
+    {
+        return $id > 0 ? InvestmentMovement::where('user_id', $this->user->id)->find($id) : null;
     }
 }
 
