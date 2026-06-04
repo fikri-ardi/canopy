@@ -43,6 +43,13 @@
             <button type="submit" class="btn-primary w-full">Create Account</button>
         </form>
 
+        <p class="mt-4 text-center text-xs leading-5 text-gray-400 dark:text-slate-500">
+            By creating an account, you agree to Canopy's
+            <a href="{{ route('terms') }}" class="font-semibold text-green-600 hover:text-green-700 dark:text-green-400">Terms</a>
+            and
+            <a href="{{ route('privacy') }}" class="font-semibold text-green-600 hover:text-green-700 dark:text-green-400">Privacy Policy</a>.
+        </p>
+
         <p class="mt-5 text-center text-sm text-gray-500 dark:text-slate-400">
             Sudah punya akun?
             <a href="{{ route('login') }}" wire:navigate class="font-semibold text-green-600 hover:text-green-700 dark:text-green-400">Login</a>

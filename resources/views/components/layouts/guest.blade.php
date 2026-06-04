@@ -25,6 +25,12 @@
             </a>
 
             {{ $slot }}
+
+            <div class="mt-6 flex items-center justify-center gap-3 text-xs font-semibold text-gray-400 dark:text-slate-500">
+                <a href="{{ route('privacy') }}" class="transition hover:text-green-600 dark:hover:text-green-400">Privacy Policy</a>
+                <span aria-hidden="true">/</span>
+                <a href="{{ route('terms') }}" class="transition hover:text-green-600 dark:hover:text-green-400">Terms</a>
+            </div>
         </div>
     </main>
     @livewireScripts

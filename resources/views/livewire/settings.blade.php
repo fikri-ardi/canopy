@@ -25,6 +25,7 @@
                     ['href' => '#profile', 'label' => 'Profile'],
                     ['href' => '#security', 'label' => 'Security'],
                     ['href' => '#data', 'label' => 'Export / Import'],
+                    ['href' => '#legal', 'label' => 'Legal'],
                     ['href' => '#delete-account', 'label' => 'Delete Account'],
                     ['href' => '#logout', 'label' => 'Logout'],
                 ] as $item)
@@ -210,6 +211,19 @@
                             <span wire:loading wire:target="importData">Importing...</span>
                         </button>
                     </form>
+                </div>
+            </section>
+
+            <section id="legal" class="panel scroll-mt-5 p-4 sm:p-5">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Legal</h2>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Review how Canopy handles your data and the terms for using the app.</p>
+                    </div>
+                    <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                        <a href="{{ route('privacy') }}" class="btn-secondary w-full sm:w-auto">Privacy Policy</a>
+                        <a href="{{ route('terms') }}" class="btn-secondary w-full sm:w-auto">Terms</a>
+                    </div>
                 </div>
             </section>
 
