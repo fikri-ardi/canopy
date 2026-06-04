@@ -489,6 +489,16 @@
             0 18px 44px rgb(15 23 42 / 0.16);
     }
 
+    .onboarding-spotlight-overlay {
+        @apply pointer-events-none fixed inset-0 z-[150] h-screen w-screen;
+    }
+
+    .onboarding-spotlight-blur {
+        @apply pointer-events-none fixed z-[145];
+        backdrop-filter: blur(3px) saturate(0.92);
+        -webkit-backdrop-filter: blur(3px) saturate(0.92);
+    }
+
     .onboarding-tour-tooltip {
         @apply fixed z-[160] rounded-lg border border-white/70 bg-white/95 px-3.5 py-3 text-sm shadow-2xl shadow-slate-900/10 ring-1 ring-slate-900/5 backdrop-blur-xl dark:border-slate-700/80 dark:bg-slate-900/95 dark:shadow-black/30 dark:ring-white/10;
     }

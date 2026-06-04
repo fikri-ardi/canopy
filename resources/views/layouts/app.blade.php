@@ -117,9 +117,17 @@
                 editIncome: false,
                 deleteBudget: false,
                 onboardingStep: initialOnboardingStep,
-                tour: { visible: false, style: '' },
+                tour: {
+                    visible: false,
+                    style: '',
+                    spotlight: { x: 0, y: 0, width: 0, height: 0, radius: 12, cx: 0, cy: 0, r: 0 },
+                    blurStyle: { top: '', right: '', bottom: '', left: '' },
+                },
                 tourTarget: null,
                 tourRetry: null,
+                tourAdvanceTimer: null,
+                tourInputDelay: 260,
+                tourChoiceDelay: 180,
                 tourSteps: {
                     'budgets-menu': {
                         kicker: 'Langkah 1',
@@ -196,8 +204,21 @@
                     return this.tourSteps[this.onboardingStep] || null;
                 },
                 setOnboardingStep(step) {
+                    this.clearQueuedOnboardingStep();
                     this.onboardingStep = step;
                     this.$nextTick(() => this.updateTour());
+                },
+                queueOnboardingStep(step, delay = this.tourInputDelay) {
+                    if (!step || this.onboardingStep === step) {
+                        return;
+                    }
+
+                    this.clearQueuedOnboardingStep();
+                    this.tourAdvanceTimer = setTimeout(() => this.setOnboardingStep(step), delay);
+                },
+                clearQueuedOnboardingStep() {
+                    clearTimeout(this.tourAdvanceTimer);
+                    this.tourAdvanceTimer = null;
                 },
                 nextExistingStep(steps) {
                     return steps.find((step) => document.querySelector(`[data-onboarding-target="${step}"]`)) || null;
@@ -221,6 +242,7 @@
                     if (!step) {
                         this.tour.visible = false;
                         this.tourTarget = null;
+                        this.clearQueuedOnboardingStep();
                         return;
                     }
 
@@ -272,8 +294,49 @@
                             Math.max(margin, rect.bottom + gap),
                             window.innerHeight - tooltipHeight - margin
                         );
+                    const modalPanel = this.tourTarget.closest('.modal-panel');
+                    const focusRect = modalPanel?.getBoundingClientRect();
+                    const spotlightPadding = shouldPreferAbove ? 6 : 8;
+                    const focusPadding = focusRect ? 10 : spotlightPadding;
+                    const sourceRect = focusRect || rect;
+                    const spotlightX = Math.max(margin, sourceRect.left - focusPadding);
+                    const spotlightY = Math.max(margin, sourceRect.top - focusPadding);
+                    const spotlightWidth = Math.min(
+                        window.innerWidth - (margin * 2),
+                        sourceRect.width + (focusPadding * 2)
+                    );
+                    const baseSpotlightHeight = Math.min(
+                        window.innerHeight - (margin * 2),
+                        sourceRect.height + (focusPadding * 2)
+                    );
+                    const spotlightHeight = !focusRect && shouldPreferAbove
+                        ? Math.min(
+                            window.innerHeight - spotlightY - margin,
+                            Math.max(baseSpotlightHeight, rect.height + 220)
+                        )
+                        : baseSpotlightHeight;
 
                     this.tour.style = `width:${width}px;left:${Math.round(left)}px;top:${Math.round(top)}px;`;
+                    this.tour.spotlight = {
+                        x: Math.round(spotlightX),
+                        y: Math.round(spotlightY),
+                        width: Math.round(spotlightWidth),
+                        height: Math.round(spotlightHeight),
+                        radius: focusRect ? 22 : (shouldPreferAbove ? 10 : 14),
+                        cx: Math.round(sourceRect.left + (sourceRect.width / 2)),
+                        cy: Math.round(sourceRect.top + (sourceRect.height / 2)),
+                        r: Math.round(Math.max(window.innerWidth, window.innerHeight) * 0.82),
+                    };
+
+                    const spotlightRight = Math.round(spotlightX + spotlightWidth);
+                    const spotlightBottom = Math.round(spotlightY + spotlightHeight);
+
+                    this.tour.blurStyle = {
+                        top: `left:0;top:0;width:${window.innerWidth}px;height:${Math.round(spotlightY)}px;`,
+                        left: `left:0;top:${Math.round(spotlightY)}px;width:${Math.round(spotlightX)}px;height:${Math.round(spotlightHeight)}px;`,
+                        right: `left:${spotlightRight}px;top:${Math.round(spotlightY)}px;width:${Math.max(0, window.innerWidth - spotlightRight)}px;height:${Math.round(spotlightHeight)}px;`,
+                        bottom: `left:0;top:${spotlightBottom}px;width:${window.innerWidth}px;height:${Math.max(0, window.innerHeight - spotlightBottom)}px;`,
+                    };
                 },
                 openBudgetModalFromTour() {
                     this.createBudget = true;
@@ -292,39 +355,58 @@
                 startExpenseOnboarding() {
                     this.createBudget = false;
                     this.createExpense = false;
-                    this.setOnboardingStep('expense-button');
+                    this.showExpenseButtonTour();
                 },
                 startExpenseFormTour() {
                     this.createExpense = true;
-                    this.setOnboardingStep('expense-name');
+                    this.$nextTick(() => {
+                        setTimeout(() => this.setOnboardingStep('expense-name'), 80);
+                    });
+                },
+                showExpenseButtonTour() {
+                    this.setOnboardingStep('expense-button');
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            document.getElementById('expenses')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+                            this.updateTour();
+                        }, 180);
+                    });
                 },
                 advanceBudgetName(value) {
                     if (this.onboardingStep === 'budget-name' && value.trim().length > 0) {
-                        this.setOnboardingStep('budget-income');
+                        this.queueOnboardingStep('budget-income');
+                    } else if (this.onboardingStep === 'budget-name') {
+                        this.clearQueuedOnboardingStep();
                     }
                 },
                 advanceBudgetIncome(value) {
                     const amount = String(value || '').replace(/\D/g, '');
 
                     if (this.onboardingStep === 'budget-income' && Number(amount) > 0) {
-                        this.setOnboardingStep('budget-create');
+                        this.queueOnboardingStep('budget-create');
+                    } else if (this.onboardingStep === 'budget-income') {
+                        this.clearQueuedOnboardingStep();
                     }
                 },
                 advanceExpenseName(value) {
                     if (this.onboardingStep === 'expense-name' && value.trim().length > 0) {
-                        this.setOnboardingStep('expense-amount');
+                        this.queueOnboardingStep('expense-amount');
+                    } else if (this.onboardingStep === 'expense-name') {
+                        this.clearQueuedOnboardingStep();
                     }
                 },
                 advanceExpenseAmount(value) {
                     const amount = String(value || '').replace(/\D/g, '');
 
                     if (this.onboardingStep === 'expense-amount' && Number(amount) > 0) {
-                        this.setOnboardingStep(this.nextExistingStep(['expense-label', 'expense-platform']));
+                        this.queueOnboardingStep(this.nextExistingStep(['expense-label', 'expense-platform']));
+                    } else if (this.onboardingStep === 'expense-amount') {
+                        this.clearQueuedOnboardingStep();
                     }
                 },
                 advanceExpenseChoice(currentStep, nextStep) {
                     if (this.onboardingStep === currentStep) {
-                        this.setOnboardingStep(nextStep);
+                        this.queueOnboardingStep(nextStep, this.tourChoiceDelay);
                     }
                 },
                 afterBudgetCreated() {
@@ -332,7 +414,7 @@
                     this.budgetMenu.close();
 
                     if (['budget-name', 'budget-income', 'budget-create', 'new-budget'].includes(this.onboardingStep)) {
-                        this.setOnboardingStep('expense-button');
+                        this.showExpenseButtonTour();
                     }
                 },
                 afterExpenseSaved() {

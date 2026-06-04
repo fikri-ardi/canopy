@@ -16,7 +16,7 @@
             <div class="space-y-3">
                 <div>
                     <label for="expense-name" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Expense</label>
-                    <input wire:model="name" x-on:input.debounce.150ms="advanceExpenseName($event.target.value)" type="text" name="name" id="expense-name" placeholder="Makan" class="input-field" data-onboarding-target="expense-name">
+                    <input wire:model="name" x-on:blur="advanceExpenseName($event.target.value)" x-on:keydown.enter.prevent="advanceExpenseName($event.target.value)" type="text" name="name" id="expense-name" placeholder="Makan" class="input-field" data-onboarding-target="expense-name">
                     @error('name')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror
@@ -24,7 +24,7 @@
 
                 <div>
                     <label for="expense-amount" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Amount</label>
-                    <input wire:model="amount" x-on:input.debounce.150ms="advanceExpenseAmount($event.target.value)" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" name="amount" id="expense-amount" placeholder="300.000" class="input-field" data-onboarding-target="expense-amount">
+                    <input wire:model="amount" x-on:blur="advanceExpenseAmount($event.target.value)" x-on:keydown.enter.prevent="advanceExpenseAmount($event.target.value)" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" name="amount" id="expense-amount" placeholder="300.000" class="input-field" data-onboarding-target="expense-amount">
                     @error('amount')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror

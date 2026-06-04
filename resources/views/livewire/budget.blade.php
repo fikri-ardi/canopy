@@ -1,12 +1,12 @@
 <div
     x-data="canopyBudgetPage(@js($onboardingStep))"
-    x-on:saved="afterExpenseSaved()"
-    x-on:onboarding-completed="skipOnboarding()"
-    x-on:budget-created="afterBudgetCreated()"
-    x-on:onboarding-expense-ready="startExpenseOnboarding()"
-    x-on:budget-renamed="renameBudget = false"
-    x-on:budget-income-updated="editIncome = false"
-    x-on:budget-deleted="deleteBudget = false"
+    x-on:saved.window="afterExpenseSaved()"
+    x-on:onboarding-completed.window="skipOnboarding()"
+    x-on:budget-created.window="afterBudgetCreated()"
+    x-on:onboarding-expense-ready.window="startExpenseOnboarding()"
+    x-on:budget-renamed.window="renameBudget = false"
+    x-on:budget-income-updated.window="editIncome = false"
+    x-on:budget-deleted.window="deleteBudget = false"
     class="min-w-0"
 >
     <header class="app-header">
@@ -95,6 +95,53 @@
             </div>
         </div>
     </header>
+
+    <template x-teleport="body">
+        <template x-if="tour.visible && currentTourStep()">
+            <div aria-hidden="true">
+                <div class="onboarding-spotlight-blur" x-bind:style="tour.blurStyle.top"></div>
+                <div class="onboarding-spotlight-blur" x-bind:style="tour.blurStyle.right"></div>
+                <div class="onboarding-spotlight-blur" x-bind:style="tour.blurStyle.bottom"></div>
+                <div class="onboarding-spotlight-blur" x-bind:style="tour.blurStyle.left"></div>
+            </div>
+        </template>
+    </template>
+
+    <template x-teleport="body">
+        <svg
+            x-show="tour.visible && currentTourStep()"
+            x-cloak
+            x-transition.opacity
+            class="onboarding-spotlight-overlay"
+            aria-hidden="true"
+        >
+            <defs>
+                <radialGradient
+                    id="onboarding-spotlight-gradient"
+                    gradientUnits="userSpaceOnUse"
+                    x-bind:cx="tour.spotlight.cx"
+                    x-bind:cy="tour.spotlight.cy"
+                    x-bind:r="tour.spotlight.r"
+                >
+                    <stop offset="0%" stop-color="#020617" stop-opacity="0.28" />
+                    <stop offset="58%" stop-color="#020617" stop-opacity="0.58" />
+                    <stop offset="100%" stop-color="#020617" stop-opacity="0.74" />
+                </radialGradient>
+                <mask id="onboarding-spotlight-mask">
+                    <rect width="100%" height="100%" fill="white" />
+                    <rect
+                        x-bind:x="tour.spotlight.x"
+                        x-bind:y="tour.spotlight.y"
+                        x-bind:width="tour.spotlight.width"
+                        x-bind:height="tour.spotlight.height"
+                        x-bind:rx="tour.spotlight.radius"
+                        fill="black"
+                    />
+                </mask>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#onboarding-spotlight-gradient)" mask="url(#onboarding-spotlight-mask)" />
+        </svg>
+    </template>
 
     <template x-teleport="body">
         <div
