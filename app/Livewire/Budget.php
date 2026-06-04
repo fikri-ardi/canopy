@@ -13,17 +13,33 @@ use Livewire\Component;
 class Budget extends Component
 {
     public $activeBudget;
+
     public $activeBudgetId;
+
     public $budgets;
+
     public $renameBudgetName;
+
     public $incomeAmount;
+
     public $budgetRenderKey = 0;
+
     public $selectedInvestmentName;
+
     public $selectedAllocationPlatformId;
+
+    public $onboardingStep;
 
     public function mount()
     {
         $this->refreshBudgets();
+        $this->onboardingStep = session('canopy_onboarding_step');
+
+        if ($this->budgets->isEmpty() && ! $this->onboardingStep) {
+            $this->onboardingStep = 'budget';
+            session(['canopy_onboarding_step' => 'budget']);
+        }
+
         $this->setActiveBudget($this->userBudgetsQuery()->first());
     }
 
@@ -31,6 +47,7 @@ class Budget extends Component
     public function budgetCreated($budgetId = null)
     {
         $this->refreshBudgets();
+        $this->onboardingStep = session('canopy_onboarding_step');
         $this->setActiveBudget($this->userBudgetsQuery()->find($budgetId) ?? $this->userBudgetsQuery()->first());
     }
 
@@ -60,7 +77,8 @@ class Budget extends Component
 
     public function startEditingIncome()
     {
-        $this->incomeAmount = $this->activeBudget?->income;
+        $income = (int) ($this->activeBudget?->income ?? 0);
+        $this->incomeAmount = $income > 0 ? number_format($income, 0, ',', '.') : '';
     }
 
     public function renameActiveBudget()
@@ -89,11 +107,11 @@ class Budget extends Component
         }
 
         $validated = $this->validate([
-            'incomeAmount' => ['required', 'numeric', 'min:0'],
+            'incomeAmount' => ['required', 'regex:/^[0-9][0-9.]*$/'],
         ]);
 
         $this->activeBudget->update([
-            'income' => $validated['incomeAmount'],
+            'income' => $this->rawAmount($validated['incomeAmount']),
         ]);
 
         $this->setActiveBudget($this->activeBudget->fresh(), false);
@@ -106,6 +124,7 @@ class Budget extends Component
 
         if (! $budget) {
             $this->setActiveBudget($this->userBudgetsQuery()->first());
+
             return;
         }
 
@@ -508,6 +527,11 @@ class Budget extends Component
     public function rupiah($amount): string
     {
         return 'Rp'.number_format((int) $amount, 0, ',', '.');
+    }
+
+    private function rawAmount(string $amount): int
+    {
+        return (int) str_replace('.', '', $amount);
     }
 
     public function render()

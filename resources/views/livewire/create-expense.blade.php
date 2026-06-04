@@ -12,26 +12,34 @@
             </div>
         </div>
 
+        <div x-show="onboardingStep === 'expense'" x-cloak class="onboarding-card mt-5">
+            <div class="onboarding-kicker">Langkah 2 dari 2</div>
+            <div class="onboarding-title">Catat expense pertama</div>
+            <p class="onboarding-copy">Isi transaksi pertama supaya budget langsung punya konteks. Pilihan label, platform, dan status bisa diubah kapan saja.</p>
+        </div>
+
         <form class="mt-5 space-y-5" wire:submit="store">
             <div class="space-y-3">
-                <div>
+                <div class="onboarding-field" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
                     <label for="expense-name" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Expense</label>
                     <input wire:model="name" type="text" name="name" id="expense-name" placeholder="Makan" class="input-field">
+                    <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Tulis nama transaksi singkat, misalnya "Makan siang" atau "Internet".</div>
                     @error('name')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div>
+                <div class="onboarding-field" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
                     <label for="expense-amount" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Amount</label>
-                    <input wire:model="amount" type="number" min="0" name="amount" id="expense-amount" placeholder="300000" class="input-field">
+                    <input wire:model="amount" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" name="amount" id="expense-amount" placeholder="300.000" class="input-field">
+                    <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Masukkan nominal tanpa perlu titik manual. Nol di depan akan dibersihkan otomatis.</div>
                     @error('amount')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror
                 </div>
 
                 @if ($labelsReady)
-                    <div x-data="{selectLabel: false}" class="relative">
+                    <div x-data="{selectLabel: false}" class="onboarding-field relative" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
                         <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Label</label>
                         <button type="button" x-on:click="selectLabel = true" class="btn-secondary w-full justify-between">
                             <span class="truncate">{{ $selectedLabel?->name ?? 'Select label' }}</span>
@@ -47,10 +55,11 @@
                                 </button>
                             @endforeach
                         </div>
+                        <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Label membantu membaca kategori pengeluaran di dashboard dan reports.</div>
                     </div>
                 @endif
 
-                <div x-data="{selectPlatform: false}" class="relative">
+                <div x-data="{selectPlatform: false}" class="onboarding-field relative" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
                     <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Platform</label>
                     <button type="button" x-on:click="selectPlatform = true" class="btn-secondary w-full justify-between">
                         <span class="truncate">{{ $selectedPlatform?->name }}</span>
@@ -66,9 +75,10 @@
                             </button>
                         @endforeach
                     </div>
+                    <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Pilih sumber uang atau tempat pembayaran, seperti Cash, Main Bank, atau E-Wallet.</div>
                 </div>
 
-                <div x-data="{selectStatus: false}" class="relative">
+                <div x-data="{selectStatus: false}" class="onboarding-field relative" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
                     <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Status</label>
                     <button type="button" x-on:click="selectStatus = true" class="btn-secondary w-full justify-between">
                         <span class="truncate">{{ $selectedStatus?->body }}</span>
@@ -84,6 +94,7 @@
                             </button>
                         @endforeach
                     </div>
+                    <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Status menandai apakah uang masih belum dialokasi, sudah dialokasi, selesai, atau ditarik.</div>
                 </div>
             </div>
 

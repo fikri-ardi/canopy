@@ -12,18 +12,26 @@
             </div>
         </div>
 
+        <div x-show="onboardingStep === 'budget'" x-cloak class="onboarding-card mt-5">
+            <div class="onboarding-kicker">Langkah 1 dari 2</div>
+            <div class="onboarding-title">Buat budget pertama</div>
+            <p class="onboarding-copy">Isi nama budget dan income utama dulu. Setelah dibuat, Canopy akan lanjut memandu input expense pertama.</p>
+        </div>
+
         <form class="mt-5 space-y-5" wire:submit="store">
             <div class="space-y-3">
-                <div>
+                <div class="onboarding-field" x-bind:class="onboardingStep === 'budget' ? 'onboarding-field-active' : ''">
                     <label for="budget-name" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Name</label>
                     <input wire:model="name" type="text" name="name" id="budget-name" placeholder="Monthly plan" class="input-field">
+                    <div x-show="onboardingStep === 'budget'" x-cloak class="field-tooltip">Pakai nama yang gampang dikenali, misalnya "Juni 2026" atau "Monthly plan".</div>
                     @error('name')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror
                 </div>
-                <div>
+                <div class="onboarding-field" x-bind:class="onboardingStep === 'budget' ? 'onboarding-field-active' : ''">
                     <label for="budget-income" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Income</label>
-                    <input wire:model="income" type="number" min="0" name="income" id="budget-income" placeholder="2000000" class="input-field">
+                    <input wire:model="income" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" name="income" id="budget-income" placeholder="2.000.000" class="input-field">
+                    <div x-show="onboardingStep === 'budget'" x-cloak class="field-tooltip">Masukkan total income untuk budget ini. Angka akan otomatis dirapikan saat diketik.</div>
                     @error('income')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror

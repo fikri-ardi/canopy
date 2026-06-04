@@ -12,14 +12,23 @@ use Livewire\Component;
 class CreateExpense extends Component
 {
     public $name;
+
     public $amount;
+
     public $platforms;
+
     public $selectedPlatform;
+
     public $statuses;
+
     public $selectedStatus;
+
     public $labels;
+
     public $selectedLabel;
+
     public $labelsReady = false;
+
     public $activeBudgetId;
 
     public function mount($activeBudgetId = null)
@@ -69,7 +78,7 @@ class CreateExpense extends Component
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'numeric', 'min:0'],
+            'amount' => ['required', 'regex:/^[0-9][0-9.]*$/'],
         ]);
 
         $activeBudget = $this->activeBudgetId
@@ -80,11 +89,13 @@ class CreateExpense extends Component
             return;
         }
 
+        $isOnboardingExpense = session('canopy_onboarding_step') === 'expense';
+
         $payload = [
             'platform_id' => $this->selectedPlatform->id,
             'status_id' => $this->selectedStatus->id,
             'name' => $validated['name'],
-            'amount' => $validated['amount']
+            'amount' => $this->rawAmount($validated['amount']),
         ];
 
         if ($this->labelsReady && $this->selectedLabel) {
@@ -93,8 +104,18 @@ class CreateExpense extends Component
 
         $activeBudget->spends()->create($payload);
 
+        if ($isOnboardingExpense) {
+            session()->forget('canopy_onboarding_step');
+            $this->dispatch('onboarding-completed');
+        }
+
         $this->reset(['name', 'amount']);
         $this->dispatch('saved');
+    }
+
+    private function rawAmount(string $amount): int
+    {
+        return (int) str_replace('.', '', $amount);
     }
 
     private function labelsSchemaReady(): bool

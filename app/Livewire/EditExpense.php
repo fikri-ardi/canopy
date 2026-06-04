@@ -12,16 +12,27 @@ use Livewire\Component;
 class EditExpense extends Component
 {
     public $spend;
+
     public $name;
+
     public $amount;
+
     public $platform_id;
+
     public $status_id;
+
     public $label_id;
+
     public $iteration;
+
     public $platforms;
+
     public $statuses;
+
     public $labels;
+
     public $labelsReady = false;
+
     public $maxAmount = 0;
 
     public function mount($spend = null, $iteration = null, $maxAmount = 0)
@@ -32,7 +43,7 @@ class EditExpense extends Component
         $this->maxAmount = (int) $maxAmount;
         $this->spend = $spend;
         $this->name = $spend->name;
-        $this->amount = $spend->amount;
+        $this->amount = $this->editableAmount((int) $spend->getRawOriginal('amount'));
         $this->platform_id = $spend->platform_id;
         $this->status_id = $spend->status_id;
         $this->labelsReady = $this->labelsSchemaReady();
@@ -55,7 +66,7 @@ class EditExpense extends Component
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'regex:/^[0-9.]+$/'],
+            'amount' => ['required', 'regex:/^[0-9][0-9.]*$/'],
             'platform_id' => [
                 'required',
                 Rule::exists('platforms', 'id')->when($this->platformsSchemaReady(), fn ($rule) => $rule->where('user_id', auth()->id())),
@@ -72,8 +83,13 @@ class EditExpense extends Component
 
         $this->validateOnly($name, $rules);
 
+        if ($name === 'amount') {
+            $value = $this->rawAmount((string) $value);
+            $this->amount = $this->editableAmount($value);
+        }
+
         $this->spend->update([
-            $name => $value
+            $name => $value,
         ]);
 
         $this->spend = $this->spend->fresh($this->labelsReady ? ['platform', 'status', 'label'] : ['platform', 'status']);
@@ -203,6 +219,16 @@ class EditExpense extends Component
     private function spendBelongsToCurrentUser(): bool
     {
         return $this->spend?->budget()->where('user_id', auth()->id())->exists() ?? false;
+    }
+
+    private function rawAmount(string $amount): int
+    {
+        return (int) str_replace('.', '', $amount);
+    }
+
+    private function editableAmount(int $amount): string
+    {
+        return $amount > 0 ? number_format($amount, 0, ',', '.') : '';
     }
 
     private function userPlatformsQuery()

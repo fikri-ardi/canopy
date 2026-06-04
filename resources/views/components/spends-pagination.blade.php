@@ -20,6 +20,7 @@
                 wire:loading.attr="disabled"
                 class="btn-secondary min-w-0 px-2.5 disabled:cursor-not-allowed disabled:opacity-45"
                 aria-label="Previous page"
+                data-tooltip="Previous page"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -60,6 +61,7 @@
                 wire:loading.attr="disabled"
                 class="btn-secondary min-w-0 px-2.5 disabled:cursor-not-allowed disabled:opacity-45"
                 aria-label="Next page"
+                data-tooltip="Next page"
             >
                 <span class="hidden sm:inline">Next</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">

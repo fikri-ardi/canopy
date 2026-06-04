@@ -42,6 +42,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
 
+        if (! \App\Models\Budget::where('user_id', $request->user()->id)->exists()) {
+            $request->session()->put('canopy_onboarding_step', 'budget');
+
+            return redirect()->route('budgets');
+        }
+
         return redirect()
             ->intended(route('dashboard', absolute: false))
             ->with('status', 'email-verified');

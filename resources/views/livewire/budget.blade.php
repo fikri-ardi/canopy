@@ -1,7 +1,8 @@
 <div
-    x-data="{createBudget: false, budgetMenu: canopyDropdown(), allocationMenu: canopyDropdown({ minWidth: 300, maxWidth: 380 }), investmentMenu: canopyDropdown({ minWidth: 336, maxWidth: 420 }), createExpense: false, renameBudget: false, editIncome: false, deleteBudget: false}"
-    x-on:saved="createExpense = false"
-    x-on:budget-created="createBudget = false; budgetMenu.close()"
+    x-data="canopyBudgetPage(@js($onboardingStep))"
+    x-on:saved="afterExpenseSaved()"
+    x-on:onboarding-completed="onboardingStep = null"
+    x-on:budget-created="afterBudgetCreated()"
     x-on:budget-renamed="renameBudget = false"
     x-on:budget-income-updated="editIncome = false"
     x-on:budget-deleted="deleteBudget = false"
@@ -29,7 +30,7 @@
                     x-on:click="theme = theme === 'dark' ? 'light' : 'dark'"
                     class="btn-icon"
                     aria-label="Toggle appearance"
-                    title="Toggle appearance"
+                    data-tooltip="Toggle appearance"
                 >
                     <svg x-show="theme === 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
@@ -59,25 +60,25 @@
                         </template>
                     </div>
 
-                    <button type="button" x-on:click="renameBudget = true" wire:click="startRenamingBudget" class="btn-icon" aria-label="Rename budget" title="Rename budget">
+                    <button type="button" x-on:click="renameBudget = true" wire:click="startRenamingBudget" class="btn-icon" aria-label="Rename budget" data-tooltip="Rename budget">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.862 4.487Zm0 0L19.5 7.125" />
                         </svg>
                     </button>
 
-                    <button type="button" x-on:click="editIncome = true" wire:click="startEditingIncome" class="btn-icon" aria-label="Edit total income" title="Edit total income">
+                    <button type="button" x-on:click="editIncome = true" wire:click="startEditingIncome" class="btn-icon" aria-label="Edit total income" data-tooltip="Edit total income">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182-.586-.439-1.354-.659-2.121-.659-.768 0-1.536-.22-2.121-.659-1.172-.879-1.172-2.303 0-3.182 1.171-.879 3.07-.879 4.242 0l.879.659" />
                         </svg>
                     </button>
 
-                    <button type="button" wire:click="duplicateActiveBudget" class="btn-icon" aria-label="Duplicate budget" title="Duplicate budget">
+                    <button type="button" wire:click="duplicateActiveBudget" class="btn-icon" aria-label="Duplicate budget" data-tooltip="Duplicate budget">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125v-9.75c0-.621.504-1.125 1.125-1.125H8.25m7.5 7.5h3.375c.621 0 1.125-.504 1.125-1.125v-9.75c0-.621-.504-1.125-1.125-1.125h-9.75A1.125 1.125 0 0 0 8.25 6.375v3.375m7.5 7.5H9.375A1.125 1.125 0 0 1 8.25 16.125V9.75" />
                         </svg>
                     </button>
 
-                    <button type="button" x-on:click="deleteBudget = true" class="btn-icon border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-red-900/70 dark:hover:bg-red-950/40" aria-label="Delete budget" title="Delete budget">
+                    <button type="button" x-on:click="deleteBudget = true" class="btn-icon border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-red-900/70 dark:hover:bg-red-950/40" aria-label="Delete budget" data-tooltip="Delete budget">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0 1 15.916 21.75H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a49.058 49.058 0 0 0-7.5 0" />
                         </svg>
@@ -146,7 +147,7 @@
                 <form class="mt-5 space-y-4" wire:submit="updateActiveBudgetIncome">
                     <div>
                         <label for="budget-income-edit" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Income</label>
-                        <input wire:model="incomeAmount" type="number" min="0" id="budget-income-edit" class="input-field" placeholder="2000000">
+                        <input wire:model="incomeAmount" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" id="budget-income-edit" class="input-field" placeholder="2.000.000">
                         @error('incomeAmount')
                             <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                         @enderror
@@ -216,7 +217,7 @@
                                             x-on:click.stop="allocationMenu.toggle($refs.allocationTrigger, $refs.allocationMenu)"
                                             class="summary-menu-button"
                                             aria-label="Choose allocation platform"
-                                            title="Choose allocation platform"
+                                            data-tooltip="Choose allocation platform"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -230,7 +231,7 @@
                                             x-on:click.stop="investmentMenu.toggle($refs.investmentTrigger, $refs.investmentMenu)"
                                             class="summary-menu-button"
                                             aria-label="Choose investment spend"
-                                            title="Choose investment spend"
+                                            data-tooltip="Choose investment spend"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />

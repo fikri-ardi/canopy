@@ -54,6 +54,16 @@
     button {
         @apply focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-950;
     }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        margin: 0;
+        -webkit-appearance: none;
+    }
 }
 
 @layer components {
@@ -461,6 +471,42 @@
 
     .floating-select-menu {
         @apply fixed z-[80] flex max-h-60 flex-col overflow-y-auto rounded-lg bg-white py-1 shadow-xl ring-1 ring-gray-200 dark:bg-slate-900 dark:ring-slate-700;
+    }
+
+    .canopy-ui-tooltip {
+        @apply pointer-events-none fixed left-0 top-0 z-[140] max-w-56 rounded-md border border-white/70 bg-white/95 px-2.5 py-1.5 text-xs font-semibold text-gray-700 opacity-0 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/5 backdrop-blur transition duration-150 dark:border-slate-700/80 dark:bg-slate-900/95 dark:text-slate-100 dark:shadow-black/30 dark:ring-white/10;
+    }
+
+    .canopy-ui-tooltip.is-visible {
+        @apply opacity-100;
+    }
+
+    .onboarding-card {
+        @apply rounded-lg border border-green-200/70 bg-green-50/80 px-3.5 py-3 shadow-sm shadow-green-500/5 ring-1 ring-green-500/10 dark:border-green-500/20 dark:bg-green-500/10 dark:ring-green-500/10;
+    }
+
+    .onboarding-kicker {
+        @apply text-[11px] font-bold uppercase text-green-600 dark:text-green-300;
+    }
+
+    .onboarding-title {
+        @apply mt-1 text-sm font-bold text-gray-950 dark:text-slate-50;
+    }
+
+    .onboarding-copy {
+        @apply mt-1 text-sm leading-5 text-gray-600 dark:text-slate-300;
+    }
+
+    .onboarding-field {
+        @apply rounded-lg transition;
+    }
+
+    .onboarding-field-active {
+        @apply bg-green-50/45 p-2 ring-1 ring-green-100 dark:bg-green-500/5 dark:ring-green-500/15;
+    }
+
+    .field-tooltip {
+        @apply mt-2 rounded-md border border-gray-200 bg-white/90 px-2.5 py-2 text-xs leading-5 text-gray-600 shadow-sm shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300;
     }
 
     .modal-backdrop {
