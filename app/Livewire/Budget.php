@@ -33,22 +33,20 @@ class Budget extends Component
     public function mount()
     {
         $this->refreshBudgets();
-        $this->onboardingStep = session('canopy_onboarding_step');
-
-        if ($this->budgets->isEmpty() && ! $this->onboardingStep) {
-            $this->onboardingStep = 'budget';
-            session(['canopy_onboarding_step' => 'budget']);
-        }
-
         $this->setActiveBudget($this->userBudgetsQuery()->first());
+        $this->onboardingStep = $this->initialOnboardingStep();
     }
 
     #[On('budget-created')]
     public function budgetCreated($budgetId = null)
     {
         $this->refreshBudgets();
-        $this->onboardingStep = session('canopy_onboarding_step');
         $this->setActiveBudget($this->userBudgetsQuery()->find($budgetId) ?? $this->userBudgetsQuery()->first());
+        $this->onboardingStep = auth()->user()->needsOnboarding() ? 'expense-button' : null;
+
+        if ($this->onboardingStep === 'expense-button') {
+            $this->dispatch('onboarding-expense-ready');
+        }
     }
 
     #[On('saved')]
@@ -195,6 +193,51 @@ class Budget extends Component
         }
 
         $this->selectedAllocationPlatformId = $option['id'];
+    }
+
+    public function completeOnboarding(): void
+    {
+        $this->markOnboardingComplete();
+        $this->onboardingStep = null;
+        $this->dispatch('onboarding-completed');
+    }
+
+    private function initialOnboardingStep(): ?string
+    {
+        if (! auth()->user()->needsOnboarding()) {
+            return null;
+        }
+
+        if ($this->budgets->isEmpty()) {
+            return 'budgets-menu';
+        }
+
+        if (! $this->userHasAnyExpense()) {
+            return 'expense-button';
+        }
+
+        $this->markOnboardingComplete();
+
+        return null;
+    }
+
+    private function markOnboardingComplete(): void
+    {
+        if (! auth()->user()->needsOnboarding()) {
+            return;
+        }
+
+        auth()->user()->forceFill([
+            'onboarding_completed_at' => now(),
+        ])->save();
+    }
+
+    private function userHasAnyExpense(): bool
+    {
+        return Spend::query()
+            ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
+            ->where('budgets.user_id', auth()->id())
+            ->exists();
     }
 
     private function refreshBudgets()

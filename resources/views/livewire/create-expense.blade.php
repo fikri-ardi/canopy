@@ -12,36 +12,28 @@
             </div>
         </div>
 
-        <div x-show="onboardingStep === 'expense'" x-cloak class="onboarding-card mt-5">
-            <div class="onboarding-kicker">Langkah 2 dari 2</div>
-            <div class="onboarding-title">Catat expense pertama</div>
-            <p class="onboarding-copy">Isi transaksi pertama supaya budget langsung punya konteks. Pilihan label, platform, dan status bisa diubah kapan saja.</p>
-        </div>
-
         <form class="mt-5 space-y-5" wire:submit="store">
             <div class="space-y-3">
-                <div class="onboarding-field" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
+                <div>
                     <label for="expense-name" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Expense</label>
-                    <input wire:model="name" type="text" name="name" id="expense-name" placeholder="Makan" class="input-field">
-                    <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Tulis nama transaksi singkat, misalnya "Makan siang" atau "Internet".</div>
+                    <input wire:model="name" x-on:input.debounce.150ms="advanceExpenseName($event.target.value)" type="text" name="name" id="expense-name" placeholder="Makan" class="input-field" data-onboarding-target="expense-name">
                     @error('name')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="onboarding-field" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
+                <div>
                     <label for="expense-amount" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Amount</label>
-                    <input wire:model="amount" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" name="amount" id="expense-amount" placeholder="300.000" class="input-field">
-                    <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Masukkan nominal tanpa perlu titik manual. Nol di depan akan dibersihkan otomatis.</div>
+                    <input wire:model="amount" x-on:input.debounce.150ms="advanceExpenseAmount($event.target.value)" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" name="amount" id="expense-amount" placeholder="300.000" class="input-field" data-onboarding-target="expense-amount">
                     @error('amount')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror
                 </div>
 
                 @if ($labelsReady)
-                    <div x-data="{selectLabel: false}" class="onboarding-field relative" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
+                    <div x-data="{selectLabel: false}" class="relative">
                         <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Label</label>
-                        <button type="button" x-on:click="selectLabel = true" class="btn-secondary w-full justify-between">
+                        <button type="button" x-on:click="selectLabel = true" class="btn-secondary w-full justify-between" data-onboarding-target="expense-label">
                             <span class="truncate">{{ $selectedLabel?->name ?? 'Select label' }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -50,18 +42,17 @@
 
                         <div x-show="selectLabel" x-cloak x-on:click.away="selectLabel = false" x-transition class="select-menu">
                             @foreach ($labels as $label)
-                                <button type="button" x-on:click="selectLabel = false" wire:click="selectLabel({{ $label->id }})" wire:key="create-expense-label-option-{{ $label->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                <button type="button" x-on:click="selectLabel = false; advanceExpenseChoice('expense-label', 'expense-platform')" wire:click="selectLabel({{ $label->id }})" wire:key="create-expense-label-option-{{ $label->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                                     {{ $label->name }}
                                 </button>
                             @endforeach
                         </div>
-                        <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Label membantu membaca kategori pengeluaran di dashboard dan reports.</div>
                     </div>
                 @endif
 
-                <div x-data="{selectPlatform: false}" class="onboarding-field relative" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
+                <div x-data="{selectPlatform: false}" class="relative">
                     <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Platform</label>
-                    <button type="button" x-on:click="selectPlatform = true" class="btn-secondary w-full justify-between">
+                    <button type="button" x-on:click="selectPlatform = true" class="btn-secondary w-full justify-between" data-onboarding-target="expense-platform">
                         <span class="truncate">{{ $selectedPlatform?->name }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -70,17 +61,16 @@
 
                     <div x-show="selectPlatform" x-cloak x-on:click.away="selectPlatform = false" x-transition class="select-menu">
                         @foreach ($platforms as $platform)
-                            <button type="button" x-on:click="selectPlatform = false" wire:click="selectPlatform({{ $platform->id }})" wire:key="create-expense-platform-option-{{ $platform->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                            <button type="button" x-on:click="selectPlatform = false; advanceExpenseChoice('expense-platform', 'expense-status')" wire:click="selectPlatform({{ $platform->id }})" wire:key="create-expense-platform-option-{{ $platform->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                                 {{ $platform->name }}
                             </button>
                         @endforeach
                     </div>
-                    <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Pilih sumber uang atau tempat pembayaran, seperti Cash, Main Bank, atau E-Wallet.</div>
                 </div>
 
-                <div x-data="{selectStatus: false}" class="onboarding-field relative" x-bind:class="onboardingStep === 'expense' ? 'onboarding-field-active' : ''">
+                <div x-data="{selectStatus: false}" class="relative">
                     <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Status</label>
-                    <button type="button" x-on:click="selectStatus = true" class="btn-secondary w-full justify-between">
+                    <button type="button" x-on:click="selectStatus = true" class="btn-secondary w-full justify-between" data-onboarding-target="expense-status">
                         <span class="truncate">{{ $selectedStatus?->body }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -89,18 +79,17 @@
 
                     <div x-show="selectStatus" x-cloak x-on:click.away="selectStatus = false" x-transition class="select-menu">
                         @foreach ($statuses as $status)
-                            <button type="button" x-on:click="selectStatus = false" wire:click="selectStatus({{ $status->id }})" wire:key="create-expense-status-option-{{ $status->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                            <button type="button" x-on:click="selectStatus = false; advanceExpenseChoice('expense-status', 'expense-create')" wire:click="selectStatus({{ $status->id }})" wire:key="create-expense-status-option-{{ $status->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                                 {{ $status->body }}
                             </button>
                         @endforeach
                     </div>
-                    <div x-show="onboardingStep === 'expense'" x-cloak class="field-tooltip">Status menandai apakah uang masih belum dialokasi, sudah dialokasi, selesai, atau ditarik.</div>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2">
                 <button type="button" x-on:click="createExpense = false" class="btn-secondary">Cancel</button>
-                <button type="submit" class="btn-primary">
+                <button type="submit" class="btn-primary" data-onboarding-target="expense-create">
                     <span>Add Expense</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />

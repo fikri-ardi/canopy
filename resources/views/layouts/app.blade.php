@@ -106,7 +106,7 @@
         document.addEventListener('DOMContentLoaded', window.canopyFormatNumberInputs);
         document.addEventListener('livewire:navigated', window.canopyFormatNumberInputs);
 
-        window.canopyBudgetPage = function (onboardingStep = null) {
+        window.canopyBudgetPage = function (initialOnboardingStep = null) {
             return {
                 createBudget: false,
                 budgetMenu: canopyDropdown(),
@@ -116,37 +116,234 @@
                 renameBudget: false,
                 editIncome: false,
                 deleteBudget: false,
-                onboardingStep,
+                onboardingStep: initialOnboardingStep,
+                tour: { visible: false, style: '' },
+                tourTarget: null,
+                tourRetry: null,
+                tourSteps: {
+                    'budgets-menu': {
+                        kicker: 'Langkah 1',
+                        title: 'Menu Budgets',
+                        copy: 'Canopy menyusun income dan expenses dari sini. Kita mulai dari halaman Budgets.',
+                        action: 'Lanjut',
+                        next: 'new-budget',
+                    },
+                    'new-budget': {
+                        kicker: 'Langkah 2',
+                        title: 'Buat budget baru',
+                        copy: 'Klik tombol New Budget untuk membuat rencana income pertama.',
+                    },
+                    'budget-name': {
+                        kicker: 'Budget',
+                        title: 'Nama budget',
+                        copy: 'Isi nama yang gampang dikenali, misalnya Juni 2026 atau Monthly Plan.',
+                    },
+                    'budget-income': {
+                        kicker: 'Budget',
+                        title: 'Total income',
+                        copy: 'Masukkan income utama untuk budget ini. Angka akan dirapikan otomatis saat diketik.',
+                    },
+                    'budget-create': {
+                        kicker: 'Budget',
+                        title: 'Simpan budget',
+                        copy: 'Klik Create untuk menyimpan budget dan lanjut ke expense pertama.',
+                    },
+                    'expense-button': {
+                        kicker: 'Langkah 3',
+                        title: 'Tambah expense',
+                        copy: 'Klik New Expense supaya budget pertama punya transaksi awal.',
+                    },
+                    'expense-name': {
+                        kicker: 'Expense',
+                        title: 'Nama expense',
+                        copy: 'Tulis transaksi singkat, misalnya Makan siang, Internet, atau Transport.',
+                    },
+                    'expense-amount': {
+                        kicker: 'Expense',
+                        title: 'Nominal expense',
+                        copy: 'Masukkan jumlah transaksi. Nol di depan dibersihkan dan ribuan diformat otomatis.',
+                    },
+                    'expense-label': {
+                        kicker: 'Expense',
+                        title: 'Label',
+                        copy: 'Label membantu membaca kategori pengeluaran di dashboard dan reports.',
+                    },
+                    'expense-platform': {
+                        kicker: 'Expense',
+                        title: 'Platform',
+                        copy: 'Pilih sumber uang atau tempat pembayaran, seperti Cash, Main Bank, atau E-Wallet.',
+                    },
+                    'expense-status': {
+                        kicker: 'Expense',
+                        title: 'Status',
+                        copy: 'Status menandai apakah uang belum dialokasi, sudah dialokasi, selesai, atau ditarik.',
+                    },
+                    'expense-create': {
+                        kicker: 'Selesai',
+                        title: 'Simpan expense',
+                        copy: 'Klik Add Expense. Setelah expense pertama tersimpan, onboarding selesai.',
+                    },
+                },
                 init() {
-                    if (this.onboardingStep === 'budget') {
-                        this.$nextTick(() => {
-                            this.createBudget = true;
-                        });
-                    } else if (this.onboardingStep === 'expense') {
-                        this.$nextTick(() => {
-                            document.getElementById('expenses')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-                            this.createExpense = true;
-                        });
+                    this.$watch('onboardingStep', () => this.updateTour());
+
+                    window.addEventListener('resize', () => this.updateTour());
+                    window.addEventListener('scroll', () => this.positionTour(), true);
+
+                    this.$nextTick(() => this.updateTour());
+                },
+                currentTourStep() {
+                    return this.tourSteps[this.onboardingStep] || null;
+                },
+                setOnboardingStep(step) {
+                    this.onboardingStep = step;
+                    this.$nextTick(() => this.updateTour());
+                },
+                nextExistingStep(steps) {
+                    return steps.find((step) => document.querySelector(`[data-onboarding-target="${step}"]`)) || null;
+                },
+                continueTour() {
+                    const step = this.currentTourStep();
+
+                    if (!step?.next) {
+                        return;
+                    }
+
+                    this.setOnboardingStep(step.next);
+                },
+                updateTour() {
+                    document.querySelectorAll('.onboarding-highlight-target').forEach((target) => {
+                        target.classList.remove('onboarding-highlight-target');
+                    });
+
+                    const step = this.currentTourStep();
+
+                    if (!step) {
+                        this.tour.visible = false;
+                        this.tourTarget = null;
+                        return;
+                    }
+
+                    const target = document.querySelector(`[data-onboarding-target="${this.onboardingStep}"]`);
+
+                    if (!target) {
+                        this.tour.visible = false;
+                        this.tourTarget = null;
+                        clearTimeout(this.tourRetry);
+                        this.tourRetry = setTimeout(() => this.updateTour(), 150);
+                        return;
+                    }
+
+                    clearTimeout(this.tourRetry);
+                    this.tourTarget = target;
+                    this.tour.visible = true;
+                    target.classList.add('onboarding-highlight-target');
+                    target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+
+                    requestAnimationFrame(() => this.positionTour());
+                },
+                positionTour() {
+                    if (!this.tourTarget || !this.tour.visible) {
+                        return;
+                    }
+
+                    const rect = this.tourTarget.getBoundingClientRect();
+                    const dropdownSteps = ['expense-label', 'expense-platform', 'expense-status'];
+                    const margin = 12;
+                    const gap = 10;
+                    const width = Math.min(320, window.innerWidth - (margin * 2));
+                    const tooltip = document.querySelector('.onboarding-tour-tooltip');
+                    const tooltipHeight = Math.min(
+                        tooltip?.offsetHeight || 170,
+                        window.innerHeight - (margin * 2)
+                    );
+                    const left = Math.min(
+                        Math.max(margin, rect.left + (rect.width / 2) - (width / 2)),
+                        window.innerWidth - width - margin
+                    );
+                    const hasRoomAbove = rect.top >= tooltipHeight + gap + margin;
+                    const shouldPreferAbove = dropdownSteps.includes(this.onboardingStep);
+                    const opensUp = shouldPreferAbove
+                        ? hasRoomAbove
+                        : rect.bottom + tooltipHeight + gap + margin > window.innerHeight && hasRoomAbove;
+                    const top = opensUp
+                        ? Math.max(margin, rect.top - tooltipHeight - gap)
+                        : Math.min(
+                            Math.max(margin, rect.bottom + gap),
+                            window.innerHeight - tooltipHeight - margin
+                        );
+
+                    this.tour.style = `width:${width}px;left:${Math.round(left)}px;top:${Math.round(top)}px;`;
+                },
+                openBudgetModalFromTour() {
+                    this.createBudget = true;
+
+                    if (this.onboardingStep === 'new-budget') {
+                        this.setOnboardingStep('budget-name');
+                    }
+                },
+                openExpenseModalFromTour() {
+                    this.createExpense = true;
+
+                    if (this.onboardingStep === 'expense-button') {
+                        this.startExpenseFormTour();
+                    }
+                },
+                startExpenseOnboarding() {
+                    this.createBudget = false;
+                    this.createExpense = false;
+                    this.setOnboardingStep('expense-button');
+                },
+                startExpenseFormTour() {
+                    this.createExpense = true;
+                    this.setOnboardingStep('expense-name');
+                },
+                advanceBudgetName(value) {
+                    if (this.onboardingStep === 'budget-name' && value.trim().length > 0) {
+                        this.setOnboardingStep('budget-income');
+                    }
+                },
+                advanceBudgetIncome(value) {
+                    const amount = String(value || '').replace(/\D/g, '');
+
+                    if (this.onboardingStep === 'budget-income' && Number(amount) > 0) {
+                        this.setOnboardingStep('budget-create');
+                    }
+                },
+                advanceExpenseName(value) {
+                    if (this.onboardingStep === 'expense-name' && value.trim().length > 0) {
+                        this.setOnboardingStep('expense-amount');
+                    }
+                },
+                advanceExpenseAmount(value) {
+                    const amount = String(value || '').replace(/\D/g, '');
+
+                    if (this.onboardingStep === 'expense-amount' && Number(amount) > 0) {
+                        this.setOnboardingStep(this.nextExistingStep(['expense-label', 'expense-platform']));
+                    }
+                },
+                advanceExpenseChoice(currentStep, nextStep) {
+                    if (this.onboardingStep === currentStep) {
+                        this.setOnboardingStep(nextStep);
                     }
                 },
                 afterBudgetCreated() {
                     this.createBudget = false;
                     this.budgetMenu.close();
 
-                    if (this.onboardingStep === 'budget') {
-                        this.onboardingStep = 'expense';
-                        this.$nextTick(() => {
-                            document.getElementById('expenses')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-                            this.createExpense = true;
-                        });
+                    if (['budget-name', 'budget-income', 'budget-create', 'new-budget'].includes(this.onboardingStep)) {
+                        this.setOnboardingStep('expense-button');
                     }
                 },
                 afterExpenseSaved() {
                     this.createExpense = false;
 
-                    if (this.onboardingStep === 'expense') {
-                        this.onboardingStep = null;
+                    if (this.onboardingStep === 'expense-create') {
+                        this.setOnboardingStep(null);
                     }
+                },
+                skipOnboarding() {
+                    this.setOnboardingStep(null);
                 },
             };
         };

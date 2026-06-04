@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Budget;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,9 +39,7 @@ class AuthenticatedSessionController extends Controller
                 ->with('status', 'verification-link-sent');
         }
 
-        if (! Budget::where('user_id', $request->user()->id)->exists()) {
-            $request->session()->put('canopy_onboarding_step', 'budget');
-
+        if ($request->user()->shouldStartOnboarding()) {
             return redirect()->route('budgets');
         }
 

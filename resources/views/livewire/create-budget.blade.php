@@ -12,26 +12,18 @@
             </div>
         </div>
 
-        <div x-show="onboardingStep === 'budget'" x-cloak class="onboarding-card mt-5">
-            <div class="onboarding-kicker">Langkah 1 dari 2</div>
-            <div class="onboarding-title">Buat budget pertama</div>
-            <p class="onboarding-copy">Isi nama budget dan income utama dulu. Setelah dibuat, Canopy akan lanjut memandu input expense pertama.</p>
-        </div>
-
         <form class="mt-5 space-y-5" wire:submit="store">
             <div class="space-y-3">
-                <div class="onboarding-field" x-bind:class="onboardingStep === 'budget' ? 'onboarding-field-active' : ''">
+                <div>
                     <label for="budget-name" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Name</label>
-                    <input wire:model="name" type="text" name="name" id="budget-name" placeholder="Monthly plan" class="input-field">
-                    <div x-show="onboardingStep === 'budget'" x-cloak class="field-tooltip">Pakai nama yang gampang dikenali, misalnya "Juni 2026" atau "Monthly plan".</div>
+                    <input wire:model="name" x-on:input.debounce.150ms="advanceBudgetName($event.target.value)" type="text" name="name" id="budget-name" placeholder="Monthly plan" class="input-field" data-onboarding-target="budget-name">
                     @error('name')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="onboarding-field" x-bind:class="onboardingStep === 'budget' ? 'onboarding-field-active' : ''">
+                <div>
                     <label for="budget-income" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Income</label>
-                    <input wire:model="income" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" name="income" id="budget-income" placeholder="2.000.000" class="input-field">
-                    <div x-show="onboardingStep === 'budget'" x-cloak class="field-tooltip">Masukkan total income untuk budget ini. Angka akan otomatis dirapikan saat diketik.</div>
+                    <input wire:model="income" x-on:input.debounce.150ms="advanceBudgetIncome($event.target.value)" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" name="income" id="budget-income" placeholder="2.000.000" class="input-field" data-onboarding-target="budget-income">
                     @error('income')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                     @enderror
@@ -40,7 +32,7 @@
 
             <div class="flex justify-end gap-2">
                 <button type="button" x-on:click="createBudget = false" class="btn-secondary">Cancel</button>
-                <button type="submit" class="btn-primary">
+                <button type="submit" class="btn-primary" data-onboarding-target="budget-create">
                     <span>Create</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />

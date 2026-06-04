@@ -481,32 +481,33 @@
         @apply opacity-100;
     }
 
-    .onboarding-card {
-        @apply rounded-lg border border-green-200/70 bg-green-50/80 px-3.5 py-3 shadow-sm shadow-green-500/5 ring-1 ring-green-500/10 dark:border-green-500/20 dark:bg-green-500/10 dark:ring-green-500/10;
+    .onboarding-highlight-target {
+        @apply relative rounded-lg ring-2 ring-green-400 ring-offset-2 ring-offset-white dark:ring-green-300 dark:ring-offset-slate-950;
+        z-index: 90 !important;
+        box-shadow:
+            0 0 0 6px rgb(34 197 94 / 0.14),
+            0 18px 44px rgb(15 23 42 / 0.16);
     }
 
-    .onboarding-kicker {
+    .onboarding-tour-tooltip {
+        @apply fixed z-[160] rounded-lg border border-white/70 bg-white/95 px-3.5 py-3 text-sm shadow-2xl shadow-slate-900/10 ring-1 ring-slate-900/5 backdrop-blur-xl dark:border-slate-700/80 dark:bg-slate-900/95 dark:shadow-black/30 dark:ring-white/10;
+    }
+
+    .onboarding-tour-tooltip::before {
+        content: "";
+        @apply absolute -top-px left-3 h-px w-16 bg-gradient-to-r from-green-400 to-transparent;
+    }
+
+    .onboarding-tour-kicker {
         @apply text-[11px] font-bold uppercase text-green-600 dark:text-green-300;
     }
 
-    .onboarding-title {
-        @apply mt-1 text-sm font-bold text-gray-950 dark:text-slate-50;
+    .onboarding-tour-title {
+        @apply mt-1 font-bold text-gray-950 dark:text-slate-50;
     }
 
-    .onboarding-copy {
-        @apply mt-1 text-sm leading-5 text-gray-600 dark:text-slate-300;
-    }
-
-    .onboarding-field {
-        @apply rounded-lg transition;
-    }
-
-    .onboarding-field-active {
-        @apply bg-green-50/45 p-2 ring-1 ring-green-100 dark:bg-green-500/5 dark:ring-green-500/15;
-    }
-
-    .field-tooltip {
-        @apply mt-2 rounded-md border border-gray-200 bg-white/90 px-2.5 py-2 text-xs leading-5 text-gray-600 shadow-sm shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300;
+    .onboarding-tour-copy {
+        @apply mt-1 text-xs leading-5 text-gray-600 dark:text-slate-300;
     }
 
     .modal-backdrop {

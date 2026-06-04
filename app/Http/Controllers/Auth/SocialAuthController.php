@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Budget;
 use App\Models\SocialAccount;
 use App\Models\User;
 use App\Support\InitializesUserAccount;
@@ -115,9 +114,7 @@ class SocialAuthController extends Controller
         Auth::login($user, true);
         request()->session()->regenerate();
 
-        if ($isNewUser || ! Budget::where('user_id', $user->id)->exists()) {
-            request()->session()->put('canopy_onboarding_step', 'budget');
-
+        if ($user->shouldStartOnboarding()) {
             return redirect()->route('budgets');
         }
 

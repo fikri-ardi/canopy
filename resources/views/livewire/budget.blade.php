@@ -1,8 +1,9 @@
 <div
     x-data="canopyBudgetPage(@js($onboardingStep))"
     x-on:saved="afterExpenseSaved()"
-    x-on:onboarding-completed="onboardingStep = null"
+    x-on:onboarding-completed="skipOnboarding()"
     x-on:budget-created="afterBudgetCreated()"
+    x-on:onboarding-expense-ready="startExpenseOnboarding()"
     x-on:budget-renamed="renameBudget = false"
     x-on:budget-income-updated="editIncome = false"
     x-on:budget-deleted="deleteBudget = false"
@@ -85,7 +86,7 @@
                     </button>
                 @endif
 
-                <button type="button" x-on:click="createBudget = true" class="btn-primary">
+                <button type="button" x-on:click="openBudgetModalFromTour()" class="btn-primary" data-onboarding-target="new-budget">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -94,6 +95,36 @@
             </div>
         </div>
     </header>
+
+    <template x-teleport="body">
+        <div
+            x-show="tour.visible && currentTourStep()"
+            x-cloak
+            x-transition.opacity
+            class="onboarding-tour-tooltip"
+            x-bind:style="tour.style"
+        >
+            <div class="onboarding-tour-kicker" x-text="currentTourStep()?.kicker"></div>
+            <div class="onboarding-tour-title" x-text="currentTourStep()?.title"></div>
+            <p class="onboarding-tour-copy" x-text="currentTourStep()?.copy"></p>
+            <div class="mt-3 flex items-center justify-between gap-2">
+                <button
+                    type="button"
+                    class="text-xs font-semibold text-gray-400 transition hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
+                    x-on:click="$wire.completeOnboarding(); skipOnboarding()"
+                >
+                    Skip
+                </button>
+                <button
+                    type="button"
+                    x-show="currentTourStep()?.action"
+                    x-on:click="continueTour()"
+                    class="btn-primary px-2.5 py-1.5 text-xs"
+                    x-text="currentTourStep()?.action"
+                ></button>
+            </div>
+        </div>
+    </template>
 
     <livewire:create-budget />
 
@@ -306,7 +337,7 @@
                         <p class="text-sm text-gray-500 dark:text-slate-400">Inline edit any transaction, label, platform, or status.</p>
                     </div>
 
-                    <button type="button" x-on:click="createExpense = true" class="btn-primary">
+                    <button type="button" x-on:click="openExpenseModalFromTour()" class="btn-primary" data-onboarding-target="expense-button">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
@@ -456,7 +487,7 @@
                 </span>
                 <div class="mt-4 text-lg font-semibold text-gray-950 dark:text-slate-50">No budget yet</div>
                 <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Create your first budget to start tracking expenses.</p>
-                <button type="button" x-on:click="createBudget = true" class="btn-primary mt-4">New Budget</button>
+                <button type="button" x-on:click="openBudgetModalFromTour()" class="btn-primary mt-4" data-onboarding-target="new-budget">New Budget</button>
             </section>
         @endif
     </main>

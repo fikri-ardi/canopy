@@ -89,8 +89,6 @@ class CreateExpense extends Component
             return;
         }
 
-        $isOnboardingExpense = session('canopy_onboarding_step') === 'expense';
-
         $payload = [
             'platform_id' => $this->selectedPlatform->id,
             'status_id' => $this->selectedStatus->id,
@@ -104,8 +102,11 @@ class CreateExpense extends Component
 
         $activeBudget->spends()->create($payload);
 
-        if ($isOnboardingExpense) {
-            session()->forget('canopy_onboarding_step');
+        if (auth()->user()->needsOnboarding()) {
+            auth()->user()->forceFill([
+                'onboarding_completed_at' => now(),
+            ])->save();
+
             $this->dispatch('onboarding-completed');
         }
 

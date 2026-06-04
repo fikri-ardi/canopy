@@ -13,8 +13,6 @@ class CreateBudget extends Component
 
     public function store()
     {
-        $hadBudget = Budget::where('user_id', auth()->id())->exists();
-
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'income' => ['required', 'regex:/^[0-9][0-9.]*$/'],
@@ -25,10 +23,6 @@ class CreateBudget extends Component
             'name' => $validated['name'],
             'income' => $this->rawAmount($validated['income']),
         ]);
-
-        if (! $hadBudget || session('canopy_onboarding_step') === 'budget') {
-            session(['canopy_onboarding_step' => 'expense']);
-        }
 
         $this->reset(['name', 'income']);
         $this->dispatch('budget-created', budgetId: $budget->id);
