@@ -1,5 +1,5 @@
-<div class="min-w-0" x-data="{budgetMenu: canopyDropdown(), rangeMenu: canopyDropdown()}">
-    <header class="app-header">
+<div class="min-w-0" x-data="canopyDashboardPage(@js($showOnboardingWelcome))">
+    <header class="app-header" data-onboarding-target="dashboard-welcome">
         <div class="page-header-layout">
             <div class="page-header-copy">
                 <span class="page-hero-icon page-hero-icon-emerald">
@@ -68,6 +68,76 @@
             </div>
         </div>
     </header>
+
+    <template x-teleport="body">
+        <template x-if="welcomeTour.visible">
+            <div aria-hidden="true">
+                <div class="onboarding-spotlight-blur" x-bind:style="welcomeTour.blurStyle.top"></div>
+                <div class="onboarding-spotlight-blur" x-bind:style="welcomeTour.blurStyle.right"></div>
+                <div class="onboarding-spotlight-blur" x-bind:style="welcomeTour.blurStyle.bottom"></div>
+                <div class="onboarding-spotlight-blur" x-bind:style="welcomeTour.blurStyle.left"></div>
+            </div>
+        </template>
+    </template>
+
+    <template x-teleport="body">
+        <svg
+            x-show="welcomeTour.visible"
+            x-cloak
+            x-transition.opacity
+            class="onboarding-spotlight-overlay"
+            aria-hidden="true"
+        >
+            <defs>
+                <radialGradient
+                    id="dashboard-welcome-gradient"
+                    gradientUnits="userSpaceOnUse"
+                    x-bind:cx="welcomeTour.spotlight.cx"
+                    x-bind:cy="welcomeTour.spotlight.cy"
+                    x-bind:r="welcomeTour.spotlight.r"
+                >
+                    <stop offset="0%" stop-color="#020617" stop-opacity="0.24" />
+                    <stop offset="58%" stop-color="#020617" stop-opacity="0.54" />
+                    <stop offset="100%" stop-color="#020617" stop-opacity="0.72" />
+                </radialGradient>
+                <mask id="dashboard-welcome-mask">
+                    <rect width="100%" height="100%" fill="white" />
+                    <rect
+                        x-bind:x="welcomeTour.spotlight.x"
+                        x-bind:y="welcomeTour.spotlight.y"
+                        x-bind:width="welcomeTour.spotlight.width"
+                        x-bind:height="welcomeTour.spotlight.height"
+                        x-bind:rx="welcomeTour.spotlight.radius"
+                        fill="black"
+                    />
+                </mask>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#dashboard-welcome-gradient)" mask="url(#dashboard-welcome-mask)" />
+        </svg>
+    </template>
+
+    <template x-teleport="body">
+        <div
+            x-show="welcomeTour.visible"
+            x-cloak
+            x-transition.opacity
+            class="onboarding-tour-tooltip dashboard-welcome-tooltip"
+            x-bind:style="welcomeTour.style"
+        >
+            <div class="onboarding-tour-kicker">Dashboard</div>
+            <div class="onboarding-tour-title">Selamat datang di Dashboard</div>
+            <p class="onboarding-tour-copy">Di sini kamu bisa membaca ringkasan income, expense, grafik kategori, budget health, dan transaksi terbaru dalam satu tempat.</p>
+            <div class="mt-3 flex justify-end">
+                <button
+                    type="button"
+                    x-on:click="Promise.resolve($wire.completeOnboarding()).then(() => closeWelcomeTour())"
+                    class="btn-primary px-2.5 py-1.5 text-xs"
+                >
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </template>
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
         <section class="summary-grid">

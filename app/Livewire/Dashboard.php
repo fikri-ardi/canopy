@@ -15,6 +15,26 @@ class Dashboard extends Component
     public $range = 'all';
     public $budgetId = 'all';
 
+    public function completeOnboarding(): void
+    {
+        if (! auth()->user()->needsOnboarding()) {
+            return;
+        }
+
+        auth()->user()->forceFill([
+            'onboarding_completed_at' => now(),
+        ])->save();
+    }
+
+    private function shouldShowOnboardingWelcome(): bool
+    {
+        return auth()->user()->needsOnboarding()
+            && Budget::query()
+                ->where('user_id', auth()->id())
+                ->whereHas('spends')
+                ->exists();
+    }
+
     private function userSpendQuery(bool $withRelations = false): Builder
     {
         $relations = ['budget', 'platform', 'status'];
@@ -492,6 +512,7 @@ class Dashboard extends Component
             'labelCount' => $labelBreakdown->count(),
             'labelsReady' => $this->labelsSchemaReady(),
             'topLabel' => $labelBreakdown->first(),
+            'showOnboardingWelcome' => $this->shouldShowOnboardingWelcome(),
         ]);
     }
 

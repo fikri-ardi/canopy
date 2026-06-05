@@ -179,7 +179,7 @@
                     'expense-platform': {
                         kicker: 'Expense',
                         title: 'Platform',
-                        copy: 'Pilih sumber uang atau tempat pembayaran, seperti Cash, Main Bank, atau E-Wallet.',
+                        copy: 'Pilih sumber uang atau tempat pembayaran, seperti Cash, GoPay, Dana, atau rekening bank.',
                     },
                     'expense-status': {
                         kicker: 'Expense',
@@ -190,13 +190,6 @@
                         kicker: 'Selesai',
                         title: 'Simpan expense',
                         copy: 'Klik Add Expense untuk menyimpan transaksi pertama.',
-                    },
-                    'onboarding-complete': {
-                        kicker: 'Berhasil',
-                        title: 'Expense pertama tersimpan',
-                        copy: 'Sekarang kamu bisa lacak data keuangan lebih lengkap lewat Dashboard: ringkasan, grafik kategori, budget health, dan transaksi terbaru.',
-                        action: 'Buka Dashboard',
-                        complete: true,
                     },
                 },
                 init() {
@@ -233,18 +226,13 @@
                 continueTour() {
                     const step = this.currentTourStep();
 
-                    if (step?.complete) {
-                        this.finishOnboarding();
-                        return;
-                    }
-
                     if (!step?.next) {
                         return;
                     }
 
                     this.setOnboardingStep(step.next);
                 },
-                finishOnboarding() {
+                goToDashboard() {
                     this.setOnboardingStep(null);
 
                     if (window.Livewire?.navigate) {
@@ -444,12 +432,117 @@
 
                     if (this.onboardingStep === 'expense-create') {
                         this.$nextTick(() => {
-                            setTimeout(() => this.setOnboardingStep('onboarding-complete'), 160);
+                            setTimeout(() => this.goToDashboard(), 220);
                         });
                     }
                 },
                 skipOnboarding() {
                     this.setOnboardingStep(null);
+                },
+            };
+        };
+
+        window.canopyDashboardPage = function (showWelcomeTour = false) {
+            return {
+                budgetMenu: canopyDropdown(),
+                rangeMenu: canopyDropdown(),
+                welcomeTour: {
+                    visible: showWelcomeTour,
+                    style: '',
+                    spotlight: { x: 0, y: 0, width: 0, height: 0, radius: 18, cx: 0, cy: 0, r: 0 },
+                    blurStyle: { top: '', right: '', bottom: '', left: '' },
+                },
+                init() {
+                    window.addEventListener('resize', () => this.updateWelcomeTour());
+                    window.addEventListener('scroll', () => this.positionWelcomeTour(), true);
+
+                    this.$nextTick(() => this.updateWelcomeTour());
+                },
+                updateWelcomeTour() {
+                    document.querySelectorAll('.onboarding-highlight-target').forEach((target) => {
+                        target.classList.remove('onboarding-highlight-target');
+                    });
+
+                    if (!this.welcomeTour.visible) {
+                        return;
+                    }
+
+                    const target = document.querySelector('[data-onboarding-target="dashboard-welcome"]');
+
+                    if (!target) {
+                        return;
+                    }
+
+                    target.classList.add('onboarding-highlight-target');
+                    target.scrollIntoView({ block: 'start', inline: 'center', behavior: 'smooth' });
+
+                    requestAnimationFrame(() => this.positionWelcomeTour());
+                },
+                positionWelcomeTour() {
+                    if (!this.welcomeTour.visible) {
+                        return;
+                    }
+
+                    const target = document.querySelector('[data-onboarding-target="dashboard-welcome"]');
+
+                    if (!target) {
+                        return;
+                    }
+
+                    const rect = target.getBoundingClientRect();
+                    const margin = 12;
+                    const gap = 12;
+                    const width = Math.min(340, window.innerWidth - (margin * 2));
+                    const tooltip = document.querySelector('.dashboard-welcome-tooltip');
+                    const tooltipHeight = Math.min(
+                        tooltip?.offsetHeight || 180,
+                        window.innerHeight - (margin * 2)
+                    );
+                    const left = Math.min(
+                        Math.max(margin, rect.left + (rect.width / 2) - (width / 2)),
+                        window.innerWidth - width - margin
+                    );
+                    const top = Math.min(
+                        Math.max(margin, rect.bottom + gap),
+                        window.innerHeight - tooltipHeight - margin
+                    );
+                    const spotlightPadding = 10;
+                    const spotlightX = Math.max(margin, rect.left - spotlightPadding);
+                    const spotlightY = Math.max(margin, rect.top - spotlightPadding);
+                    const spotlightWidth = Math.min(
+                        window.innerWidth - (margin * 2),
+                        rect.width + (spotlightPadding * 2)
+                    );
+                    const spotlightHeight = Math.min(
+                        window.innerHeight - (margin * 2),
+                        rect.height + (spotlightPadding * 2)
+                    );
+                    const spotlightRight = Math.round(spotlightX + spotlightWidth);
+                    const spotlightBottom = Math.round(spotlightY + spotlightHeight);
+
+                    this.welcomeTour.style = `width:${width}px;left:${Math.round(left)}px;top:${Math.round(top)}px;`;
+                    this.welcomeTour.spotlight = {
+                        x: Math.round(spotlightX),
+                        y: Math.round(spotlightY),
+                        width: Math.round(spotlightWidth),
+                        height: Math.round(spotlightHeight),
+                        radius: 18,
+                        cx: Math.round(rect.left + (rect.width / 2)),
+                        cy: Math.round(rect.top + (rect.height / 2)),
+                        r: Math.round(Math.max(window.innerWidth, window.innerHeight) * 0.82),
+                    };
+                    this.welcomeTour.blurStyle = {
+                        top: `left:0;top:0;width:${window.innerWidth}px;height:${Math.round(spotlightY)}px;`,
+                        left: `left:0;top:${Math.round(spotlightY)}px;width:${Math.round(spotlightX)}px;height:${Math.round(spotlightHeight)}px;`,
+                        right: `left:${spotlightRight}px;top:${Math.round(spotlightY)}px;width:${Math.max(0, window.innerWidth - spotlightRight)}px;height:${Math.round(spotlightHeight)}px;`,
+                        bottom: `left:0;top:${spotlightBottom}px;width:${window.innerWidth}px;height:${Math.max(0, window.innerHeight - spotlightBottom)}px;`,
+                    };
+                },
+                closeWelcomeTour() {
+                    this.welcomeTour.visible = false;
+                    document.querySelectorAll('.onboarding-highlight-target').forEach((target) => {
+                        target.classList.remove('onboarding-highlight-target');
+                    });
                 },
             };
         };

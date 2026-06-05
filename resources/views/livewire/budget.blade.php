@@ -165,7 +165,7 @@
                 <button
                     type="button"
                     x-show="currentTourStep()?.action"
-                    x-on:click="currentTourStep()?.complete ? Promise.resolve($wire.completeOnboarding()).then(() => finishOnboarding()) : continueTour()"
+                    x-on:click="continueTour()"
                     class="btn-primary px-2.5 py-1.5 text-xs"
                     x-text="currentTourStep()?.action"
                 ></button>

@@ -9,7 +9,7 @@ class LabelSeeder extends Seeder
 {
     public function run(): void
     {
-        collect(['Jajan', 'Elektronik', 'Investasi', 'Transport', 'Bills'])->each(function ($label) {
+        collect(['elektronik', 'investasi', 'jajan', 'kebutuhan', 'tagihan', 'transport'])->each(function ($label) {
             Label::firstOrCreate(['name' => $label]);
         });
     }

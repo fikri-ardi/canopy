@@ -43,8 +43,9 @@ class CreateExpense extends Component
         $this->labels = collect();
 
         if ($this->labelsReady) {
+            $this->ensureDefaultLabels();
             $this->selectedLabel = Label::where('user_id', auth()->id())->first()
-                ?? Label::create(['user_id' => auth()->id(), 'name' => 'General']);
+                ?? Label::create(['user_id' => auth()->id(), 'name' => 'kebutuhan']);
             $this->labels = Label::where('user_id', auth()->id())->get(['id', 'name']);
         }
 
@@ -121,7 +122,7 @@ class CreateExpense extends Component
     private function ensureDefaultPlatformsAndStatuses(): void
     {
         if ($this->platformsSchemaReady() && ! Platform::where('user_id', auth()->id())->exists()) {
-            collect(['Cash', 'Main Bank', 'E-Wallet'])->each(fn ($platform) => Platform::create([
+            collect(['Cash', 'GoPay', 'Shopeepay', 'OVO', 'Dana', 'BNI', 'BRI', 'BCA'])->each(fn ($platform) => Platform::firstOrCreate([
                 'user_id' => auth()->id(),
                 'name' => $platform,
             ]));
@@ -133,6 +134,18 @@ class CreateExpense extends Component
                 'body' => $status,
             ]));
         }
+    }
+
+    private function ensureDefaultLabels(): void
+    {
+        if (! $this->labelsReady || Label::where('user_id', auth()->id())->exists()) {
+            return;
+        }
+
+        collect(['elektronik', 'investasi', 'jajan', 'kebutuhan', 'tagihan', 'transport'])->each(fn ($label) => Label::firstOrCreate([
+            'user_id' => auth()->id(),
+            'name' => $label,
+        ]));
     }
 
     private function userPlatformsQuery()

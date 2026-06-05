@@ -13,12 +13,10 @@ class PlatformSeeder extends Seeder
      */
     public function run(): void
     {
-        $platforms = collect(['GoPay', 'ShopeePay', 'SeaBank', 'BRI', 'Cash', 'Jago', 'BNI']);
+        $platforms = collect(['Cash', 'GoPay', 'Shopeepay', 'OVO', 'Dana', 'BNI', 'BRI', 'BCA']);
 
         $platforms->each(function ($platform) {
-            Platform::create([
-                'name' => $platform
-            ]);
+            Platform::firstOrCreate(['name' => $platform]);
         });
     }
 }

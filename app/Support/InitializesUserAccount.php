@@ -42,8 +42,15 @@ trait InitializesUserAccount
 
     private function createDefaultTrackingSettings(User $user): void
     {
+        if (Schema::hasTable('labels') && Schema::hasColumn('labels', 'user_id') && ! Label::where('user_id', $user->id)->exists()) {
+            collect(['elektronik', 'investasi', 'jajan', 'kebutuhan', 'tagihan', 'transport'])->each(fn ($label) => Label::firstOrCreate([
+                'user_id' => $user->id,
+                'name' => $label,
+            ]));
+        }
+
         if (Schema::hasColumn('platforms', 'user_id') && ! Platform::where('user_id', $user->id)->exists()) {
-            collect(['Cash', 'Main Bank', 'E-Wallet'])->each(fn ($platform) => Platform::create([
+            collect(['Cash', 'GoPay', 'Shopeepay', 'OVO', 'Dana', 'BNI', 'BRI', 'BCA'])->each(fn ($platform) => Platform::firstOrCreate([
                 'user_id' => $user->id,
                 'name' => $platform,
             ]));
