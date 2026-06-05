@@ -103,8 +103,31 @@
             });
         };
 
+        window.canopySyncModalScrollLock = function () {
+            const hasOpenModal = Array.from(document.querySelectorAll('.modal-backdrop')).some((modal) => {
+                const style = window.getComputedStyle(modal);
+
+                return style.display !== 'none' && style.visibility !== 'hidden';
+            });
+
+            document.documentElement.classList.toggle('modal-open', hasOpenModal);
+            document.body.classList.toggle('modal-open', hasOpenModal);
+        };
+
         document.addEventListener('DOMContentLoaded', window.canopyFormatNumberInputs);
         document.addEventListener('livewire:navigated', window.canopyFormatNumberInputs);
+        document.addEventListener('DOMContentLoaded', () => {
+            window.canopySyncModalScrollLock();
+
+            const modalObserver = new MutationObserver(() => window.canopySyncModalScrollLock());
+            modalObserver.observe(document.body, {
+                attributes: true,
+                attributeFilter: ['class', 'style'],
+                childList: true,
+                subtree: true,
+            });
+        });
+        document.addEventListener('livewire:navigated', window.canopySyncModalScrollLock);
 
         window.canopyBudgetPage = function (initialOnboardingStep = null) {
             return {
@@ -126,6 +149,8 @@
                 tourTarget: null,
                 tourRetry: null,
                 tourAdvanceTimer: null,
+                onboardingReloading: false,
+                onboardingStepObserver: null,
                 tourInputDelay: 260,
                 tourChoiceDelay: 180,
                 tourSteps: {
@@ -191,14 +216,52 @@
                         title: 'Simpan expense',
                         copy: 'Klik Add Expense untuk menyimpan transaksi pertama.',
                     },
+                    'dashboard-menu': {
+                        kicker: 'Langkah terakhir',
+                        title: 'Buka Dashboard',
+                        copy: 'Klik menu Dashboard untuk melihat ringkasan dan grafik dari budget serta expense yang baru kamu buat.',
+                    },
                 },
                 init() {
                     this.$watch('onboardingStep', () => this.updateTour());
+                    this.observeServerOnboardingStep();
 
                     window.addEventListener('resize', () => this.updateTour());
                     window.addEventListener('scroll', () => this.positionTour(), true);
+                    window.addEventListener('canopy-dropdown-positioned', () => this.positionTour());
 
                     this.$nextTick(() => this.updateTour());
+                },
+                observeServerOnboardingStep() {
+                    const sync = () => {
+                        const step = this.$el.dataset.serverOnboardingStep || null;
+                        this.syncServerOnboardingStep(step);
+                    };
+
+                    sync();
+
+                    this.onboardingStepObserver = new MutationObserver(sync);
+                    this.onboardingStepObserver.observe(this.$el, {
+                        attributes: true,
+                        attributeFilter: ['data-server-onboarding-step'],
+                    });
+                },
+                syncServerOnboardingStep(step) {
+                    if (!step || step === this.onboardingStep) {
+                        return;
+                    }
+
+                    if (step === 'expense-button') {
+                        this.startExpenseOnboarding();
+                        return;
+                    }
+
+                    if (step === 'dashboard-menu') {
+                        this.startDashboardOnboarding();
+                        return;
+                    }
+
+                    this.setOnboardingStep(step);
                 },
                 currentTourStep() {
                     return this.tourSteps[this.onboardingStep] || null;
@@ -223,6 +286,14 @@
                 nextExistingStep(steps) {
                     return steps.find((step) => document.querySelector(`[data-onboarding-target="${step}"]`)) || null;
                 },
+                reloadFullPageForOnboarding() {
+                    if (this.onboardingReloading) {
+                        return;
+                    }
+
+                    this.onboardingReloading = true;
+                    setTimeout(() => window.location.reload(), 120);
+                },
                 continueTour() {
                     const step = this.currentTourStep();
 
@@ -231,16 +302,6 @@
                     }
 
                     this.setOnboardingStep(step.next);
-                },
-                goToDashboard() {
-                    this.setOnboardingStep(null);
-
-                    if (window.Livewire?.navigate) {
-                        window.Livewire.navigate('/');
-                        return;
-                    }
-
-                    window.location.assign('/');
                 },
                 updateTour() {
                     document.querySelectorAll('.onboarding-highlight-target').forEach((target) => {
@@ -262,7 +323,19 @@
                         this.tour.visible = false;
                         this.tourTarget = null;
                         clearTimeout(this.tourRetry);
-                        this.tourRetry = setTimeout(() => this.updateTour(), 150);
+                        this.tourRetry = setTimeout(() => this.updateTour(), 120);
+                        return;
+                    }
+
+                    const rect = target.getBoundingClientRect();
+                    const style = window.getComputedStyle(target);
+                    const isVisible = rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+
+                    if (!isVisible) {
+                        this.tour.visible = false;
+                        this.tourTarget = null;
+                        clearTimeout(this.tourRetry);
+                        this.tourRetry = setTimeout(() => this.updateTour(), 120);
                         return;
                     }
 
@@ -272,7 +345,12 @@
                     target.classList.add('onboarding-highlight-target');
                     target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
 
-                    requestAnimationFrame(() => this.positionTour());
+                    requestAnimationFrame(() => {
+                        this.positionTour();
+                        [120, 280, 520].forEach((delay) => {
+                            setTimeout(() => this.positionTour(), delay);
+                        });
+                    });
                 },
                 positionTour() {
                     if (!this.tourTarget || !this.tour.visible) {
@@ -289,34 +367,72 @@
                         tooltip?.offsetHeight || 170,
                         window.innerHeight - (margin * 2)
                     );
-                    const left = Math.min(
+                    const modalPanel = this.tourTarget.closest('.modal-panel');
+                    const modalRect = modalPanel?.getBoundingClientRect();
+                    const openMenu = Array.from(document.querySelectorAll('.floating-select-menu')).find((menu) => {
+                        const menuStyle = window.getComputedStyle(menu);
+                        const menuRect = menu.getBoundingClientRect();
+
+                        return menuStyle.display !== 'none' && menuStyle.visibility !== 'hidden' && menuRect.width > 0 && menuRect.height > 0;
+                    });
+                    const menuRect = openMenu?.getBoundingClientRect();
+                    const hasRoomAbove = rect.top >= tooltipHeight + gap + margin;
+                    const shouldPreferAbove = dropdownSteps.includes(this.onboardingStep);
+                    const menuOpensAboveTarget = menuRect && menuRect.bottom <= rect.top + 4;
+                    const maxTooltipTop = Math.max(margin, window.innerHeight - tooltipHeight - margin);
+                    const sideTooltipTop = Math.min(
+                        Math.max(margin, rect.top + (rect.height / 2) - (tooltipHeight / 2)),
+                        maxTooltipTop
+                    );
+                    const rightSideLeft = modalRect ? modalRect.right + gap : 0;
+                    const leftSideLeft = modalRect ? modalRect.left - width - gap : 0;
+                    const hasRightSideRoom = Boolean(modalRect && rightSideLeft + width <= window.innerWidth - margin);
+                    const hasLeftSideRoom = Boolean(modalRect && leftSideLeft >= margin);
+                    let left = Math.min(
                         Math.max(margin, rect.left + (rect.width / 2) - (width / 2)),
                         window.innerWidth - width - margin
                     );
-                    const hasRoomAbove = rect.top >= tooltipHeight + gap + margin;
-                    const shouldPreferAbove = dropdownSteps.includes(this.onboardingStep);
-                    const opensUp = shouldPreferAbove
-                        ? hasRoomAbove
-                        : rect.bottom + tooltipHeight + gap + margin > window.innerHeight && hasRoomAbove;
-                    const top = opensUp
-                        ? Math.max(margin, rect.top - tooltipHeight - gap)
-                        : Math.min(
-                            Math.max(margin, rect.bottom + gap),
-                            window.innerHeight - tooltipHeight - margin
-                        );
-                    const modalPanel = this.tourTarget.closest('.modal-panel');
-                    const focusRect = modalPanel?.getBoundingClientRect();
+                    let top;
+
+                    if (shouldPreferAbove && modalRect && (hasRightSideRoom || hasLeftSideRoom)) {
+                        left = hasRightSideRoom ? rightSideLeft : leftSideLeft;
+                        top = sideTooltipTop;
+                    } else {
+                        const opensUp = shouldPreferAbove && menuRect
+                            ? !menuOpensAboveTarget && hasRoomAbove
+                            : shouldPreferAbove
+                                ? hasRoomAbove
+                            : rect.bottom + tooltipHeight + gap + margin > window.innerHeight && hasRoomAbove;
+                        top = opensUp
+                            ? Math.max(margin, rect.top - tooltipHeight - gap)
+                            : Math.min(
+                                Math.max(margin, rect.bottom + gap),
+                                maxTooltipTop
+                            );
+                    }
+
+                    const sidebarPanel = this.onboardingStep === 'dashboard-menu' ? this.tourTarget.closest('nav') : null;
+                    const rawFocusRect = (modalPanel || sidebarPanel)?.getBoundingClientRect();
+                    const focusRect = sidebarPanel && rawFocusRect
+                        ? (
+                            rawFocusRect.top > window.innerHeight / 2
+                                ? { left: 0, top: rawFocusRect.top, width: window.innerWidth, height: window.innerHeight - rawFocusRect.top }
+                                : { left: 0, top: 0, width: rawFocusRect.right, height: window.innerHeight }
+                        )
+                        : rawFocusRect;
                     const spotlightPadding = shouldPreferAbove ? 6 : 8;
-                    const focusPadding = focusRect ? 10 : spotlightPadding;
+                    const focusPadding = sidebarPanel ? 0 : (focusRect ? 10 : spotlightPadding);
                     const sourceRect = focusRect || rect;
-                    const spotlightX = Math.max(margin, sourceRect.left - focusPadding);
-                    const spotlightY = Math.max(margin, sourceRect.top - focusPadding);
-                    const spotlightWidth = Math.min(
-                        window.innerWidth - (margin * 2),
-                        sourceRect.width + (focusPadding * 2)
-                    );
+                    const spotlightX = sidebarPanel ? sourceRect.left : Math.max(margin, sourceRect.left - focusPadding);
+                    const spotlightY = sidebarPanel ? sourceRect.top : Math.max(margin, sourceRect.top - focusPadding);
+                    const spotlightWidth = sidebarPanel
+                        ? sourceRect.width
+                        : Math.min(
+                            window.innerWidth - (margin * 2),
+                            sourceRect.width + (focusPadding * 2)
+                        );
                     const baseSpotlightHeight = Math.min(
-                        window.innerHeight - (margin * 2),
+                        sidebarPanel ? window.innerHeight : window.innerHeight - (margin * 2),
                         sourceRect.height + (focusPadding * 2)
                     );
                     const spotlightHeight = !focusRect && shouldPreferAbove
@@ -332,7 +448,7 @@
                         y: Math.round(spotlightY),
                         width: Math.round(spotlightWidth),
                         height: Math.round(spotlightHeight),
-                        radius: focusRect ? 22 : (shouldPreferAbove ? 10 : 14),
+                        radius: modalPanel ? 22 : (sidebarPanel ? 18 : (shouldPreferAbove ? 10 : 14)),
                         cx: Math.round(sourceRect.left + (sourceRect.width / 2)),
                         cy: Math.round(sourceRect.top + (sourceRect.height / 2)),
                         r: Math.round(Math.max(window.innerWidth, window.innerHeight) * 0.82),
@@ -382,6 +498,10 @@
                         }, 180);
                     });
                 },
+                startDashboardOnboarding() {
+                    this.createExpense = false;
+                    this.setOnboardingStep('dashboard-menu');
+                },
                 advanceBudgetName(value) {
                     if (this.onboardingStep === 'budget-name' && value.trim().length > 0) {
                         this.queueOnboardingStep('budget-income');
@@ -424,16 +544,23 @@
                     this.budgetMenu.close();
 
                     if (['budget-name', 'budget-income', 'budget-create', 'new-budget'].includes(this.onboardingStep)) {
-                        this.showExpenseButtonTour();
+                        this.reloadFullPageForOnboarding();
+                        return;
                     }
+
+                    [120, 320, 560].forEach((delay) => {
+                        setTimeout(() => {
+                            if (this.$el.dataset.serverOnboardingStep === 'expense-button') {
+                                this.startExpenseOnboarding();
+                            }
+                        }, delay);
+                    });
                 },
                 afterExpenseSaved() {
                     this.createExpense = false;
 
                     if (this.onboardingStep === 'expense-create') {
-                        this.$nextTick(() => {
-                            setTimeout(() => this.goToDashboard(), 220);
-                        });
+                        this.reloadFullPageForOnboarding();
                     }
                 },
                 skipOnboarding() {
@@ -467,15 +594,6 @@
                         return;
                     }
 
-                    const target = document.querySelector('[data-onboarding-target="dashboard-welcome"]');
-
-                    if (!target) {
-                        return;
-                    }
-
-                    target.classList.add('onboarding-highlight-target');
-                    target.scrollIntoView({ block: 'start', inline: 'center', behavior: 'smooth' });
-
                     requestAnimationFrame(() => this.positionWelcomeTour());
                 },
                 positionWelcomeTour() {
@@ -483,59 +601,35 @@
                         return;
                     }
 
-                    const target = document.querySelector('[data-onboarding-target="dashboard-welcome"]');
-
-                    if (!target) {
-                        return;
-                    }
-
-                    const rect = target.getBoundingClientRect();
                     const margin = 12;
-                    const gap = 12;
                     const width = Math.min(340, window.innerWidth - (margin * 2));
                     const tooltip = document.querySelector('.dashboard-welcome-tooltip');
                     const tooltipHeight = Math.min(
                         tooltip?.offsetHeight || 180,
                         window.innerHeight - (margin * 2)
                     );
-                    const left = Math.min(
-                        Math.max(margin, rect.left + (rect.width / 2) - (width / 2)),
-                        window.innerWidth - width - margin
-                    );
-                    const top = Math.min(
-                        Math.max(margin, rect.bottom + gap),
+                    const left = Math.round((window.innerWidth - width) / 2);
+                    const top = Math.round(Math.min(
+                        Math.max(margin, (window.innerHeight - tooltipHeight) / 2),
                         window.innerHeight - tooltipHeight - margin
-                    );
-                    const spotlightPadding = 10;
-                    const spotlightX = Math.max(margin, rect.left - spotlightPadding);
-                    const spotlightY = Math.max(margin, rect.top - spotlightPadding);
-                    const spotlightWidth = Math.min(
-                        window.innerWidth - (margin * 2),
-                        rect.width + (spotlightPadding * 2)
-                    );
-                    const spotlightHeight = Math.min(
-                        window.innerHeight - (margin * 2),
-                        rect.height + (spotlightPadding * 2)
-                    );
-                    const spotlightRight = Math.round(spotlightX + spotlightWidth);
-                    const spotlightBottom = Math.round(spotlightY + spotlightHeight);
+                    ));
 
-                    this.welcomeTour.style = `width:${width}px;left:${Math.round(left)}px;top:${Math.round(top)}px;`;
+                    this.welcomeTour.style = `width:${width}px;left:${left}px;top:${top}px;`;
                     this.welcomeTour.spotlight = {
-                        x: Math.round(spotlightX),
-                        y: Math.round(spotlightY),
-                        width: Math.round(spotlightWidth),
-                        height: Math.round(spotlightHeight),
-                        radius: 18,
-                        cx: Math.round(rect.left + (rect.width / 2)),
-                        cy: Math.round(rect.top + (rect.height / 2)),
+                        x: 0,
+                        y: 0,
+                        width: 0,
+                        height: 0,
+                        radius: 0,
+                        cx: Math.round(window.innerWidth / 2),
+                        cy: Math.round(window.innerHeight / 2),
                         r: Math.round(Math.max(window.innerWidth, window.innerHeight) * 0.82),
                     };
                     this.welcomeTour.blurStyle = {
-                        top: `left:0;top:0;width:${window.innerWidth}px;height:${Math.round(spotlightY)}px;`,
-                        left: `left:0;top:${Math.round(spotlightY)}px;width:${Math.round(spotlightX)}px;height:${Math.round(spotlightHeight)}px;`,
-                        right: `left:${spotlightRight}px;top:${Math.round(spotlightY)}px;width:${Math.max(0, window.innerWidth - spotlightRight)}px;height:${Math.round(spotlightHeight)}px;`,
-                        bottom: `left:0;top:${spotlightBottom}px;width:${window.innerWidth}px;height:${Math.max(0, window.innerHeight - spotlightBottom)}px;`,
+                        top: `left:0;top:0;width:${window.innerWidth}px;height:${window.innerHeight}px;`,
+                        left: 'left:0;top:0;width:0;height:0;',
+                        right: 'left:0;top:0;width:0;height:0;',
+                        bottom: 'left:0;top:0;width:0;height:0;',
                     };
                 },
                 closeWelcomeTour() {
@@ -587,6 +681,7 @@
                         : Math.min(window.innerHeight - menuHeight - margin, rect.bottom + gap);
 
                     this.style = `top:${top}px;left:${left}px;width:${menuWidth}px;max-height:${menuHeight}px;`;
+                    window.dispatchEvent(new CustomEvent('canopy-dropdown-positioned'));
                 },
             };
         };

@@ -55,6 +55,7 @@ class Budget extends Component
     public function refreshSummary()
     {
         $this->setActiveBudget($this->activeBudgetId ? $this->userBudgetsQuery()->find($this->activeBudgetId) : null, false);
+        $this->syncOnboardingStep();
     }
 
     public function selectBudget($budgetId)
@@ -216,9 +217,7 @@ class Budget extends Component
             return 'expense-button';
         }
 
-        $this->markOnboardingComplete();
-
-        return null;
+        return 'dashboard-menu';
     }
 
     private function markOnboardingComplete(): void
@@ -230,6 +229,25 @@ class Budget extends Component
         auth()->user()->forceFill([
             'onboarding_completed_at' => now(),
         ])->save();
+    }
+
+    private function syncOnboardingStep(): void
+    {
+        if (! auth()->user()->needsOnboarding()) {
+            $this->onboardingStep = null;
+
+            return;
+        }
+
+        $this->onboardingStep = $this->initialOnboardingStep();
+
+        if ($this->onboardingStep === 'expense-button') {
+            $this->dispatch('onboarding-expense-ready');
+        }
+
+        if ($this->onboardingStep === 'dashboard-menu') {
+            $this->dispatch('onboarding-dashboard-ready');
+        }
     }
 
     private function userHasAnyExpense(): bool

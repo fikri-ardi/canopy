@@ -105,6 +105,11 @@ class CreateExpense extends Component
 
         $this->reset(['name', 'amount']);
         $this->dispatch('saved');
+
+        if (auth()->user()->needsOnboarding()) {
+            $this->dispatch('onboarding-expense-created');
+            $this->dispatch('onboarding-dashboard-ready');
+        }
     }
 
     private function rawAmount(string $amount): int

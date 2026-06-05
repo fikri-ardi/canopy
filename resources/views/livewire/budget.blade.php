@@ -1,11 +1,25 @@
 <div
     x-data="canopyBudgetPage(@js($onboardingStep))"
+    data-server-onboarding-step="{{ $onboardingStep ?? '' }}"
+    x-on:saved="afterExpenseSaved()"
     x-on:saved.window="afterExpenseSaved()"
+    x-on:onboarding-completed="skipOnboarding()"
     x-on:onboarding-completed.window="skipOnboarding()"
+    x-on:budget-created="afterBudgetCreated()"
     x-on:budget-created.window="afterBudgetCreated()"
+    x-on:onboarding-budget-created="reloadFullPageForOnboarding()"
+    x-on:onboarding-budget-created.window="reloadFullPageForOnboarding()"
+    x-on:onboarding-expense-created="reloadFullPageForOnboarding()"
+    x-on:onboarding-expense-created.window="reloadFullPageForOnboarding()"
+    x-on:onboarding-expense-ready="startExpenseOnboarding()"
     x-on:onboarding-expense-ready.window="startExpenseOnboarding()"
+    x-on:onboarding-dashboard-ready="startDashboardOnboarding()"
+    x-on:onboarding-dashboard-ready.window="startDashboardOnboarding()"
+    x-on:budget-renamed="renameBudget = false"
     x-on:budget-renamed.window="renameBudget = false"
+    x-on:budget-income-updated="editIncome = false"
     x-on:budget-income-updated.window="editIncome = false"
+    x-on:budget-deleted="deleteBudget = false"
     x-on:budget-deleted.window="deleteBudget = false"
     class="min-w-0"
 >
@@ -538,4 +552,5 @@
             </section>
         @endif
     </main>
+
 </div>

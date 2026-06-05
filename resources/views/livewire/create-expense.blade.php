@@ -1,5 +1,5 @@
-<div x-show="createExpense" x-cloak x-transition class="modal-backdrop">
-    <div x-on:click.away="createExpense = false" class="modal-panel">
+<div x-show="createExpense" x-cloak x-transition x-on:click.self="createExpense = false" class="modal-backdrop">
+    <div class="modal-panel">
         <div class="flex items-center gap-3">
             <span class="icon-box">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -31,59 +31,65 @@
                 </div>
 
                 @if ($labelsReady)
-                    <div x-data="{selectLabel: false}" class="relative">
+                    <div x-data="{labelMenu: canopyDropdown()}" class="relative">
                         <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Label</label>
-                        <button type="button" x-on:click="selectLabel = true" class="btn-secondary w-full justify-between" data-onboarding-target="expense-label">
+                        <button x-ref="labelTrigger" type="button" x-on:click.stop="labelMenu.toggle($refs.labelTrigger, $refs.labelMenu)" class="btn-secondary w-full justify-between" data-onboarding-target="expense-label">
                             <span class="truncate">{{ $selectedLabel?->name ?? 'Select label' }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
                         </button>
 
-                        <div x-show="selectLabel" x-cloak x-on:click.away="selectLabel = false" x-transition class="select-menu">
-                            @foreach ($labels as $label)
-                                <button type="button" x-on:click="selectLabel = false; advanceExpenseChoice('expense-label', 'expense-platform')" wire:click="selectLabel({{ $label->id }})" wire:key="create-expense-label-option-{{ $label->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                                    {{ $label->name }}
-                                </button>
-                            @endforeach
-                        </div>
+                        <template x-teleport="body">
+                            <div x-ref="labelMenu" x-show="labelMenu.open" x-cloak x-transition x-bind:style="labelMenu.style" x-on:click.outside="labelMenu.close()" x-on:resize.window="labelMenu.close()" wire:key="create-expense-label-menu" wire:ignore.self class="floating-select-menu">
+                                @foreach ($labels as $label)
+                                    <button type="button" x-on:click="labelMenu.close(); advanceExpenseChoice('expense-label', 'expense-platform')" wire:click="selectLabel({{ $label->id }})" wire:key="create-expense-label-option-{{ $label->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                        {{ $label->name }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </template>
                     </div>
                 @endif
 
-                <div x-data="{selectPlatform: false}" class="relative">
+                <div x-data="{platformMenu: canopyDropdown()}" class="relative">
                     <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Platform</label>
-                    <button type="button" x-on:click="selectPlatform = true" class="btn-secondary w-full justify-between" data-onboarding-target="expense-platform">
+                    <button x-ref="platformTrigger" type="button" x-on:click.stop="platformMenu.toggle($refs.platformTrigger, $refs.platformMenu)" class="btn-secondary w-full justify-between" data-onboarding-target="expense-platform">
                         <span class="truncate">{{ $selectedPlatform?->name }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                         </svg>
                     </button>
 
-                    <div x-show="selectPlatform" x-cloak x-on:click.away="selectPlatform = false" x-transition class="select-menu">
-                        @foreach ($platforms as $platform)
-                            <button type="button" x-on:click="selectPlatform = false; advanceExpenseChoice('expense-platform', 'expense-status')" wire:click="selectPlatform({{ $platform->id }})" wire:key="create-expense-platform-option-{{ $platform->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                                {{ $platform->name }}
-                            </button>
-                        @endforeach
-                    </div>
+                    <template x-teleport="body">
+                        <div x-ref="platformMenu" x-show="platformMenu.open" x-cloak x-transition x-bind:style="platformMenu.style" x-on:click.outside="platformMenu.close()" x-on:resize.window="platformMenu.close()" wire:key="create-expense-platform-menu" wire:ignore.self class="floating-select-menu">
+                            @foreach ($platforms as $platform)
+                                <button type="button" x-on:click="platformMenu.close(); advanceExpenseChoice('expense-platform', 'expense-status')" wire:click="selectPlatform({{ $platform->id }})" wire:key="create-expense-platform-option-{{ $platform->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                    {{ $platform->name }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </template>
                 </div>
 
-                <div x-data="{selectStatus: false}" class="relative">
+                <div x-data="{statusMenu: canopyDropdown()}" class="relative">
                     <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Status</label>
-                    <button type="button" x-on:click="selectStatus = true" class="btn-secondary w-full justify-between" data-onboarding-target="expense-status">
+                    <button x-ref="statusTrigger" type="button" x-on:click.stop="statusMenu.toggle($refs.statusTrigger, $refs.statusMenu)" class="btn-secondary w-full justify-between" data-onboarding-target="expense-status">
                         <span class="truncate">{{ $selectedStatus?->body }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                         </svg>
                     </button>
 
-                    <div x-show="selectStatus" x-cloak x-on:click.away="selectStatus = false" x-transition class="select-menu">
-                        @foreach ($statuses as $status)
-                            <button type="button" x-on:click="selectStatus = false; advanceExpenseChoice('expense-status', 'expense-create')" wire:click="selectStatus({{ $status->id }})" wire:key="create-expense-status-option-{{ $status->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                                {{ $status->body }}
-                            </button>
-                        @endforeach
-                    </div>
+                    <template x-teleport="body">
+                        <div x-ref="statusMenu" x-show="statusMenu.open" x-cloak x-transition x-bind:style="statusMenu.style" x-on:click.outside="statusMenu.close()" x-on:resize.window="statusMenu.close()" wire:key="create-expense-status-menu" wire:ignore.self class="floating-select-menu">
+                            @foreach ($statuses as $status)
+                                <button type="button" x-on:click="statusMenu.close(); advanceExpenseChoice('expense-status', 'expense-create')" wire:click="selectStatus({{ $status->id }})" wire:key="create-expense-status-option-{{ $status->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                    {{ $status->body }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </template>
                 </div>
             </div>
 
