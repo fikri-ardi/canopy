@@ -102,14 +102,6 @@ class CreateExpense extends Component
 
         $activeBudget->spends()->create($payload);
 
-        if (auth()->user()->needsOnboarding()) {
-            auth()->user()->forceFill([
-                'onboarding_completed_at' => now(),
-            ])->save();
-
-            $this->dispatch('onboarding-completed');
-        }
-
         $this->reset(['name', 'amount']);
         $this->dispatch('saved');
     }

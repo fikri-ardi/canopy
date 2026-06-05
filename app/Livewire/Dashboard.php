@@ -269,17 +269,36 @@ class Dashboard extends Component
         $padding = ['left' => 48, 'right' => 20, 'top' => 18, 'bottom' => 46];
         $plotWidth = $width - $padding['left'] - $padding['right'];
         $plotHeight = $height - $padding['top'] - $padding['bottom'];
-        $xStep = $budgets->count() > 1 ? $plotWidth / ($budgets->count() - 1) : 0;
-
         $maxValue = max((int) $rows->max('total'), 1);
         $chartMax = $maxValue;
         $colors = $this->chartColors();
 
-        $budgetPoints = $budgets->map(function (Budget $budget, int $index) use ($padding, $xStep, $plotWidth) {
-            return [
+        $chartBudgets = $budgets
+            ->map(fn (Budget $budget) => [
                 'id' => $budget->id,
                 'name' => $budget->name,
                 'shortName' => str($budget->name)->limit(14)->toString(),
+                'baseline' => false,
+            ])
+            ->values();
+
+        if ($chartBudgets->count() === 1) {
+            $chartBudgets->prepend([
+                'id' => '__baseline',
+                'name' => 'Start',
+                'shortName' => 'Start',
+                'baseline' => true,
+            ]);
+        }
+
+        $xStep = $chartBudgets->count() > 1 ? $plotWidth / ($chartBudgets->count() - 1) : 0;
+
+        $budgetPoints = $chartBudgets->map(function (array $budget, int $index) use ($padding, $xStep, $plotWidth) {
+            return [
+                'id' => $budget['id'],
+                'name' => $budget['name'],
+                'shortName' => $budget['shortName'],
+                'baseline' => $budget['baseline'],
                 'x' => $padding['left'] + ($xStep ? $index * $xStep : $plotWidth / 2),
             ];
         });

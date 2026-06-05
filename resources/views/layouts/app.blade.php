@@ -189,7 +189,14 @@
                     'expense-create': {
                         kicker: 'Selesai',
                         title: 'Simpan expense',
-                        copy: 'Klik Add Expense. Setelah expense pertama tersimpan, onboarding selesai.',
+                        copy: 'Klik Add Expense untuk menyimpan transaksi pertama.',
+                    },
+                    'onboarding-complete': {
+                        kicker: 'Berhasil',
+                        title: 'Expense pertama tersimpan',
+                        copy: 'Sekarang kamu bisa lacak data keuangan lebih lengkap lewat Dashboard: ringkasan, grafik kategori, budget health, dan transaksi terbaru.',
+                        action: 'Buka Dashboard',
+                        complete: true,
                     },
                 },
                 init() {
@@ -226,11 +233,26 @@
                 continueTour() {
                     const step = this.currentTourStep();
 
+                    if (step?.complete) {
+                        this.finishOnboarding();
+                        return;
+                    }
+
                     if (!step?.next) {
                         return;
                     }
 
                     this.setOnboardingStep(step.next);
+                },
+                finishOnboarding() {
+                    this.setOnboardingStep(null);
+
+                    if (window.Livewire?.navigate) {
+                        window.Livewire.navigate('/');
+                        return;
+                    }
+
+                    window.location.assign('/');
                 },
                 updateTour() {
                     document.querySelectorAll('.onboarding-highlight-target').forEach((target) => {
@@ -421,7 +443,9 @@
                     this.createExpense = false;
 
                     if (this.onboardingStep === 'expense-create') {
-                        this.setOnboardingStep(null);
+                        this.$nextTick(() => {
+                            setTimeout(() => this.setOnboardingStep('onboarding-complete'), 160);
+                        });
                     }
                 },
                 skipOnboarding() {
