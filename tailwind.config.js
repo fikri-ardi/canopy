@@ -9,8 +9,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Geist Mono', 'ui-monospace', 'monospace'],
-                mono: ['JetBrains Mono', 'monospace'],
+                sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Consolas', 'monospace'],
             },
         },
     },

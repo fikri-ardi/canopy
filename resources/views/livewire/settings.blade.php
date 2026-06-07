@@ -22,6 +22,7 @@
         <aside class="lg:sticky lg:top-5 lg:self-start">
             <div class="panel p-2">
                 @foreach ([
+                    ['href' => '#appearance', 'label' => 'Appearance'],
                     ['href' => '#profile', 'label' => 'Profile'],
                     ['href' => '#security', 'label' => 'Security'],
                     ['href' => '#data', 'label' => 'Export / Import'],
@@ -40,6 +41,43 @@
         </aside>
 
         <div class="min-w-0 space-y-5">
+            <section id="appearance" class="panel scroll-mt-5 p-4 sm:p-5">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Appearance</h2>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Choose the visual mode for your workspace.</p>
+                    </div>
+
+                    <div class="inline-flex w-full rounded-lg border border-slate-200 bg-white/70 p-1 dark:border-slate-700 dark:bg-slate-900/70 sm:w-auto">
+                        <button
+                            type="button"
+                            x-on:click="theme = 'light'"
+                            class="inline-flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition sm:flex-none"
+                            x-bind:class="theme !== 'dark' ? 'bg-white text-slate-950 shadow-sm dark:bg-slate-100 dark:text-slate-950' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'"
+                            aria-label="Use light appearance"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0Z" />
+                            </svg>
+                            Light
+                        </button>
+
+                        <button
+                            type="button"
+                            x-on:click="theme = 'dark'"
+                            class="inline-flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition sm:flex-none"
+                            x-bind:class="theme === 'dark' ? 'bg-slate-950 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'"
+                            aria-label="Use dark appearance"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25 9.75 9.75 0 0 0 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                            </svg>
+                            Dark
+                        </button>
+                    </div>
+                </div>
+            </section>
+
             <section id="profile" class="panel scroll-mt-5 p-4 sm:p-5">
                 <div class="flex items-start justify-between gap-4">
                     <div>

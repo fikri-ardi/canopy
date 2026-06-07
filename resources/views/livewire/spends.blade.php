@@ -38,7 +38,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Filtered Total</div>
-                        <div class="metric-value">{{ $this->rupiah($totalAmount) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($totalAmount) }}</div>
                     </div>
                     <span class="icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -64,7 +64,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Average Spend</div>
-                        <div class="metric-value">{{ $this->rupiah($averageAmount) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($averageAmount) }}</div>
                     </div>
                     <span class="icon-box-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -77,7 +77,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Largest Spend</div>
-                        <div class="metric-value">{{ $this->rupiah($largestAmount) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($largestAmount) }}</div>
                     </div>
                     <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 ring-1 ring-amber-100 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/20">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -202,7 +202,7 @@
                             <td class="p-3 text-gray-600 dark:text-slate-300">{{ $spend->label?->name ?? 'Unlabeled' }}</td>
                             <td class="p-3 text-gray-600 dark:text-slate-300">{{ $spend->platform?->name }}</td>
                             <td class="p-3 text-gray-600 dark:text-slate-300">{{ $spend->status?->body }}</td>
-                            <td class="p-3 text-right font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($spend->getRawOriginal('amount')) }}</td>
+                            <td class="money-value p-3 text-right font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($spend->getRawOriginal('amount')) }}</td>
                         </tr>
                     @empty
                         <tr>

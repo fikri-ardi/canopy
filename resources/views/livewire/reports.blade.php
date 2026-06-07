@@ -57,15 +57,15 @@
         <section class="summary-grid">
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Planned Income</div>
-                <div class="metric-value">{{ $this->rupiah($totalIncome) }}</div>
+                <div class="metric-value money-value">{{ $this->rupiah($totalIncome) }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Expense</div>
-                <div class="metric-value">{{ $this->rupiah($totalExpense) }}</div>
+                <div class="metric-value money-value">{{ $this->rupiah($totalExpense) }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Remaining</div>
-                <div class="{{ $remainingBalance < 0 ? 'metric-value-danger' : 'metric-value' }}">{{ $this->rupiah($remainingBalance) }}</div>
+                <div class="{{ $remainingBalance < 0 ? 'metric-value-danger' : 'metric-value' }} money-value">{{ $this->rupiah($remainingBalance) }}</div>
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>
@@ -73,7 +73,7 @@
             </div>
             <div class="metric-card">
                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Average</div>
-                <div class="metric-value">{{ $this->rupiah($averageExpense) }}</div>
+                <div class="metric-value money-value">{{ $this->rupiah($averageExpense) }}</div>
             </div>
         </section>
 
@@ -92,7 +92,7 @@
                             <div class="mb-2 flex items-center justify-between gap-3 text-sm">
                                 <div class="min-w-0">
                                     <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $budget['name'] }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($budget['spent']) }} of {{ $this->rupiah($budget['income']) }}</div>
+                                    <div class="money-value text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($budget['spent']) }} of {{ $this->rupiah($budget['income']) }}</div>
                                 </div>
                                 <div class="{{ $budget['remaining'] < 0 ? 'text-red-500' : ($budget['percentage'] >= 80 ? 'text-amber-500' : 'text-green-500') }} shrink-0 font-semibold">
                                     {{ $budget['percentage'] }}%
@@ -122,7 +122,7 @@
                                     <span>{{ $expense->label?->name ?? 'Unlabeled' }}</span>
                                 </div>
                             </div>
-                            <div class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
+                            <div class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
                         </div>
                     @empty
                         <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No expenses in this report.</div>
@@ -141,7 +141,7 @@
                         <div wire:key="reports-label-breakdown-{{ str($label['name'])->slug() }}">
                             <div class="mb-1 flex items-center justify-between gap-3 text-sm">
                                 <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ $label['name'] }}</span>
-                                <span class="shrink-0 text-gray-500 dark:text-slate-400">{{ $this->rupiah($label['total']) }}</span>
+                                <span class="money-value shrink-0 text-gray-500 dark:text-slate-400">{{ $this->rupiah($label['total']) }}</span>
                             </div>
                             <div class="progress-track h-2">
                                 <div class="progress-fill" style="--progress: {{ $label['percentage'] }}%; --progress-color: #22c55e"></div>
@@ -187,7 +187,7 @@
                                 <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ ucfirst($status['name']) }}</span>
                                 <span class="text-gray-500 dark:text-slate-400">{{ $status['transactions'] }}x</span>
                             </div>
-                            <div class="mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
+                            <div class="money-value mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
                         </div>
                     @empty
                         <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No status data yet.</div>

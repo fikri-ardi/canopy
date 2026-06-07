@@ -8,6 +8,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @livewireStyles
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
     <title>Canopy - Your Income Pal</title>
@@ -103,6 +106,35 @@
             });
         };
 
+        window.canopyOpenDropdowns = window.canopyOpenDropdowns || new Set();
+        window.canopyScrollLock = window.canopyScrollLock || {
+            syncPending: false,
+        };
+
+        window.canopyScheduleScrollLockSync = function () {
+            if (window.canopyScrollLock.syncPending) {
+                return;
+            }
+
+            window.canopyScrollLock.syncPending = true;
+            requestAnimationFrame(() => {
+                window.canopyScrollLock.syncPending = false;
+                window.canopySyncModalScrollLock();
+            });
+        };
+
+        window.canopyPreventDropdownBackgroundScroll = function (event) {
+            if (window.canopyOpenDropdowns.size === 0) {
+                return;
+            }
+
+            if (event.target?.closest?.('.floating-select-menu')) {
+                return;
+            }
+
+            event.preventDefault();
+        };
+
         window.canopySyncModalScrollLock = function () {
             const hasOpenModal = Array.from(document.querySelectorAll('.modal-backdrop')).some((modal) => {
                 const style = window.getComputedStyle(modal);
@@ -110,7 +142,6 @@
                 return style.display !== 'none' && style.visibility !== 'hidden';
             });
 
-            document.documentElement.classList.toggle('modal-open', hasOpenModal);
             document.body.classList.toggle('modal-open', hasOpenModal);
         };
 
@@ -118,8 +149,16 @@
         document.addEventListener('livewire:navigated', window.canopyFormatNumberInputs);
         document.addEventListener('DOMContentLoaded', () => {
             window.canopySyncModalScrollLock();
+            document.addEventListener('wheel', window.canopyPreventDropdownBackgroundScroll, { passive: false });
+            document.addEventListener('touchmove', window.canopyPreventDropdownBackgroundScroll, { passive: false });
 
-            const modalObserver = new MutationObserver(() => window.canopySyncModalScrollLock());
+            const modalObserver = new MutationObserver((mutations) => {
+                if (mutations.every((mutation) => mutation.target === document.body)) {
+                    return;
+                }
+
+                window.canopyScheduleScrollLockSync();
+            });
             modalObserver.observe(document.body, {
                 attributes: true,
                 attributeFilter: ['class', 'style'],
@@ -127,7 +166,10 @@
                 subtree: true,
             });
         });
-        document.addEventListener('livewire:navigated', window.canopySyncModalScrollLock);
+        document.addEventListener('livewire:navigated', () => {
+            window.canopyOpenDropdowns.clear();
+            window.canopySyncModalScrollLock();
+        });
 
         window.canopyBudgetPage = function (initialOnboardingStep = null) {
             return {
@@ -643,6 +685,7 @@
 
         window.canopyDropdown = function (options = {}) {
             return {
+                lockId: `dropdown-${Math.random().toString(36).slice(2)}`,
                 open: false,
                 style: '',
                 toggle(trigger, menu) {
@@ -650,17 +693,23 @@
                 },
                 show(trigger, menu) {
                     this.open = true;
+                    window.canopyOpenDropdowns.add(this.lockId);
+                    window.canopySyncModalScrollLock?.();
                     requestAnimationFrame(() => {
                         this.position(trigger, menu);
+                        window.canopySyncModalScrollLock?.();
                         requestAnimationFrame(() => {
                             if (this.open) {
                                 this.position(trigger, menu);
+                                window.canopySyncModalScrollLock?.();
                             }
                         });
                     });
                 },
                 close() {
                     this.open = false;
+                    window.canopyOpenDropdowns.delete(this.lockId);
+                    window.canopySyncModalScrollLock?.();
                 },
                 position(trigger, menu) {
                     if (!trigger || !menu) {

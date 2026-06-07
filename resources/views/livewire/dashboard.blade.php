@@ -57,14 +57,6 @@
                     </svg>
                     <span>Manage Budget</span>
                 </a>
-                <button type="button" x-on:click="theme = theme === 'dark' ? 'light' : 'dark'" class="btn-icon" aria-label="Toggle appearance" data-tooltip="Toggle appearance">
-                    <svg x-show="theme === 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                    </svg>
-                    <svg x-show="theme !== 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25 9.75 9.75 0 0 0 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
-                    </svg>
-                </button>
             </div>
         </div>
     </header>
@@ -145,7 +137,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Income</div>
-                        <div class="metric-value">{{ $this->rupiah($totalIncome) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($totalIncome) }}</div>
                     </div>
                     <span class="icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -158,7 +150,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Expense</div>
-                        <div class="metric-value">{{ $this->rupiah($totalExpense) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($totalExpense) }}</div>
                     </div>
                     <span class="icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -171,7 +163,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Remaining</div>
-                        <div class="{{ $remainingBalance < 0 ? 'metric-value-danger' : 'metric-value' }}">{{ $this->rupiah($remainingBalance) }}</div>
+                        <div class="{{ $remainingBalance < 0 ? 'metric-value-danger' : 'metric-value' }} money-value">{{ $this->rupiah($remainingBalance) }}</div>
                     </div>
                     <span class="{{ $remainingBalance < 0 ? 'inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20' : 'icon-box-muted' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -419,7 +411,7 @@
                     </div>
                     <div class="rounded-lg bg-gray-50 px-3 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Avg Spend</div>
-                        <div class="font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($averageTransaction) }}</div>
+                        <div class="money-value font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($averageTransaction) }}</div>
                     </div>
                 </div>
 
@@ -429,7 +421,7 @@
                             <div class="mb-2 flex items-center justify-between gap-3 text-sm">
                                 <div class="min-w-0">
                                     <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $budget['name'] }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($budget['spent']) }} of {{ $this->rupiah($budget['income']) }}</div>
+                                    <div class="money-value text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($budget['spent']) }} of {{ $this->rupiah($budget['income']) }}</div>
                                 </div>
                                 <div class="{{ $budget['tone'] === 'danger' ? 'text-red-500' : ($budget['tone'] === 'warning' ? 'text-amber-500' : 'text-green-500') }} shrink-0 font-semibold">
                                     {{ $budget['percentage'] }}%
@@ -471,7 +463,7 @@
                                     <span>{{ $expense->created_at?->format('d M Y') }}</span>
                                 </div>
                             </div>
-                            <div class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
+                            <div class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
                         </div>
                     @empty
                         <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No recent expenses.</div>
@@ -483,7 +475,7 @@
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Largest Expense</div>
                         <div class="mt-2 flex items-center justify-between gap-3">
                             <div class="min-w-0 truncate font-semibold text-gray-950 dark:text-slate-50">{{ $largestExpense->name }}</div>
-                            <div class="shrink-0 font-bold text-red-500">{{ $this->rupiah($largestExpense->getRawOriginal('amount')) }}</div>
+                            <div class="money-value shrink-0 font-bold text-red-500">{{ $this->rupiah($largestExpense->getRawOriginal('amount')) }}</div>
                         </div>
                     </div>
                 @endif
@@ -505,7 +497,7 @@
                                     <span>{{ $expense->label?->name ?? 'Unlabeled' }}</span>
                                 </div>
                             </div>
-                            <div class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
+                            <div class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
                         </div>
                     @empty
                         <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No expenses in this view.</div>
@@ -545,7 +537,7 @@
                                 <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ ucfirst($status['name']) }}</span>
                                 <span class="text-gray-500 dark:text-slate-400">{{ $status['transactions'] }}x</span>
                             </div>
-                            <div class="mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
+                            <div class="money-value mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
                         </div>
                     @empty
                         <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No status data yet.</div>
@@ -582,7 +574,7 @@
                                 <p class="text-xs text-gray-500 dark:text-slate-400">{{ $label['transactions'] }} transactions</p>
                             </div>
                         </div>
-                        <div class="text-right text-lg font-bold text-green-500">{{ $this->rupiah($label['total']) }}</div>
+                        <div class="money-value text-right text-lg font-bold text-green-500">{{ $this->rupiah($label['total']) }}</div>
                     </div>
 
                     <div class="mt-4 space-y-3">
@@ -593,7 +585,7 @@
                                         <div class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ $item['name'] }}</div>
                                         <div class="text-xs text-gray-400 dark:text-slate-500">{{ $item['transactions'] }}x</div>
                                     </div>
-                                    <div class="shrink-0 font-semibold text-gray-950 dark:text-slate-50">{{ $this->rupiah($item['total']) }}</div>
+                                    <div class="money-value shrink-0 font-semibold text-gray-950 dark:text-slate-50">{{ $this->rupiah($item['total']) }}</div>
                                 </div>
                                 <div class="progress-track h-2">
                                     <div class="progress-fill" style="--progress: {{ $item['percentage'] }}%; --progress-color: #22c55e"></div>

@@ -40,21 +40,6 @@
             </div>
 
             <div class="page-header-actions">
-                <button
-                    type="button"
-                    x-on:click="theme = theme === 'dark' ? 'light' : 'dark'"
-                    class="btn-icon"
-                    aria-label="Toggle appearance"
-                    data-tooltip="Toggle appearance"
-                >
-                    <svg x-show="theme === 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                    </svg>
-                    <svg x-show="theme !== 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25 9.75 9.75 0 0 0 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
-                    </svg>
-                </button>
-
                 @if ($activeBudget)
                     <div class="relative min-w-0 flex-1 sm:min-w-48 sm:flex-none">
                         <button x-ref="budgetTrigger" type="button" x-on:click.stop="budgetMenu.toggle($refs.budgetTrigger, $refs.budgetMenu)" class="btn-secondary w-full justify-between">
@@ -331,7 +316,7 @@
                                         </button>
                                     @endif
                                 </div>
-                                <div class="metric-value-lg">{{ $this->rupiah($card['amount']) }}</div>
+                                <div class="metric-value-lg money-value">{{ $this->rupiah($card['amount']) }}</div>
                                 @if (in_array(($card['key'] ?? null), ['allocation', 'investment'], true))
                                     <div class="mt-1 truncate text-xs font-medium text-gray-500 dark:text-slate-400">{{ $card['detail'] }}</div>
                                 @endif
@@ -365,7 +350,7 @@
                                                 <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
                                                 <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi</span>
                                             </span>
-                                            <span class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
+                                            <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
                                         </button>
                                     @endforeach
                                 </div>
@@ -381,7 +366,7 @@
                                                 <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
                                                 <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi / {{ $option['movements'] }} movements</span>
                                             </span>
-                                            <span class="shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
+                                            <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
                                         </button>
                                     @endforeach
                                 </div>
@@ -427,7 +412,7 @@
                         @foreach ($insightCards as $card)
                             <div wire:key="budget-insight-card-{{ str($card['label'])->slug() }}" class="metric-tile rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
-                                <div class="metric-value-sm">
+                                <div class="metric-value-sm {{ $card['format'] === 'money' ? 'money-value' : '' }}">
                                     {{ $card['format'] === 'money' ? $this->rupiah($card['amount']) : number_format($card['amount'], 0, ',', '.') }}
                                 </div>
                             </div>
@@ -441,7 +426,7 @@
                             <div class="eyebrow">Top Expenses</div>
                             <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Largest items in this budget</h2>
                         </div>
-                        <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} text-sm font-semibold">
+                        <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} money-value text-sm font-semibold">
                             {{ $this->rupiah($remainingBalance) }} left
                         </div>
                     </div>
@@ -457,7 +442,7 @@
                                         <span>{{ $expense->status?->body }}</span>
                                     </div>
                                 </div>
-                                <div class="shrink-0 font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
+                                <div class="money-value shrink-0 font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
                             </div>
                         @empty
                             <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No expenses yet.</div>
@@ -478,7 +463,7 @@
                                 <p class="text-xs text-gray-500 dark:text-slate-400">{{ $spendProgress }}% used</p>
                             </div>
                         </div>
-                        <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} text-sm font-semibold">
+                        <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} money-value text-sm font-semibold">
                             {{ $this->rupiah($remainingBalance) }}
                         </div>
                     </div>
@@ -501,7 +486,7 @@
                                     <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ ucfirst($status['name']) }}</span>
                                     <span class="text-gray-500 dark:text-slate-400">{{ $status['transactions'] }}x</span>
                                 </div>
-                                <div class="mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
+                                <div class="money-value mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
                             </div>
                         @empty
                             <div class="text-sm text-gray-500 dark:text-slate-400">No transactions yet.</div>
@@ -526,7 +511,7 @@
                         <div wire:key="budget-platform-analytic-{{ str($platform['name'])->slug() }}">
                             <div class="mb-1 flex items-center justify-between gap-3 text-sm">
                                 <span class="font-semibold text-gray-700 dark:text-slate-200">{{ $platform['name'] }}</span>
-                                <span class="shrink-0 text-gray-500 dark:text-slate-400">{{ $this->rupiah($platform['total']) }} / {{ $platform['percentage'] }}%</span>
+                                <span class="money-value shrink-0 text-gray-500 dark:text-slate-400">{{ $this->rupiah($platform['total']) }} / {{ $platform['percentage'] }}%</span>
                             </div>
                             <div class="progress-track h-2">
                                 <div class="progress-fill" style="--progress: {{ $platform['percentage'] }}%; --progress-color: #22c55e"></div>

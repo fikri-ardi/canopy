@@ -19,7 +19,7 @@
             <div class="grid grid-cols-2 gap-2 sm:flex sm:items-center lg:justify-end">
                 <div class="header-balance-chip">
                     <span class="text-gray-400 dark:text-slate-500">Balance</span>
-                    <span class="font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($summary['balance']) }}</span>
+                    <span class="money-value font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($summary['balance']) }}</span>
                 </div>
 
                 <div class="header-balance-chip">
@@ -42,7 +42,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Original Investment</div>
-                        <div class="metric-value">{{ $this->rupiah($summary['principal']) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($summary['principal']) }}</div>
                     </div>
                     <span class="icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -56,7 +56,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Withdrawn</div>
-                        <div class="metric-value">{{ $this->rupiah($summary['withdrawn']) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($summary['withdrawn']) }}</div>
                     </div>
                     <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -69,7 +69,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Top Up</div>
-                        <div class="metric-value">{{ $this->rupiah($summary['deposit']) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($summary['deposit']) }}</div>
                     </div>
                     <span class="icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -82,7 +82,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Current Balance</div>
-                        <div class="metric-value">{{ $this->rupiah($summary['balance']) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($summary['balance']) }}</div>
                     </div>
                     <span class="icon-box-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -95,7 +95,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target</div>
-                        <div class="metric-value">{{ $this->rupiah($summary['target']) }}</div>
+                        <div class="metric-value money-value">{{ $this->rupiah($summary['target']) }}</div>
                     </div>
                     <span class="icon-box-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -135,14 +135,14 @@
                                     </div>
                                 </div>
                                 <div class="shrink-0 text-right">
-                                    <div class="text-sm font-bold {{ $group['balance'] < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}">{{ $this->rupiah($group['balance']) }}</div>
+                                    <div class="money-value text-sm font-bold {{ $group['balance'] < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}">{{ $this->rupiah($group['balance']) }}</div>
                                     <div class="mt-1 text-xs text-gray-400 dark:text-slate-500">balance</div>
                                 </div>
                             </div>
                             <div class="mt-3 flex items-center justify-between gap-3">
                                 <div class="min-w-0 text-xs">
                                     <div class="text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? ($group['targetProgress'].'% reached') : 'No target yet' }}</div>
-                                    <div class="mt-0.5 truncate font-medium text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? $this->rupiah($group['target']) : 'Set target' }}</div>
+                                    <div class="money-value mt-0.5 truncate font-medium text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? $this->rupiah($group['target']) : 'Set target' }}</div>
                                 </div>
                                 <span class="progress-circle progress-circle-compact size-10" style="--progress: {{ $group['targetProgressWidth'] }}; --progress-color: {{ $group['target'] > 0 ? '#22c55e' : '#94a3b8' }}">
                                     <span class="progress-circle-value">{{ $group['target'] > 0 ? min(999, $group['targetProgress']) : '0' }}%</span>
@@ -174,19 +174,19 @@
                             <div class="grid w-full min-w-0 grid-cols-2 gap-2 text-left text-xs sm:w-auto sm:grid-cols-4 sm:text-right">
                                 <div>
                                     <div class="text-gray-400 dark:text-slate-500">Original</div>
-                                    <div class="mt-1 truncate font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($selected['principal']) }}</div>
+                                    <div class="money-value mt-1 truncate font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($selected['principal']) }}</div>
                                 </div>
                                 <div>
                                     <div class="text-gray-400 dark:text-slate-500">Used</div>
-                                    <div class="mt-1 truncate font-bold text-red-500">{{ $this->rupiah($selected['withdrawn']) }}</div>
+                                    <div class="money-value mt-1 truncate font-bold text-red-500">{{ $this->rupiah($selected['withdrawn']) }}</div>
                                 </div>
                                 <div>
                                     <div class="text-gray-400 dark:text-slate-500">Balance</div>
-                                    <div class="mt-1 truncate font-bold {{ $selected['balance'] < 0 ? 'text-red-500' : 'text-green-500' }}">{{ $this->rupiah($selected['balance']) }}</div>
+                                    <div class="money-value mt-1 truncate font-bold {{ $selected['balance'] < 0 ? 'text-red-500' : 'text-green-500' }}">{{ $this->rupiah($selected['balance']) }}</div>
                                 </div>
                                 <div>
                                     <div class="text-gray-400 dark:text-slate-500">Target</div>
-                                    <div class="mt-1 truncate font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($selected['target']) }}</div>
+                                    <div class="money-value mt-1 truncate font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($selected['target']) }}</div>
                                 </div>
                             </div>
                         @endif
@@ -205,7 +205,7 @@
                                             {{ $selected['targetProgress'] === null ? 'Set a target to track progress' : $selected['targetProgress'].'% reached' }}
                                         </div>
                                         @if ($selected['target'] > 0)
-                                            <div class="mt-1 text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($selected['remainingToTarget']) }} left to target</div>
+                                            <div class="money-value mt-1 text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($selected['remainingToTarget']) }} left to target</div>
                                         @endif
                                     </div>
                                 </div>
@@ -283,7 +283,7 @@
                                     <td class="px-2 py-2 text-gray-600 dark:text-slate-300 sm:p-3">
                                         <div class="max-w-[4.5rem] truncate sm:max-w-[9rem] lg:max-w-[12rem]" title="{{ $movement->note ?? '-' }}">{{ $movement->note ?? '-' }}</div>
                                     </td>
-                                    <td class="whitespace-nowrap px-2 py-2 text-right font-bold tabular-nums sm:p-3 {{ $movement->type === 'withdrawal' ? 'text-red-500' : 'text-green-500' }}">{{ $this->rupiah($movement->amount) }}</td>
+                                    <td class="money-value whitespace-nowrap px-2 py-2 text-right font-bold sm:p-3 {{ $movement->type === 'withdrawal' ? 'text-red-500' : 'text-green-500' }}">{{ $this->rupiah($movement->amount) }}</td>
                                     <td class="px-1.5 py-2 text-right sm:p-3">
                                         <button type="button" x-on:click="deleteMovement = true" wire:click="confirmDeleteMovement({{ $movement->id }})" class="btn-secondary size-8 px-0 py-0 text-xs sm:h-auto sm:w-auto sm:px-3 sm:py-1.5" aria-label="Delete movement" data-tooltip="Delete movement">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4 sm:hidden">
