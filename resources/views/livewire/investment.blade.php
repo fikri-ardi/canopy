@@ -20,11 +20,6 @@
                     <span class="text-gray-400 dark:text-slate-500">Balance</span>
                     <span class="money-value font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($summary['balance']) }}</span>
                 </div>
-
-                <div class="header-balance-chip">
-                    <span class="text-gray-400 dark:text-slate-500">Progress</span>
-                    <span class="font-bold text-green-600 dark:text-green-300">{{ $summary['progress'] === null ? '0%' : $summary['progress'].'%' }}</span>
-                </div>
             </div>
         </div>
     </header>
@@ -107,7 +102,7 @@
                 <div class="flex items-center justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target Progress</div>
-                        <div class="metric-value">{{ $summary['progress'] === null ? '0%' : $summary['progress'].'%' }}</div>
+                        <div class="mt-1 text-sm font-medium text-gray-500 dark:text-slate-400">Overall target</div>
                     </div>
                     <span class="progress-circle size-14" style="--progress: {{ $summary['progressWidth'] }}; --progress-color: #22c55e">
                         <span class="progress-circle-value">{{ $summary['progress'] === null ? '0' : min(999, $summary['progress']) }}%</span>
@@ -140,8 +135,8 @@
                             </div>
                             <div class="mt-3 flex items-center justify-between gap-3">
                                 <div class="min-w-0 text-xs">
-                                    <div class="text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? ($group['targetProgress'].'% reached') : 'No target yet' }}</div>
-                                    <div class="money-value mt-0.5 truncate font-medium text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? $this->rupiah($group['target']) : 'Set target' }}</div>
+                                    <div class="text-gray-500 dark:text-slate-400">Target</div>
+                                    <div class="money-value mt-0.5 truncate font-medium text-gray-500 dark:text-slate-400">{{ $group['target'] > 0 ? $this->rupiah($group['target']) : 'Not set' }}</div>
                                 </div>
                                 <span class="progress-circle progress-circle-compact size-10" style="--progress: {{ $group['targetProgressWidth'] }}; --progress-color: {{ $group['target'] > 0 ? '#22c55e' : '#94a3b8' }}">
                                     <span class="progress-circle-value">{{ $group['target'] > 0 ? min(999, $group['targetProgress']) : '0' }}%</span>
@@ -201,7 +196,7 @@
                                     <div class="min-w-0">
                                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Target progress</div>
                                         <div class="mt-1 text-sm font-semibold text-gray-950 dark:text-slate-50">
-                                            {{ $selected['targetProgress'] === null ? 'Set a target to track progress' : $selected['targetProgress'].'% reached' }}
+                                            {{ $selected['targetProgress'] === null ? 'Set a target to track progress' : 'Tracking selected target' }}
                                         </div>
                                         @if ($selected['target'] > 0)
                                             <div class="money-value mt-1 text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($selected['remainingToTarget']) }} left to target</div>
