@@ -117,6 +117,90 @@ class Dashboard extends Component
         return (int) $this->userSpendQuery()->sum('amount');
     }
 
+    private function labelActivityHeatmap(): array
+    {
+        if (! $this->labelsSchemaReady()) {
+            return [
+                'ready' => false,
+                'rows' => collect(),
+                'weeks' => collect(),
+                'totalTransactions' => 0,
+                'periodLabel' => '',
+            ];
+        }
+
+        [$start, $end] = $this->labelActivityRange();
+        $weeks = collect();
+        $cursor = $start->copy();
+
+        while ($cursor->lte($end)) {
+            $weeks->push([
+                'key' => $cursor->toDateString(),
+                'label' => $cursor->isSameMonth($cursor->copy()->subWeek()) ? '' : $cursor->format('M'),
+                'short' => $cursor->format('d M'),
+            ]);
+
+            $cursor->addWeek();
+        }
+
+        $spends = Spend::query()
+            ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
+            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+            ->whereBetween('spends.created_at', [$start, $end])
+            ->when($this->search, function ($query) {
+                $query->where(function ($query) {
+                    $query->where('labels.name', 'like', '%'.$this->search.'%')
+                        ->orWhere('spends.name', 'like', '%'.$this->search.'%');
+                });
+            })
+            ->selectRaw("coalesce(labels.name, 'Unlabeled') as label_name, spends.amount as raw_amount, spends.created_at")
+            ->get();
+
+        $cellTotals = $spends
+            ->groupBy(fn ($spend) => $spend->label_name.'|'.$spend->created_at->copy()->startOfWeek()->toDateString())
+            ->map(fn ($items) => (int) $items->sum(fn ($spend) => (int) $spend->raw_amount));
+
+        $maxCell = max((int) $cellTotals->max(), 1);
+
+        $rows = $spends
+            ->groupBy('label_name')
+            ->map(fn ($items, string $label) => [
+                'label' => $label,
+                'total' => (int) $items->sum(fn ($spend) => (int) $spend->raw_amount),
+                'transactions' => $items->count(),
+                'items' => $items,
+            ])
+            ->sortByDesc('total')
+            ->take(7)
+            ->values()
+            ->map(function (array $row) use ($weeks, $cellTotals, $maxCell) {
+                return [
+                    'label' => $row['label'],
+                    'total' => $row['total'],
+                    'transactions' => $row['transactions'],
+                    'cells' => $weeks->map(function (array $week) use ($row, $cellTotals, $maxCell) {
+                        $amount = (int) ($cellTotals->get($row['label'].'|'.$week['key']) ?? 0);
+                        $level = $amount === 0 ? 0 : max(1, min(4, (int) ceil(($amount / $maxCell) * 4)));
+
+                        return [
+                            'amount' => $amount,
+                            'formatted' => $this->rupiah($amount),
+                            'level' => $level,
+                            'week' => $week['short'],
+                        ];
+                    }),
+                ];
+            });
+
+        return [
+            'ready' => true,
+            'rows' => $rows,
+            'weeks' => $weeks,
+            'totalTransactions' => $spends->count(),
+            'periodLabel' => $start->format('d M').' - '.$end->format('d M Y'),
+        ];
+    }
+
     private function totalIncome(): int
     {
         return (int) $this->userBudgetQuery()->sum('income');
@@ -159,7 +243,9 @@ class Dashboard extends Component
             ->withSum(['spends as total_spent' => function ($query) {
                 $this->applyDateRange($query, 'created_at');
             }], 'amount')
-            ->orderBy('name')
+            ->latest('created_at')
+            ->latest('id')
+            ->take(5)
             ->get()
             ->map(function (Budget $budget) {
                 $income = (int) $budget->income;
@@ -458,6 +544,22 @@ class Dashboard extends Component
             ->when($this->dateBoundary($this->endDate, true), fn (Builder $query, Carbon $end) => $query->where($column, '<=', $end));
     }
 
+    private function labelActivityRange(): array
+    {
+        $start = $this->dateBoundary($this->startDate)?->startOfWeek() ?? now()->subWeeks(11)->startOfWeek();
+        $end = $this->dateBoundary($this->endDate, true)?->endOfWeek() ?? now()->endOfWeek();
+
+        if ($start->gt($end)) {
+            [$start, $end] = [$end->copy()->startOfWeek(), $start->copy()->endOfWeek()];
+        }
+
+        if ($start->diffInWeeks($end) > 15) {
+            $start = $end->copy()->subWeeks(15)->startOfWeek();
+        }
+
+        return [$start, $end];
+    }
+
     private function dateBoundary(?string $date, bool $endOfDay = false): ?Carbon
     {
         if (! is_string($date) || trim($date) === '') {
@@ -487,6 +589,7 @@ class Dashboard extends Component
 
         return view('livewire.dashboard', [
             'labelBreakdown' => $labelBreakdown,
+            'labelActivityHeatmap' => $this->labelActivityHeatmap(),
             'platformBreakdown' => $this->platformBreakdown(),
             'statusBreakdown' => $this->statusBreakdown(),
             'topExpenses' => $this->topExpenses(),

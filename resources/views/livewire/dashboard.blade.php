@@ -391,13 +391,79 @@
             @endif
         </section>
 
+        <section class="panel overflow-hidden px-4 py-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <div class="eyebrow">Label Activity</div>
+                    <h2 class="mt-1 text-lg font-semibold text-gray-950 dark:text-slate-50">Breakdown by label</h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ $labelActivityHeatmap['totalTransactions'] }} transactions / {{ $labelActivityHeatmap['periodLabel'] }}</p>
+                </div>
+                <div class="relative w-full sm:w-72">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197M15.803 15.803A7.5 7.5 0 1 0 5.197 5.197a7.5 7.5 0 0 0 10.606 10.606Z" />
+                    </svg>
+                    <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search label or expense" class="input-field pl-9">
+                </div>
+            </div>
+
+            @if (! $labelActivityHeatmap['ready'])
+                <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
+                    Add labels to expenses to activate label activity.
+                </div>
+            @elseif ($labelActivityHeatmap['rows']->isEmpty())
+                <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
+                    No label spending found in this view.
+                </div>
+            @else
+                <div class="mt-5 overflow-hidden pb-1 sm:overflow-x-auto">
+                    <div class="min-w-0 sm:min-w-[46rem]">
+                        <div class="ml-[4.35rem] mr-[4.25rem] grid gap-px sm:ml-32 sm:mr-24 sm:gap-1" style="grid-template-columns: repeat({{ $labelActivityHeatmap['weeks']->count() }}, minmax(0, 1fr));">
+                            @foreach ($labelActivityHeatmap['weeks'] as $week)
+                                <div class="h-4 text-center text-[10px] font-medium text-gray-400 dark:text-slate-500">{{ $week['label'] }}</div>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-1 space-y-1 sm:space-y-1.5">
+                            @foreach ($labelActivityHeatmap['rows'] as $row)
+                                <div class="grid grid-cols-[3.95rem_minmax(0,1fr)_3.95rem] items-center gap-1 sm:grid-cols-[7.5rem_minmax(0,1fr)_6rem] sm:gap-2">
+                                    <div class="min-w-0">
+                                        <div class="truncate text-xs font-semibold text-gray-700 dark:text-slate-200">{{ $row['label'] }}</div>
+                                        <div class="text-[10px] text-gray-400 dark:text-slate-500">{{ $row['transactions'] }}x</div>
+                                    </div>
+                                    <div class="grid gap-px sm:gap-1" style="grid-template-columns: repeat({{ $labelActivityHeatmap['weeks']->count() }}, minmax(0, 1fr));">
+                                        @foreach ($row['cells'] as $cell)
+                                            <span
+                                                tabindex="0"
+                                                class="label-activity-cell label-activity-level-{{ $cell['level'] }} focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-950"
+                                                data-tooltip="{{ $row['label'] }} / {{ $cell['week'] }} / {{ $cell['formatted'] }}"
+                                                aria-label="{{ $row['label'] }} {{ $cell['week'] }} {{ $cell['formatted'] }}"
+                                            ></span>
+                                        @endforeach
+                                    </div>
+                                    <div class="money-value truncate text-right text-[10px] font-semibold text-gray-500 dark:text-slate-400 sm:text-xs">{{ $this->rupiah($row['total']) }}</div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-4 flex items-center justify-end gap-1 text-xs text-gray-400 dark:text-slate-500 sm:gap-1.5">
+                            <span>Less</span>
+                            @for ($level = 0; $level <= 4; $level++)
+                                <span class="label-activity-cell label-activity-level-{{ $level }}"></span>
+                            @endfor
+                            <span>More</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </section>
+
         <section class="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)]">
             <div class="panel px-4 py-4">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <div class="eyebrow">Budget Health</div>
                         <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Spending pressure by budget</h2>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ $budgetCount }} active budgets tracked.</p>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Latest 5 of {{ $budgetCount }} active budgets.</p>
                     </div>
                     <div class="rounded-lg bg-gray-50 px-3 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Avg Spend</div>
@@ -536,66 +602,5 @@
             </div>
         </section>
 
-        <section class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-                <h2 class="text-xl font-bold text-gray-950 dark:text-slate-50">Breakdown by Label</h2>
-                <p class="text-sm text-gray-500 dark:text-slate-400">{{ $labelCount }} active labels, top category: {{ $topLabel['name'] ?? '-' }}.</p>
-            </div>
-            <div class="relative w-full sm:w-80">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197M15.803 15.803A7.5 7.5 0 1 0 5.197 5.197a7.5 7.5 0 0 0 10.606 10.606Z" />
-                </svg>
-                <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search label or expense" class="input-field pl-9">
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            @forelse ($labelBreakdown as $label)
-                <article wire:key="dashboard-label-breakdown-{{ str($label['name'])->slug() }}" class="panel px-4 py-4">
-                    <div class="flex flex-wrap items-start justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <span class="icon-box-muted">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
-                                </svg>
-                            </span>
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-950 dark:text-slate-50">{{ $label['name'] }}</h3>
-                                <p class="text-xs text-gray-500 dark:text-slate-400">{{ $label['transactions'] }} transactions</p>
-                            </div>
-                        </div>
-                        <div class="money-value text-right text-lg font-bold text-green-500">{{ $this->rupiah($label['total']) }}</div>
-                    </div>
-
-                    <div class="mt-4 space-y-3">
-                        @foreach ($label['items'] as $item)
-                            <div wire:key="dashboard-label-{{ str($label['name'])->slug() }}-item-{{ str($item['name'])->slug() }}">
-                                <div class="mb-1 flex items-center justify-between gap-3 text-sm">
-                                    <div class="min-w-0">
-                                        <div class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ $item['name'] }}</div>
-                                        <div class="text-xs text-gray-400 dark:text-slate-500">{{ $item['transactions'] }}x</div>
-                                    </div>
-                                    <div class="money-value shrink-0 font-semibold text-gray-950 dark:text-slate-50">{{ $this->rupiah($item['total']) }}</div>
-                                </div>
-                                <div class="progress-track h-2">
-                                    <div class="progress-fill" style="--progress: {{ $item['percentage'] }}%; --progress-color: #22c55e"></div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </article>
-            @empty
-                <div class="panel border-dashed px-6 py-12 text-center">
-                    <span class="icon-box mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
-                        </svg>
-                    </span>
-                    <div class="mt-4 text-lg font-semibold text-gray-950 dark:text-slate-50">No label spending found</div>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Create expenses with labels to fill this dashboard.</p>
-                </div>
-            @endforelse
-        </section>
     </main>
 </div>

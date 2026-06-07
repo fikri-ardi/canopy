@@ -18,13 +18,15 @@
 
 <body
     class="h-full font-sans"
-    x-data="{ theme: localStorage.getItem('theme') || 'dark' }"
+    x-data="{ theme: localStorage.getItem('theme') || 'dark', sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true' }"
+    x-bind:class="{ 'sidebar-collapsed': sidebarCollapsed }"
     x-init="
         document.documentElement.classList.toggle('dark', theme === 'dark');
         $watch('theme', value => {
             localStorage.setItem('theme', value);
             document.documentElement.classList.toggle('dark', value === 'dark');
         });
+        $watch('sidebarCollapsed', value => localStorage.setItem('sidebarCollapsed', value));
     "
 >
     <x-flash-banner />
@@ -32,7 +34,7 @@
     <div class="relative z-10 flex min-h-full">
         <livewire:sidebar />
 
-        <main class="min-w-0 flex-1 pb-24 md:pb-0">
+        <main class="min-w-0 flex-1 pb-24 lg:pb-0">
             <div class="w-full">
                 {{ $slot }}
             </div>

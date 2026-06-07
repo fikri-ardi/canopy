@@ -362,6 +362,55 @@
         @apply text-[10px] leading-none;
     }
 
+    .label-activity-cell {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        min-width: 0.72rem;
+        max-width: 0.92rem;
+        justify-self: center;
+        border-radius: 0.22rem;
+        background: rgb(226 232 240 / 0.72);
+        box-shadow: inset 0 0 0 1px rgb(148 163 184 / 0.08);
+    }
+
+    .dark .label-activity-cell {
+        background: rgb(30 41 59 / 0.78);
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.035);
+    }
+
+    .label-activity-level-1 {
+        background: rgb(187 247 208 / 0.72);
+    }
+
+    .label-activity-level-2 {
+        background: rgb(134 239 172 / 0.8);
+    }
+
+    .label-activity-level-3 {
+        background: rgb(34 197 94 / 0.78);
+    }
+
+    .label-activity-level-4 {
+        background: rgb(21 128 61 / 0.88);
+    }
+
+    .dark .label-activity-level-1 {
+        background: rgb(20 83 45 / 0.72);
+    }
+
+    .dark .label-activity-level-2 {
+        background: rgb(22 101 52 / 0.82);
+    }
+
+    .dark .label-activity-level-3 {
+        background: rgb(22 163 74 / 0.78);
+    }
+
+    .dark .label-activity-level-4 {
+        background: rgb(74 222 128 / 0.84);
+    }
+
     .investment-select-menu {
         @apply w-72 p-1.5;
     }
@@ -1102,5 +1151,127 @@ body,
         background: rgb(255 255 255 / 0.07);
         color: rgb(226 232 240);
         box-shadow: none;
+    }
+
+    .label-activity-cell {
+        min-width: 0.32rem;
+        max-width: 0.44rem;
+        border-radius: 0.13rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .app-sidebar {
+        left: 50%;
+        right: auto;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 0.85rem);
+        top: auto;
+        width: max-content;
+        max-width: calc(100vw - 1.5rem);
+        height: auto;
+        overflow: hidden;
+        transform: translateX(-50%);
+        border: 1px solid rgb(15 23 42 / 0.08);
+        border-radius: 9999px;
+        background: rgb(15 23 42 / 0.055);
+        box-shadow: 0 16px 42px rgb(15 23 42 / 0.12);
+        -webkit-backdrop-filter: blur(22px) saturate(1.28);
+        backdrop-filter: blur(22px) saturate(1.28);
+    }
+
+    .dark .app-sidebar {
+        border-color: rgb(255 255 255 / 0.08);
+        background: rgb(2 6 23 / 0.42);
+        box-shadow: 0 16px 42px rgb(0 0 0 / 0.32);
+    }
+
+    .app-sidebar > div {
+        height: 3.8rem;
+        max-width: none;
+        padding-left: 0.38rem;
+        padding-right: 0.38rem;
+    }
+
+    .app-sidebar > div > div,
+    .app-sidebar > div > div > div {
+        height: 100%;
+    }
+
+    .app-sidebar > div > div > div {
+        display: flex;
+        align-items: center;
+        overflow: visible;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .app-sidebar > div > div > div > div:last-child {
+        min-width: 0;
+        align-items: center;
+        gap: 0.18rem;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .app-sidebar .sidebar-brand,
+    .app-sidebar .sidebar-collapse-toggle,
+    .app-sidebar .mb-3 {
+        display: none !important;
+    }
+
+    .app-sidebar .sidebar-link {
+        width: 3.08rem;
+        min-width: 0;
+        height: 3.05rem;
+        gap: 0;
+        justify-content: center;
+        padding: 0.5rem;
+        border-radius: 9999px;
+        color: rgb(100 116 139);
+        font-size: 10.5px;
+        font-weight: 400;
+        line-height: 1rem;
+    }
+
+    .app-sidebar .sidebar-link span {
+        display: none;
+    }
+
+    .app-sidebar .sidebar-link svg {
+        width: 1.18rem;
+        height: 1.18rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .sidebar-collapsed .app-sidebar {
+        width: 5.25rem;
+    }
+
+    .sidebar-collapsed .app-sidebar > div {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .sidebar-collapsed .app-sidebar .sidebar-brand {
+        justify-content: center;
+    }
+
+    .sidebar-collapsed .app-sidebar .sidebar-brand span:last-child,
+    .sidebar-collapsed .app-sidebar .sidebar-collapse-label,
+    .sidebar-collapsed .app-sidebar .sidebar-link span,
+    .sidebar-collapsed .app-sidebar .mb-3 {
+        display: none !important;
+    }
+
+    .sidebar-collapsed .app-sidebar .sidebar-collapse-toggle,
+    .sidebar-collapsed .app-sidebar .sidebar-link {
+        justify-content: center;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .sidebar-collapsed .app-sidebar .sidebar-link {
+        gap: 0;
     }
 }
