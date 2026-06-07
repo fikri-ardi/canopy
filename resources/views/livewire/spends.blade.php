@@ -88,14 +88,12 @@
             </div>
         </section>
 
-        <section class="panel px-4 py-4">
-            <div class="max-w-xl">
-                <div class="relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197M15.803 15.803A7.5 7.5 0 1 0 5.197 5.197a7.5 7.5 0 0 0 10.606 10.606Z" />
-                    </svg>
-                    <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search expense, budget, label, platform" class="input-field pl-9">
-                </div>
+        <section class="max-w-xl">
+            <div class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400 dark:text-slate-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197M15.803 15.803A7.5 7.5 0 1 0 5.197 5.197a7.5 7.5 0 0 0 10.606 10.606Z" />
+                </svg>
+                <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search expenses" class="input-field h-11 rounded-xl bg-white/75 pl-9 text-sm shadow-sm shadow-slate-900/5 dark:bg-slate-900/70">
             </div>
         </section>
 
