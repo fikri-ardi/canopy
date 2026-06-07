@@ -125,6 +125,18 @@
             });
         };
 
+        window.alokasiQueueModalScrollLockSync = function (delays = [0, 80, 180, 360]) {
+            delays.forEach((delay) => {
+                setTimeout(() => window.alokasiSyncModalScrollLock?.(), delay);
+            });
+        };
+
+        window.alokasiReleaseInteractionLocks = function () {
+            window.alokasiOpenDropdowns.clear();
+            window.alokasiTooltip?.hide();
+            window.alokasiQueueModalScrollLockSync([0, 60, 140, 260, 420]);
+        };
+
         window.alokasiPreventDropdownBackgroundScroll = function (event) {
             if (window.alokasiOpenDropdowns.size === 0) {
                 return;
@@ -172,6 +184,10 @@
             window.alokasiOpenDropdowns.clear();
             window.alokasiSyncModalScrollLock();
         });
+        document.addEventListener('saved', () => window.alokasiReleaseInteractionLocks());
+        document.addEventListener('budget-created', () => window.alokasiReleaseInteractionLocks());
+        window.addEventListener('saved', () => window.alokasiReleaseInteractionLocks());
+        window.addEventListener('budget-created', () => window.alokasiReleaseInteractionLocks());
 
         window.alokasiBudgetPage = function (initialOnboardingStep = null) {
             return {
@@ -587,6 +603,7 @@
                 afterBudgetCreated() {
                     this.createBudget = false;
                     this.budgetMenu.close();
+                    window.alokasiReleaseInteractionLocks?.();
 
                     if (['budget-name', 'budget-income', 'budget-create', 'new-budget'].includes(this.onboardingStep)) {
                         this.reloadFullPageForOnboarding();
@@ -603,6 +620,7 @@
                 },
                 afterExpenseSaved() {
                     this.createExpense = false;
+                    window.alokasiReleaseInteractionLocks?.();
 
                     if (this.onboardingStep === 'expense-create') {
                         this.reloadFullPageForOnboarding();

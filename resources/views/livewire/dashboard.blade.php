@@ -395,7 +395,7 @@
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <div class="eyebrow">Label Activity</div>
-                    <h2 class="mt-1 text-lg font-semibold text-gray-950 dark:text-slate-50">Breakdown by label</h2>
+                    <h2 class="mt-1 text-lg font-semibold text-gray-950 dark:text-slate-50">Spending trends</h2>
                     <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ $labelActivityHeatmap['totalTransactions'] }} transactions / {{ $labelActivityHeatmap['periodLabel'] }}</p>
                 </div>
                 <label class="relative w-full sm:w-40">
@@ -445,8 +445,8 @@
                                                     <span
                                                         tabindex="0"
                                                         class="label-activity-cell label-activity-level-{{ $cell['level'] }} focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-950"
-                                                        data-tooltip="{{ $row['label'] }} / {{ $cell['day'] }}, {{ $cell['date'] }} / {{ $cell['formatted'] }}"
-                                                        aria-label="{{ $row['label'] }} {{ $cell['day'] }} {{ $cell['date'] }} {{ $cell['formatted'] }}"
+                                                        data-tooltip="{{ $cell['spendName'] }} / {{ $cell['day'] }}, {{ $cell['date'] }} / {{ $cell['formatted'] }}"
+                                                        aria-label="{{ $cell['spendName'] }} {{ $cell['day'] }} {{ $cell['date'] }} {{ $cell['formatted'] }}"
                                                     ></span>
                                                 @endforeach
                                             </div>

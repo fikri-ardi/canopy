@@ -179,12 +179,32 @@ class Dashboard extends Component
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
             ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
             ->whereBetween('spends.created_at', [$periodStart, $periodEnd])
-            ->selectRaw("coalesce(labels.name, 'Unlabeled') as label_name, spends.amount as raw_amount, spends.created_at")
+            ->selectRaw("coalesce(labels.name, 'Unlabeled') as label_name, spends.name as spend_name, spends.amount as raw_amount, spends.created_at")
             ->get();
 
         $cellTotals = $spends
             ->groupBy(fn ($spend) => $spend->label_name.'|'.$spend->created_at->copy()->toDateString())
             ->map(fn ($items) => (int) $items->sum(fn ($spend) => (int) $spend->raw_amount));
+
+        $cellNames = $spends
+            ->groupBy(fn ($spend) => $spend->label_name.'|'.$spend->created_at->copy()->toDateString())
+            ->map(function ($items) {
+                $names = $items
+                    ->pluck('spend_name')
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+                if ($names->isEmpty()) {
+                    return 'No spend';
+                }
+
+                if ($names->count() === 1) {
+                    return $names->first();
+                }
+
+                return $names->first().' +'.($names->count() - 1).' more';
+            });
 
         $maxCell = max((int) $cellTotals->max(), 1);
 
@@ -202,22 +222,24 @@ class Dashboard extends Component
         $totalRows = $labelRows->count();
         $visibleRows = $this->showAllLabelActivity ? $labelRows : $labelRows->take(3);
 
-        $rows = $visibleRows->map(function (array $row) use ($weeks, $cellTotals, $maxCell) {
+        $rows = $visibleRows->map(function (array $row) use ($weeks, $cellTotals, $cellNames, $maxCell) {
             return [
                 'label' => $row['label'],
                 'total' => $row['total'],
                 'transactions' => $row['transactions'],
-                'weeks' => $weeks->map(function (array $week) use ($row, $cellTotals, $maxCell) {
+                'weeks' => $weeks->map(function (array $week) use ($row, $cellTotals, $cellNames, $maxCell) {
                     return [
                         'key' => $week['key'],
-                        'days' => $week['days']->map(function (array $day) use ($row, $cellTotals, $maxCell) {
-                            $amount = (int) ($cellTotals->get($row['label'].'|'.$day['key']) ?? 0);
+                        'days' => $week['days']->map(function (array $day) use ($row, $cellTotals, $cellNames, $maxCell) {
+                            $cellKey = $row['label'].'|'.$day['key'];
+                            $amount = (int) ($cellTotals->get($cellKey) ?? 0);
                             $level = $amount === 0 ? 0 : max(1, min(4, (int) ceil(($amount / $maxCell) * 4)));
 
                             return [
                                 'amount' => $amount,
                                 'formatted' => $this->rupiah($amount),
                                 'level' => $level,
+                                'spendName' => $cellNames->get($cellKey, 'No spend'),
                                 'day' => $day['label'],
                                 'date' => $day['short'],
                             ];
@@ -299,7 +321,7 @@ class Dashboard extends Component
                     'spent' => $spent,
                     'remaining' => $remaining,
                     'percentage' => $percentage,
-                    'tone' => $remaining < 0 ? 'danger' : ($percentage >= 80 ? 'warning' : 'healthy'),
+                    'tone' => $remaining < 0 ? 'danger' : 'healthy',
                 ];
             });
     }
