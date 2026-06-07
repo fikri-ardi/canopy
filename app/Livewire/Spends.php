@@ -2,11 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Budget as BudgetModel;
-use App\Models\Label;
-use App\Models\Platform;
 use App\Models\Spend;
-use App\Models\Status;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
@@ -17,15 +13,10 @@ class Spends extends Component
     use WithPagination;
 
     public $search = '';
-    public $budgetId = 'all';
-    public $labelId = 'all';
-    public $platformId = 'all';
-    public $statusId = 'all';
-    public $sort = 'latest';
 
     public function updated($name): void
     {
-        if (in_array($name, ['search', 'budgetId', 'labelId', 'platformId', 'statusId', 'sort'], true)) {
+        if ($name === 'search') {
             $this->resetPage();
         }
     }
@@ -42,18 +33,11 @@ class Spends extends Component
         $transactionCount = (int) (clone $filteredQuery)->count();
 
         return view('livewire.spends', [
-            'spends' => $this->sortedSpendQuery($filteredQuery)->paginate(12),
+            'spends' => $filteredQuery->latest('spends.created_at')->paginate(12),
             'totalAmount' => $totalAmount,
             'transactionCount' => $transactionCount,
             'averageAmount' => $transactionCount > 0 ? (int) round($totalAmount / $transactionCount) : 0,
             'largestAmount' => (int) (clone $filteredQuery)->max('amount'),
-            'budgets' => BudgetModel::where('user_id', auth()->id())->orderBy('name')->get(['id', 'name']),
-            'labels' => $this->labelsSchemaReady()
-                ? Label::where('user_id', auth()->id())->orderBy('name')->get(['id', 'name'])
-                : collect(),
-            'platforms' => $this->userPlatformsQuery()->get(['id', 'name']),
-            'statuses' => $this->userStatusesQuery()->get(['id', 'body']),
-            'labelsReady' => $this->labelsSchemaReady(),
         ]);
     }
 
@@ -68,17 +52,6 @@ class Spends extends Component
         return Spend::query()
             ->with($relations)
             ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
-            ->when($this->budgetId !== 'all', fn ($query) => $query->where('budget_id', $this->budgetId))
-            ->when($this->platformId !== 'all', fn ($query) => $query->where('platform_id', $this->platformId))
-            ->when($this->statusId !== 'all', fn ($query) => $query->where('status_id', $this->statusId))
-            ->when($this->labelsSchemaReady() && $this->labelId !== 'all', function ($query) {
-                if ($this->labelId === 'unlabeled') {
-                    $query->whereNull('label_id');
-                    return;
-                }
-
-                $query->where('label_id', $this->labelId);
-            })
             ->when($this->search !== '', function ($query) {
                 $search = '%'.$this->search.'%';
 
@@ -95,16 +68,6 @@ class Spends extends Component
             });
     }
 
-    private function sortedSpendQuery(Builder $query): Builder
-    {
-        return match ($this->sort) {
-            'amount_desc' => $query->orderByDesc('amount'),
-            'amount_asc' => $query->orderBy('amount'),
-            'name' => $query->orderBy('name'),
-            default => $query->latest('spends.created_at'),
-        };
-    }
-
     private function labelsSchemaReady(): bool
     {
         return Schema::hasTable('labels')
@@ -112,27 +75,4 @@ class Spends extends Component
             && Schema::hasColumn('spends', 'label_id');
     }
 
-    private function userPlatformsQuery()
-    {
-        return Platform::query()
-            ->when($this->platformsSchemaReady(), fn ($query) => $query->where('user_id', auth()->id()))
-            ->orderBy('name');
-    }
-
-    private function userStatusesQuery()
-    {
-        return Status::query()
-            ->when($this->statusesSchemaReady(), fn ($query) => $query->where('user_id', auth()->id()))
-            ->orderBy('body');
-    }
-
-    private function platformsSchemaReady(): bool
-    {
-        return Schema::hasColumn('platforms', 'user_id');
-    }
-
-    private function statusesSchemaReady(): bool
-    {
-        return Schema::hasColumn('statuses', 'user_id');
-    }
 }
