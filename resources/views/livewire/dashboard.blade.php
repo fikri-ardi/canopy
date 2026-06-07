@@ -398,12 +398,20 @@
                     <h2 class="mt-1 text-lg font-semibold text-gray-950 dark:text-slate-50">Breakdown by label</h2>
                     <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ $labelActivityHeatmap['totalTransactions'] }} transactions / {{ $labelActivityHeatmap['periodLabel'] }}</p>
                 </div>
-                <div class="relative w-full sm:w-72">
+                <label class="relative w-full sm:w-40">
+                    <span class="sr-only">Filter year</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197M15.803 15.803A7.5 7.5 0 1 0 5.197 5.197a7.5 7.5 0 0 0 10.606 10.606Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3.75 8.25h16.5M5.25 5.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25Z" />
                     </svg>
-                    <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search label or expense" class="input-field pl-9">
-                </div>
+                    <select wire:model.live="labelActivityYear" class="input-field appearance-none pl-9 pr-9">
+                        @foreach ($labelActivityYears as $year)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
+                    </select>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-gray-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </label>
             </div>
 
             @if (! $labelActivityHeatmap['ready'])

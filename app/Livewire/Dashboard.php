@@ -15,6 +15,12 @@ class Dashboard extends Component
     public $search = '';
     public $startDate = '';
     public $endDate = '';
+    public $labelActivityYear;
+
+    public function mount(): void
+    {
+        $this->labelActivityYear ??= now()->year;
+    }
 
     public function completeOnboarding(): void
     {
@@ -158,12 +164,6 @@ class Dashboard extends Component
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
             ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
             ->whereBetween('spends.created_at', [$periodStart, $periodEnd])
-            ->when($this->search, function ($query) {
-                $query->where(function ($query) {
-                    $query->where('labels.name', 'like', '%'.$this->search.'%')
-                        ->orWhere('spends.name', 'like', '%'.$this->search.'%');
-                });
-            })
             ->selectRaw("coalesce(labels.name, 'Unlabeled') as label_name, spends.amount as raw_amount, spends.created_at")
             ->get();
 
@@ -563,13 +563,40 @@ class Dashboard extends Component
 
     private function labelActivityRange(): array
     {
-        $year = now()->year;
+        $year = $this->selectedLabelActivityYear();
         $periodStart = Carbon::create($year, 1, 1)->startOfDay();
         $periodEnd = Carbon::create($year, 12, 31)->endOfDay();
         $gridStart = $periodStart->copy()->startOfWeek();
         $gridEnd = $periodEnd->copy()->endOfWeek();
 
         return [$periodStart, $periodEnd, $gridStart, $gridEnd];
+    }
+
+    private function selectedLabelActivityYear(): int
+    {
+        $year = filter_var($this->labelActivityYear, FILTER_VALIDATE_INT);
+
+        if (! $year || $year < 1970 || $year > 2100) {
+            return now()->year;
+        }
+
+        return $year;
+    }
+
+    private function labelActivityYears()
+    {
+        $years = Spend::query()
+            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+            ->pluck('created_at')
+            ->filter()
+            ->map(fn ($date) => Carbon::parse($date)->year)
+            ->push(now()->year)
+            ->push($this->selectedLabelActivityYear())
+            ->unique()
+            ->sortDesc()
+            ->values();
+
+        return $years;
     }
 
     private function dateBoundary(?string $date, bool $endOfDay = false): ?Carbon
@@ -602,6 +629,7 @@ class Dashboard extends Component
         return view('livewire.dashboard', [
             'labelBreakdown' => $labelBreakdown,
             'labelActivityHeatmap' => $this->labelActivityHeatmap(),
+            'labelActivityYears' => $this->labelActivityYears(),
             'platformBreakdown' => $this->platformBreakdown(),
             'statusBreakdown' => $this->statusBreakdown(),
             'topExpenses' => $this->topExpenses(),
