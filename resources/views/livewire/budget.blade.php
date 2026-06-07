@@ -68,28 +68,40 @@
 
                     <template x-teleport="body">
                         <div x-ref="budgetSettingsMenu" x-show="budgetSettingsMenu.open" x-cloak x-transition x-bind:style="budgetSettingsMenu.style" x-on:click.outside="budgetSettingsMenu.close()" x-on:resize.window="budgetSettingsMenu.close()" wire:key="budget-settings-menu" wire:ignore.self class="floating-select-menu">
-                            <button type="button" x-on:click="budgetSettingsMenu.close(); renameBudget = true" wire:click="startRenamingBudget" class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4 shrink-0 text-gray-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.862 4.487Z" />
-                                </svg>
+                            <button type="button" x-on:click="budgetSettingsMenu.close(); renameBudget = true" wire:click="startRenamingBudget" class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 dark:bg-slate-800 dark:text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h8.25M7.5 12h5.25m-6 7.5h9A2.25 2.25 0 0 0 18 17.25V6.75A2.25 2.25 0 0 0 15.75 4.5h-9A2.25 2.25 0 0 0 4.5 6.75v10.5A2.25 2.25 0 0 0 6.75 19.5Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.25 15.75 4.5-4.5 1.5 1.5-4.5 4.5h-1.5v-1.5Z" />
+                                    </svg>
+                                </span>
                                 <span>Rename plan</span>
                             </button>
-                            <button type="button" x-on:click="budgetSettingsMenu.close(); editIncome = true" wire:click="startEditingIncome" class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4 shrink-0 text-gray-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182-.586-.439-1.354-.659-2.121-.659-.768 0-1.536-.22-2.121-.659-1.172-.879-1.172-2.303 0-3.182 1.171-.879 3.07-.879 4.242 0l.879.659" />
-                                </svg>
+                            <button type="button" x-on:click="budgetSettingsMenu.close(); editIncome = true" wire:click="startEditingIncome" class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125H3.75a1.125 1.125 0 0 1-1.125-1.125v-9.75C2.625 5.004 3.129 4.5 3.75 4.5Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v3.75m-1.5-1.5h3" />
+                                    </svg>
+                                </span>
                                 <span>Edit income</span>
                             </button>
-                            <button type="button" x-on:click="budgetSettingsMenu.close()" wire:click="duplicateActiveBudget" class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4 shrink-0 text-gray-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125v-9.75c0-.621.504-1.125 1.125-1.125H8.25m7.5 7.5h3.375c.621 0 1.125-.504 1.125-1.125v-9.75c0-.621-.504-1.125-1.125-1.125h-9.75A1.125 1.125 0 0 0 8.25 6.375v3.375" />
-                                </svg>
+                            <button type="button" x-on:click="budgetSettingsMenu.close()" wire:click="duplicateActiveBudget" class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                                <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 dark:bg-slate-800 dark:text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6A2.25 2.25 0 0 1 10.5 3.75h7.5A2.25 2.25 0 0 1 20.25 6v7.5A2.25 2.25 0 0 1 18 15.75h-1.5" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 8.25h7.5a2.25 2.25 0 0 1 2.25 2.25v7.5A2.25 2.25 0 0 1 12 20.25H4.5A2.25 2.25 0 0 1 2.25 18v-7.5A2.25 2.25 0 0 1 4.5 8.25Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.125 14.625h4.5m-2.25-2.25v4.5" />
+                                    </svg>
+                                </span>
                                 <span>Duplicate plan</span>
                             </button>
-                            <button type="button" x-on:click="budgetSettingsMenu.close(); deleteBudget = true" class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-500 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-500/10">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4 shrink-0">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166M19.228 5.79 18.16 19.673A2.25 2.25 0 0 1 15.916 21.75H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79" />
-                                </svg>
+                            <button type="button" x-on:click="budgetSettingsMenu.close(); deleteBudget = true" class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-red-500 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-500/10">
+                                <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5h10.5m-8.25 0V6A1.5 1.5 0 0 1 10.5 4.5h3A1.5 1.5 0 0 1 15 6v1.5m-7.5 0 .75 12A2.25 2.25 0 0 0 10.5 21h3a2.25 2.25 0 0 0 2.25-2.25l.75-11.25M10.5 11.25v5.25m3-5.25v5.25" />
+                                    </svg>
+                                </span>
                                 <span>Delete plan</span>
                             </button>
                         </div>

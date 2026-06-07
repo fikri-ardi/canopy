@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Imports\BudgetSpendsImport;
 use App\Models\Budget;
+use App\Models\Feedback;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -31,6 +32,10 @@ class Settings extends Component
     public bool $hasPassword = false;
 
     public ?TemporaryUploadedFile $importFile = null;
+
+    public string $feedbackMood = 'idea';
+
+    public string $feedbackMessage = '';
 
     public function mount(): void
     {
@@ -110,6 +115,30 @@ class Settings extends Component
 
         $this->reset('importFile');
         $this->dispatch('alokasi-flash', tone: 'success', title: 'Berhasil', message: 'Import finished.');
+    }
+
+    public function sendFeedback(): void
+    {
+        $validated = $this->validate([
+            'feedbackMood' => ['required', Rule::in(['idea', 'issue', 'love'])],
+            'feedbackMessage' => ['required', 'string', 'min:8', 'max:1200'],
+        ]);
+
+        Feedback::create([
+            'user_id' => auth()->id(),
+            'mood' => $validated['feedbackMood'],
+            'message' => $validated['feedbackMessage'],
+            'page' => request()->headers->get('referer'),
+        ]);
+
+        $this->reset('feedbackMessage');
+
+        $this->dispatch(
+            'alokasi-flash',
+            tone: 'success',
+            title: 'Makasih',
+            message: 'Feedback kamu sudah masuk.',
+        );
     }
 
     public function deleteAccount()

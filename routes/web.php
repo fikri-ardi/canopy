@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\DataExportController;
+use App\Livewire\AdminAnalytics;
 use App\Livewire\Budget;
 use App\Livewire\Dashboard;
 use App\Livewire\Investment;
@@ -76,4 +77,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/statuses', Statuses::class)->name('statuses');
     Route::get('/settings', Settings::class)->name('settings');
     Route::get('/settings/export/budgets', [DataExportController::class, 'budgets'])->name('settings.export.budgets');
+});
+
+Route::middleware(['auth', 'verified', 'admin'])->group(function () {
+    Route::get('/admin', AdminAnalytics::class)->name('admin.analytics');
 });

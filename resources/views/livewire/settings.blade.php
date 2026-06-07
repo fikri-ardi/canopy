@@ -24,6 +24,7 @@
                     ['href' => '#appearance', 'label' => 'Appearance'],
                     ['href' => '#setup', 'label' => 'App Setup'],
                     ['href' => '#profile', 'label' => 'Profile'],
+                    ['href' => '#feedback', 'label' => 'Feedback'],
                     ['href' => '#security', 'label' => 'Security'],
                     ['href' => '#data', 'label' => 'Export / Import'],
                     ['href' => '#legal', 'label' => 'Legal'],
@@ -159,6 +160,56 @@
                         </button>
                     </div>
                 </form>
+            </section>
+
+            <section id="feedback" class="panel scroll-mt-5 p-4 sm:p-5">
+                <div class="grid gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.35fr)] lg:items-start">
+                    <div>
+                        <span class="inline-flex size-10 items-center justify-center rounded-lg bg-green-50 text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75h6.75m-6.75 3h3.75M4.5 5.25A2.25 2.25 0 0 1 6.75 3h10.5a2.25 2.25 0 0 1 2.25 2.25v8.25a2.25 2.25 0 0 1-2.25 2.25H12l-4.5 3v-3H6.75a2.25 2.25 0 0 1-2.25-2.25V5.25Z" />
+                            </svg>
+                        </span>
+                        <h2 class="mt-3 text-base font-bold text-gray-950 dark:text-slate-50">Feedback</h2>
+                        <p class="mt-1 text-sm leading-6 text-gray-500 dark:text-slate-400">Tell me what feels useful, confusing, or worth improving. Short notes are perfectly fine.</p>
+                    </div>
+
+                    <form wire:submit="sendFeedback" class="space-y-4">
+                        <div class="grid gap-2 sm:grid-cols-3">
+                            @foreach ([
+                                ['value' => 'idea', 'label' => 'Idea', 'icon' => 'M12 18v-5.25m0 0A3.75 3.75 0 1 0 8.25 9m3.75 3.75A3.75 3.75 0 0 1 15.75 9M9.75 18h4.5M10.5 21h3'],
+                                ['value' => 'issue', 'label' => 'Issue', 'icon' => 'M12 9v3.75m0 3.75h.008v.008H12v-.008ZM10.29 3.86 1.82 18a2.25 2.25 0 0 0 1.93 3.375h16.5A2.25 2.25 0 0 0 22.18 18L13.71 3.86a2.25 2.25 0 0 0-3.42 0Z'],
+                                ['value' => 'love', 'label' => 'Love', 'icon' => 'M21 8.25c0 6.375-9 10.5-9 10.5s-9-4.125-9-10.5A4.875 4.875 0 0 1 12 5.25a4.875 4.875 0 0 1 9 3Z'],
+                            ] as $option)
+                                <label class="cursor-pointer">
+                                    <input type="radio" wire:model="feedbackMood" value="{{ $option['value'] }}" class="peer sr-only">
+                                    <span class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white/70 px-3 py-2 text-sm font-medium text-gray-600 transition peer-checked:border-green-200 peer-checked:bg-green-50 peer-checked:text-green-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:peer-checked:border-green-500/30 dark:peer-checked:bg-green-500/10 dark:peer-checked:text-green-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $option['icon'] }}" />
+                                        </svg>
+                                        {{ $option['label'] }}
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+
+                        <div>
+                            <label for="settings-feedback-message" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">Message</label>
+                            <textarea id="settings-feedback-message" wire:model="feedbackMessage" rows="4" maxlength="1200" placeholder="What should feel better in Alokasi?" class="input-field mt-1 resize-none"></textarea>
+                            @error('feedbackMessage')
+                                <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <button type="submit" wire:loading.attr="disabled" wire:target="sendFeedback" class="btn-primary w-full sm:w-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.77 59.77 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L6 12Zm0 0h7.5" />
+                            </svg>
+                            <span wire:loading.remove wire:target="sendFeedback">Send Feedback</span>
+                            <span wire:loading wire:target="sendFeedback">Sending...</span>
+                        </button>
+                    </form>
+                </div>
             </section>
 
             <section id="security" class="panel scroll-mt-5 p-4 sm:p-5">
