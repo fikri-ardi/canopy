@@ -362,14 +362,24 @@
         @apply text-[10px] leading-none;
     }
 
+    .label-activity-week-grid {
+        --label-activity-cell-size: 0.64rem;
+        --label-activity-cell-gap: 0.22rem;
+        display: grid;
+        gap: var(--label-activity-cell-gap);
+    }
+
+    .label-activity-day-grid {
+        display: grid;
+        gap: var(--label-activity-cell-gap);
+        grid-template-rows: repeat(7, var(--label-activity-cell-size));
+    }
+
     .label-activity-cell {
         display: block;
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        min-width: 0.72rem;
-        max-width: 0.92rem;
-        justify-self: center;
-        border-radius: 0.22rem;
+        width: var(--label-activity-cell-size, 0.64rem);
+        height: var(--label-activity-cell-size, 0.64rem);
+        border-radius: 0.18rem;
         background: rgb(226 232 240 / 0.72);
         box-shadow: inset 0 0 0 1px rgb(148 163 184 / 0.08);
     }
@@ -1153,9 +1163,14 @@ body,
         box-shadow: none;
     }
 
+    .label-activity-week-grid {
+        --label-activity-cell-size: 0.4rem;
+        --label-activity-cell-gap: 2px;
+    }
+
     .label-activity-cell {
-        min-width: 0.32rem;
-        max-width: 0.44rem;
+        width: var(--label-activity-cell-size, 0.4rem);
+        height: var(--label-activity-cell-size, 0.4rem);
         border-radius: 0.13rem;
     }
 }

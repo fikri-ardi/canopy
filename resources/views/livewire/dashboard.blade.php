@@ -415,9 +415,9 @@
                     No label spending found in this view.
                 </div>
             @else
-                <div class="mt-5 overflow-hidden pb-1 sm:overflow-x-auto">
-                    <div class="min-w-0 sm:min-w-[46rem]">
-                        <div class="ml-[4.35rem] mr-[4.25rem] grid gap-px sm:ml-32 sm:mr-24 sm:gap-1" style="grid-template-columns: repeat({{ $labelActivityHeatmap['weeks']->count() }}, minmax(0, 1fr));">
+                <div class="mt-5 overflow-x-auto pb-1">
+                    <div class="min-w-[38rem] sm:min-w-[58rem]">
+                        <div class="label-activity-week-grid ml-[4.35rem] mr-[4.25rem] sm:ml-32 sm:mr-24" style="grid-template-columns: repeat({{ $labelActivityHeatmap['weeks']->count() }}, var(--label-activity-cell-size));">
                             @foreach ($labelActivityHeatmap['weeks'] as $week)
                                 <div class="h-4 text-center text-[10px] font-medium text-gray-400 dark:text-slate-500">{{ $week['label'] }}</div>
                             @endforeach
@@ -428,16 +428,20 @@
                                 <div class="grid grid-cols-[3.95rem_minmax(0,1fr)_3.95rem] items-center gap-1 sm:grid-cols-[7.5rem_minmax(0,1fr)_6rem] sm:gap-2">
                                     <div class="min-w-0">
                                         <div class="truncate text-xs font-semibold text-gray-700 dark:text-slate-200">{{ $row['label'] }}</div>
-                                        <div class="text-[10px] text-gray-400 dark:text-slate-500">{{ $row['transactions'] }}x</div>
+                                        <div class="hidden text-[10px] text-gray-400 dark:text-slate-500 sm:block">{{ $row['transactions'] }}x</div>
                                     </div>
-                                    <div class="grid gap-px sm:gap-1" style="grid-template-columns: repeat({{ $labelActivityHeatmap['weeks']->count() }}, minmax(0, 1fr));">
-                                        @foreach ($row['cells'] as $cell)
-                                            <span
-                                                tabindex="0"
-                                                class="label-activity-cell label-activity-level-{{ $cell['level'] }} focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-950"
-                                                data-tooltip="{{ $row['label'] }} / {{ $cell['week'] }} / {{ $cell['formatted'] }}"
-                                                aria-label="{{ $row['label'] }} {{ $cell['week'] }} {{ $cell['formatted'] }}"
-                                            ></span>
+                                    <div class="label-activity-week-grid" style="grid-template-columns: repeat({{ $labelActivityHeatmap['weeks']->count() }}, var(--label-activity-cell-size));">
+                                        @foreach ($row['weeks'] as $week)
+                                            <div class="label-activity-day-grid">
+                                                @foreach ($week['days'] as $cell)
+                                                    <span
+                                                        tabindex="0"
+                                                        class="label-activity-cell label-activity-level-{{ $cell['level'] }} focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-950"
+                                                        data-tooltip="{{ $row['label'] }} / {{ $cell['day'] }}, {{ $cell['date'] }} / {{ $cell['formatted'] }}"
+                                                        aria-label="{{ $row['label'] }} {{ $cell['day'] }} {{ $cell['date'] }} {{ $cell['formatted'] }}"
+                                                    ></span>
+                                                @endforeach
+                                            </div>
                                         @endforeach
                                     </div>
                                     <div class="money-value truncate text-right text-[10px] font-semibold text-gray-500 dark:text-slate-400 sm:text-xs">{{ $this->rupiah($row['total']) }}</div>

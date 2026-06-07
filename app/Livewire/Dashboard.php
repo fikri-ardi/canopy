@@ -129,15 +129,26 @@ class Dashboard extends Component
             ];
         }
 
-        [$start, $end] = $this->labelActivityRange();
+        [$periodStart, $periodEnd, $gridStart, $gridEnd] = $this->labelActivityRange();
         $weeks = collect();
-        $cursor = $start->copy();
+        $cursor = $gridStart->copy();
 
-        while ($cursor->lte($end)) {
+        while ($cursor->lte($gridEnd)) {
+            $weekStart = $cursor->copy();
+
             $weeks->push([
-                'key' => $cursor->toDateString(),
-                'label' => $cursor->isSameMonth($cursor->copy()->subWeek()) ? '' : $cursor->format('M'),
-                'short' => $cursor->format('d M'),
+                'key' => $weekStart->toDateString(),
+                'label' => $weekStart->isSameMonth($weekStart->copy()->subWeek()) ? '' : $weekStart->format('M'),
+                'short' => $weekStart->format('d M'),
+                'days' => collect(range(0, 6))->map(function (int $offset) use ($weekStart) {
+                    $day = $weekStart->copy()->addDays($offset);
+
+                    return [
+                        'key' => $day->toDateString(),
+                        'label' => $day->format('D'),
+                        'short' => $day->format('d M'),
+                    ];
+                }),
             ]);
 
             $cursor->addWeek();
@@ -146,7 +157,7 @@ class Dashboard extends Component
         $spends = Spend::query()
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
             ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
-            ->whereBetween('spends.created_at', [$start, $end])
+            ->whereBetween('spends.created_at', [$periodStart, $periodEnd])
             ->when($this->search, function ($query) {
                 $query->where(function ($query) {
                     $query->where('labels.name', 'like', '%'.$this->search.'%')
@@ -157,7 +168,7 @@ class Dashboard extends Component
             ->get();
 
         $cellTotals = $spends
-            ->groupBy(fn ($spend) => $spend->label_name.'|'.$spend->created_at->copy()->startOfWeek()->toDateString())
+            ->groupBy(fn ($spend) => $spend->label_name.'|'.$spend->created_at->copy()->toDateString())
             ->map(fn ($items) => (int) $items->sum(fn ($spend) => (int) $spend->raw_amount));
 
         $maxCell = max((int) $cellTotals->max(), 1);
@@ -178,15 +189,21 @@ class Dashboard extends Component
                     'label' => $row['label'],
                     'total' => $row['total'],
                     'transactions' => $row['transactions'],
-                    'cells' => $weeks->map(function (array $week) use ($row, $cellTotals, $maxCell) {
-                        $amount = (int) ($cellTotals->get($row['label'].'|'.$week['key']) ?? 0);
-                        $level = $amount === 0 ? 0 : max(1, min(4, (int) ceil(($amount / $maxCell) * 4)));
-
+                    'weeks' => $weeks->map(function (array $week) use ($row, $cellTotals, $maxCell) {
                         return [
-                            'amount' => $amount,
-                            'formatted' => $this->rupiah($amount),
-                            'level' => $level,
-                            'week' => $week['short'],
+                            'key' => $week['key'],
+                            'days' => $week['days']->map(function (array $day) use ($row, $cellTotals, $maxCell) {
+                                $amount = (int) ($cellTotals->get($row['label'].'|'.$day['key']) ?? 0);
+                                $level = $amount === 0 ? 0 : max(1, min(4, (int) ceil(($amount / $maxCell) * 4)));
+
+                                return [
+                                    'amount' => $amount,
+                                    'formatted' => $this->rupiah($amount),
+                                    'level' => $level,
+                                    'day' => $day['label'],
+                                    'date' => $day['short'],
+                                ];
+                            }),
                         ];
                     }),
                 ];
@@ -197,7 +214,7 @@ class Dashboard extends Component
             'rows' => $rows,
             'weeks' => $weeks,
             'totalTransactions' => $spends->count(),
-            'periodLabel' => $start->format('d M').' - '.$end->format('d M Y'),
+            'periodLabel' => $periodStart->format('M').' - '.$periodEnd->format('M Y'),
         ];
     }
 
@@ -546,18 +563,13 @@ class Dashboard extends Component
 
     private function labelActivityRange(): array
     {
-        $start = $this->dateBoundary($this->startDate)?->startOfWeek() ?? now()->subWeeks(11)->startOfWeek();
-        $end = $this->dateBoundary($this->endDate, true)?->endOfWeek() ?? now()->endOfWeek();
+        $year = now()->year;
+        $periodStart = Carbon::create($year, 1, 1)->startOfDay();
+        $periodEnd = Carbon::create($year, 12, 31)->endOfDay();
+        $gridStart = $periodStart->copy()->startOfWeek();
+        $gridEnd = $periodEnd->copy()->endOfWeek();
 
-        if ($start->gt($end)) {
-            [$start, $end] = [$end->copy()->startOfWeek(), $start->copy()->endOfWeek()];
-        }
-
-        if ($start->diffInWeeks($end) > 15) {
-            $start = $end->copy()->subWeeks(15)->startOfWeek();
-        }
-
-        return [$start, $end];
+        return [$periodStart, $periodEnd, $gridStart, $gridEnd];
     }
 
     private function dateBoundary(?string $date, bool $endOfDay = false): ?Carbon
