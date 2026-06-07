@@ -17,46 +17,15 @@
             </div>
 
             <div class="page-header-actions">
-                <div class="min-w-0 flex-1 sm:w-44 sm:flex-none">
-                    <button x-ref="budgetTrigger" type="button" x-on:click.stop="budgetMenu.toggle($refs.budgetTrigger, $refs.budgetMenu)" class="btn-secondary w-full justify-between">
-                        <span class="truncate">{{ $budgetId === 'all' ? 'All budgets' : $budgets->firstWhere('id', (int) $budgetId)?->name }}</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                    <template x-teleport="body">
-                        <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" wire:key="dashboard-budget-menu" wire:ignore.self class="floating-select-menu">
-                            <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All budgets</button>
-                            @foreach ($budgets as $budget)
-                                <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', '{{ $budget->id }}')" wire:key="dashboard-budget-option-{{ $budget->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $budget->name }}</button>
-                            @endforeach
-                        </div>
-                    </template>
-                </div>
+                <label class="min-w-0 flex-1 sm:w-40 sm:flex-none">
+                    <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">Start Date</span>
+                    <input wire:model.live="startDate" type="date" class="input-field">
+                </label>
 
-                <div class="min-w-0 flex-1 sm:w-40 sm:flex-none">
-                    @php($rangeLabels = ['all' => 'All time', '30' => 'Last 30 days', '90' => 'Last 90 days', '365' => 'Last year'])
-                    <button x-ref="rangeTrigger" type="button" x-on:click.stop="rangeMenu.toggle($refs.rangeTrigger, $refs.rangeMenu)" class="btn-secondary w-full justify-between">
-                        <span class="truncate">{{ $rangeLabels[$range] ?? 'All time' }}</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                    <template x-teleport="body">
-                        <div x-ref="rangeMenu" x-show="rangeMenu.open" x-cloak x-transition x-bind:style="rangeMenu.style" x-on:click.outside="rangeMenu.close()" x-on:resize.window="rangeMenu.close()" wire:key="dashboard-range-menu" wire:ignore.self class="floating-select-menu">
-                            @foreach ($rangeLabels as $value => $label)
-                                <button type="button" x-on:click="rangeMenu.close()" wire:click="$set('range', '{{ $value }}')" wire:key="dashboard-range-option-{{ $value }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $label }}</button>
-                            @endforeach
-                        </div>
-                    </template>
-                </div>
-
-                <a href="{{ route('budgets') }}" wire:navigate class="btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    <span>Manage Budget</span>
-                </a>
+                <label class="min-w-0 flex-1 sm:w-40 sm:flex-none">
+                    <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">End Date</span>
+                    <input wire:model.live="endDate" type="date" class="input-field">
+                </label>
             </div>
         </div>
     </header>

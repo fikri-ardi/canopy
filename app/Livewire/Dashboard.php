@@ -7,13 +7,14 @@ use App\Models\Spend;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
+use Throwable;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
     public $search = '';
-    public $range = 'all';
-    public $budgetId = 'all';
+    public $startDate = '';
+    public $endDate = '';
 
     public function completeOnboarding(): void
     {
@@ -46,23 +47,13 @@ class Dashboard extends Component
         return Spend::query()
             ->when($withRelations, fn ($query) => $query->with($relations))
             ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
-            ->when($this->budgetId !== 'all', fn ($query) => $query->where('budget_id', $this->budgetId))
-            ->when($this->rangeStart(), fn ($query, Carbon $start) => $query->where('spends.created_at', '>=', $start));
+            ->tap(fn (Builder $query) => $this->applyDateRange($query));
     }
 
     private function userBudgetQuery(): Builder
     {
         return Budget::query()
-            ->where('user_id', auth()->id())
-            ->when($this->budgetId !== 'all', fn ($query) => $query->where('id', $this->budgetId));
-    }
-
-    private function allBudgets()
-    {
-        return Budget::query()
-            ->where('user_id', auth()->id())
-            ->orderBy('name')
-            ->get(['id', 'name']);
+            ->where('user_id', auth()->id());
     }
 
     private function labelBreakdown()
@@ -71,13 +62,10 @@ class Dashboard extends Component
             return collect();
         }
 
-        $rangeStart = $this->rangeStart();
-
         $labels = Spend::query()
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
             ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
-            ->when($this->budgetId !== 'all', fn ($query) => $query->where('spends.budget_id', $this->budgetId))
-            ->when($rangeStart, fn ($query, Carbon $start) => $query->where('spends.created_at', '>=', $start))
+            ->tap(fn (Builder $query) => $this->applyDateRange($query))
             ->when($this->search, function ($query) {
                 $query->where(function ($query) {
                     $query->where('labels.name', 'like', '%'.$this->search.'%')
@@ -90,13 +78,12 @@ class Dashboard extends Component
             ->limit(6)
             ->get();
 
-        return $labels->map(function ($label) use ($rangeStart) {
+        return $labels->map(function ($label) {
             $items = Spend::query()
                 ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
                 ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
                 ->whereRaw("coalesce(labels.name, 'Unlabeled') = ?", [$label->label_name])
-                ->when($this->budgetId !== 'all', fn ($query) => $query->where('spends.budget_id', $this->budgetId))
-                ->when($rangeStart, fn ($query, Carbon $start) => $query->where('spends.created_at', '>=', $start))
+                ->tap(fn (Builder $query) => $this->applyDateRange($query))
                 ->when($this->search, function ($query) {
                     $query->where(function ($query) {
                         $query->where('labels.name', 'like', '%'.$this->search.'%')
@@ -168,13 +155,9 @@ class Dashboard extends Component
 
     private function budgetHealth()
     {
-        $rangeStart = $this->rangeStart();
-
         return $this->userBudgetQuery()
-            ->withSum(['spends as total_spent' => function ($query) use ($rangeStart) {
-                if ($rangeStart) {
-                    $query->where('created_at', '>=', $rangeStart);
-                }
+            ->withSum(['spends as total_spent' => function ($query) {
+                $this->applyDateRange($query, 'created_at');
             }], 'amount')
             ->orderBy('name')
             ->get()
@@ -251,14 +234,11 @@ class Dashboard extends Component
             ];
         }
 
-        $rangeStart = $this->rangeStart();
-
         $rows = Spend::query()
             ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
             ->where('budgets.user_id', auth()->id())
-            ->when($this->budgetId !== 'all', fn ($query) => $query->where('spends.budget_id', $this->budgetId))
-            ->when($rangeStart, fn ($query, Carbon $start) => $query->where('spends.created_at', '>=', $start))
+            ->tap(fn (Builder $query) => $this->applyDateRange($query))
             ->selectRaw("spends.budget_id as budget_id, coalesce(labels.name, 'Unlabeled') as category, sum(spends.amount) as total")
             ->groupBy('spends.budget_id')
             ->groupByRaw("coalesce(labels.name, 'Unlabeled')")
@@ -471,14 +451,26 @@ class Dashboard extends Component
         return number_format($amount, 0, ',', '.');
     }
 
-    private function rangeStart(): ?Carbon
+    private function applyDateRange(Builder $query, string $column = 'spends.created_at'): Builder
     {
-        return match ($this->range) {
-            '30' => now()->subDays(30),
-            '90' => now()->subDays(90),
-            '365' => now()->subDays(365),
-            default => null,
-        };
+        return $query
+            ->when($this->dateBoundary($this->startDate), fn (Builder $query, Carbon $start) => $query->where($column, '>=', $start))
+            ->when($this->dateBoundary($this->endDate, true), fn (Builder $query, Carbon $end) => $query->where($column, '<=', $end));
+    }
+
+    private function dateBoundary(?string $date, bool $endOfDay = false): ?Carbon
+    {
+        if (! is_string($date) || trim($date) === '') {
+            return null;
+        }
+
+        try {
+            $boundary = Carbon::createFromFormat('Y-m-d', trim($date));
+        } catch (Throwable) {
+            return null;
+        }
+
+        return $endOfDay ? $boundary->endOfDay() : $boundary->startOfDay();
     }
 
     public function rupiah($amount): string
@@ -494,7 +486,6 @@ class Dashboard extends Component
         $transactionCount = $this->transactionCount();
 
         return view('livewire.dashboard', [
-            'budgets' => $this->allBudgets(),
             'labelBreakdown' => $labelBreakdown,
             'platformBreakdown' => $this->platformBreakdown(),
             'statusBreakdown' => $this->statusBreakdown(),

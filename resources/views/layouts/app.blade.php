@@ -613,8 +613,6 @@
 
         window.alokasiDashboardPage = function (showWelcomeTour = false) {
             return {
-                budgetMenu: alokasiDropdown(),
-                rangeMenu: alokasiDropdown(),
                 welcomeTour: {
                     visible: showWelcomeTour,
                     style: '',
