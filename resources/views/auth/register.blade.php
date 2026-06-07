@@ -44,7 +44,7 @@
         </form>
 
         <p class="mt-4 text-center text-xs leading-5 text-gray-400 dark:text-slate-500">
-            By creating an account, you agree to Canopy's
+            By creating an account, you agree to Alokasi's
             <a href="{{ route('terms') }}" class="font-semibold text-green-600 hover:text-green-700 dark:text-green-400">Terms</a>
             and
             <a href="{{ route('privacy') }}" class="font-semibold text-green-600 hover:text-green-700 dark:text-green-400">Privacy Policy</a>.

@@ -1,4 +1,4 @@
-<div class="min-w-0" x-data="canopyDashboardPage(@js($showOnboardingWelcome))">
+<div class="min-w-0" x-data="alokasiDashboardPage(@js($showOnboardingWelcome))">
     <header class="app-header" data-onboarding-target="dashboard-welcome">
         <div class="page-header-layout">
             <div class="page-header-copy">

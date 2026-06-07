@@ -235,7 +235,7 @@
 
                 <div class="panel p-4 sm:p-5">
                     <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Import Data</h2>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Upload a Canopy export file to restore or merge budget and expense rows.</p>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Upload an Alokasi export file to restore or merge budget and expense rows.</p>
 
                     <form wire:submit="importData" class="mt-5 rounded-lg border border-dashed border-gray-300 bg-gray-50/70 p-4 dark:border-slate-700 dark:bg-slate-950/40">
                         <label for="settings-import-file" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">File</label>
@@ -256,7 +256,7 @@
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Legal</h2>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Review how Canopy handles your data and the terms for using the app.</p>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Review how Alokasi handles your data and the terms for using the app.</p>
                     </div>
                     <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
                         <a href="{{ route('privacy') }}" class="btn-secondary w-full sm:w-auto">Privacy Policy</a>
@@ -269,7 +269,7 @@
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 class="text-base font-bold text-red-600 dark:text-red-300">Delete Account</h2>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Remove your account and all account-owned Canopy data.</p>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Remove your account and all account-owned Alokasi data.</p>
                     </div>
                     <button type="button" x-on:click="deleteAccount = true" class="btn-danger w-full sm:w-auto">
                         Delete Account

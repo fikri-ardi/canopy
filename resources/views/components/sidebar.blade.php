@@ -1,13 +1,13 @@
 <nav class="app-sidebar fixed inset-x-0 bottom-0 z-40 border-t border-white/45 bg-white/[0.58] shadow-[0_-8px_24px_rgba(15,23,42,0.06)] backdrop-blur-2xl md:sticky md:top-0 md:h-screen md:w-56 md:shrink-0 md:border-r md:border-t-0 md:shadow-sm md:shadow-gray-200/35 dark:border-slate-800/60 dark:bg-slate-950/[0.48] dark:shadow-black/20">
     <div class="mx-auto h-[4.75rem] max-w-7xl px-2 md:h-screen md:px-4">
         <div class="h-full md:flex md:flex-col">
-            <a href="/" wire:navigate class="hidden items-center justify-center py-5 md:flex md:justify-start md:space-x-2">
+            <a href="/" wire:navigate class="sidebar-brand hidden items-center justify-center py-5 md:flex md:justify-start md:space-x-2">
                 <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-500 ring-1 ring-green-100 dark:bg-green-500/10 dark:ring-green-500/20">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 19.5 12 4.5l8.25 15H3.75Zm4.5-6h7.5" />
                     </svg>
                 </span>
-                <span class="hidden text-xl font-bold text-gray-950 md:inline dark:text-slate-50">Canopy</span>
+                <span class="hidden text-xl font-bold text-gray-950 md:inline dark:text-slate-50">Alokasi</span>
             </a>
 
             <div class="flex h-full items-center overflow-x-auto md:block md:h-auto md:overflow-visible md:py-4">

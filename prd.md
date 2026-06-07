@@ -1,13 +1,13 @@
-# Product Requirements Document (PRD) - Canopy
+# Product Requirements Document (PRD) - Alokasi
 
 ## 1. Project Overview
-- **Project Name:** Canopy
+- **Project Name:** Alokasi
 - **Project Type:** Personal Finance Management System
 - **Target Audience:** Dewasa muda dan profesional yang memerlukan manajemen arus kas yang ketat setelah menerima pendapatan (payday).
 - **Technology Stack:** TALL Stack (Tailwind CSS, Alpine.js, Laravel, Livewire).
 
 ## 2. Objective
-Tujuan utama dari **Canopy** adalah menyediakan sistem pencatatan keuangan yang disiplin untuk mencegah fenomena "dana menguap" setelah hari gajian. Aplikasi ini memfasilitasi pengguna untuk mengalokasikan pendapatan ke dalam kategori budget tertentu (misal: bulanan atau event khusus) dan melacak setiap pengeluaran secara presisi hingga ke platform pembayaran yang digunakan.
+Tujuan utama dari **Alokasi** adalah menyediakan sistem pencatatan keuangan yang disiplin untuk mencegah fenomena "dana menguap" setelah hari gajian. Aplikasi ini memfasilitasi pengguna untuk mengalokasikan pendapatan ke dalam kategori budget tertentu (misal: bulanan atau event khusus) dan melacak setiap pengeluaran secara presisi hingga ke platform pembayaran yang digunakan.
 
 ## 3. User Features
 ### 3.1. Authentication & Security

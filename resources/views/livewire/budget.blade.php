@@ -1,5 +1,5 @@
 <div
-    x-data="canopyBudgetPage(@js($onboardingStep))"
+    x-data="alokasiBudgetPage(@js($onboardingStep))"
     data-server-onboarding-step="{{ $onboardingStep ?? '' }}"
     x-on:saved="afterExpenseSaved()"
     x-on:saved.window="afterExpenseSaved()"

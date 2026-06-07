@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class CanopyDataExport implements WithMultipleSheets
+class AlokasiDataExport implements WithMultipleSheets
 {
     /**
      * @param  array<int>  $budgetIds
@@ -27,12 +27,12 @@ class CanopyDataExport implements WithMultipleSheets
     {
         return [
             new BudgetSpendsExport($this->user, $this->budgetIds),
-            new CanopyDataSheet('Budgets', $this->budgetHeadings(), $this->budgetRows(), ['C']),
-            new CanopyDataSheet('Labels', $this->labelHeadings(), $this->labelRows()),
-            new CanopyDataSheet('Platforms', $this->platformHeadings(), $this->platformRows()),
-            new CanopyDataSheet('Statuses', $this->statusHeadings(), $this->statusRows()),
-            new CanopyDataSheet('Investment Movements', $this->movementHeadings(), $this->movementRows(), ['E']),
-            new CanopyDataSheet('Investment Targets', $this->targetHeadings(), $this->targetRows(), ['D']),
+            new AlokasiDataSheet('Budgets', $this->budgetHeadings(), $this->budgetRows(), ['C']),
+            new AlokasiDataSheet('Labels', $this->labelHeadings(), $this->labelRows()),
+            new AlokasiDataSheet('Platforms', $this->platformHeadings(), $this->platformRows()),
+            new AlokasiDataSheet('Statuses', $this->statusHeadings(), $this->statusRows()),
+            new AlokasiDataSheet('Investment Movements', $this->movementHeadings(), $this->movementRows(), ['E']),
+            new AlokasiDataSheet('Investment Targets', $this->targetHeadings(), $this->targetRows(), ['D']),
         ];
     }
 

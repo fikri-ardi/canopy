@@ -1,5 +1,5 @@
 <tr
-    x-data="{deleteExpense: false, labelMenu: canopyDropdown(), platformMenu: canopyDropdown(), statusMenu: canopyDropdown()}"
+    x-data="{deleteExpense: false, labelMenu: alokasiDropdown(), platformMenu: alokasiDropdown(), statusMenu: alokasiDropdown()}"
     class="bg-white text-gray-800 transition hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800/60"
 >
     <td class="px-2 py-2 text-center text-xs text-gray-400 dark:text-slate-500 sm:px-3 sm:py-3 sm:text-sm">{{ $iteration }}</td>

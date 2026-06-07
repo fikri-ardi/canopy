@@ -18,7 +18,7 @@ it('updates profile asynchronously and dispatches a flash notification', functio
         ->set('name', 'New Name')
         ->set('email', $user->email)
         ->call('updateProfile')
-        ->assertDispatched('canopy-flash');
+        ->assertDispatched('alokasi-flash');
 
     expect($user->fresh()->name)->toBe('New Name');
 });
@@ -35,7 +35,7 @@ it('sets a password for a passwordless user asynchronously', function () {
         ->set('password_confirmation', 'new-password')
         ->call('updatePassword')
         ->assertSet('hasPassword', true)
-        ->assertDispatched('canopy-flash');
+        ->assertDispatched('alokasi-flash');
 
     expect(Hash::check('new-password', $user->fresh()->password))->toBeTrue();
 });
@@ -52,7 +52,7 @@ it('changes an existing password asynchronously', function () {
         ->set('password', 'new-password')
         ->set('password_confirmation', 'new-password')
         ->call('updatePassword')
-        ->assertDispatched('canopy-flash');
+        ->assertDispatched('alokasi-flash');
 
     expect(Hash::check('new-password', $user->fresh()->password))->toBeTrue();
 });

@@ -8,7 +8,7 @@
         'email-verified' => [
             'tone' => 'success',
             'title' => 'Email berhasil diverifikasi',
-            'message' => 'Akun kamu sudah aktif. Selamat datang kembali di Canopy.',
+            'message' => 'Akun kamu sudah aktif. Selamat datang kembali di Alokasi.',
         ],
     ];
 
@@ -52,8 +52,8 @@
 @endif
 
 <div
-    x-data="canopyFlash()"
-    x-on:canopy-flash.window="show($event.detail)"
+    x-data="alokasiFlash()"
+    x-on:alokasi-flash.window="show($event.detail)"
     x-show="visible"
     x-cloak
     x-transition
@@ -89,7 +89,7 @@
 </div>
 
 <script>
-    window.canopyFlash = window.canopyFlash || function () {
+    window.alokasiFlash = window.alokasiFlash || function () {
         return {
             visible: false,
             timeout: null,

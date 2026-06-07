@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
-    <title>Canopy - Your Income Pal</title>
+    <title>Alokasi - Your Income Pal</title>
 </head>
 
 <body
@@ -39,14 +39,14 @@
         </main>
     </div>
     <script>
-        window.canopyFormatNumber = function (value) {
+        window.alokasiFormatNumber = function (value) {
             const digits = String(value || '').replace(/\D/g, '');
             const normalizedDigits = digits.replace(/^0+(?=\d)/, '');
 
             return normalizedDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         };
 
-        window.canopyFormatNumberInput = function (input) {
+        window.alokasiFormatNumberInput = function (input) {
             if (!input) {
                 return;
             }
@@ -54,7 +54,7 @@
             const previousValue = input.value;
             const previousCaret = input.selectionStart ?? previousValue.length;
             const digitsBeforeCaret = previousValue.slice(0, previousCaret).replace(/\D/g, '').length;
-            const formattedValue = window.canopyFormatNumber(previousValue);
+            const formattedValue = window.alokasiFormatNumber(previousValue);
 
             input.value = formattedValue;
 
@@ -89,7 +89,7 @@
                 return;
             }
 
-            window.canopyFormatNumberInput(event.target);
+            window.alokasiFormatNumberInput(event.target);
         }, true);
 
         document.addEventListener('blur', function (event) {
@@ -97,34 +97,34 @@
                 return;
             }
 
-            window.canopyFormatNumberInput(event.target);
+            window.alokasiFormatNumberInput(event.target);
         }, true);
 
-        window.canopyFormatNumberInputs = function () {
+        window.alokasiFormatNumberInputs = function () {
             document.querySelectorAll('input[data-number-format="live"]').forEach((input) => {
-                window.canopyFormatNumberInput(input);
+                window.alokasiFormatNumberInput(input);
             });
         };
 
-        window.canopyOpenDropdowns = window.canopyOpenDropdowns || new Set();
-        window.canopyScrollLock = window.canopyScrollLock || {
+        window.alokasiOpenDropdowns = window.alokasiOpenDropdowns || new Set();
+        window.alokasiScrollLock = window.alokasiScrollLock || {
             syncPending: false,
         };
 
-        window.canopyScheduleScrollLockSync = function () {
-            if (window.canopyScrollLock.syncPending) {
+        window.alokasiScheduleScrollLockSync = function () {
+            if (window.alokasiScrollLock.syncPending) {
                 return;
             }
 
-            window.canopyScrollLock.syncPending = true;
+            window.alokasiScrollLock.syncPending = true;
             requestAnimationFrame(() => {
-                window.canopyScrollLock.syncPending = false;
-                window.canopySyncModalScrollLock();
+                window.alokasiScrollLock.syncPending = false;
+                window.alokasiSyncModalScrollLock();
             });
         };
 
-        window.canopyPreventDropdownBackgroundScroll = function (event) {
-            if (window.canopyOpenDropdowns.size === 0) {
+        window.alokasiPreventDropdownBackgroundScroll = function (event) {
+            if (window.alokasiOpenDropdowns.size === 0) {
                 return;
             }
 
@@ -135,7 +135,7 @@
             event.preventDefault();
         };
 
-        window.canopySyncModalScrollLock = function () {
+        window.alokasiSyncModalScrollLock = function () {
             const hasOpenModal = Array.from(document.querySelectorAll('.modal-backdrop')).some((modal) => {
                 const style = window.getComputedStyle(modal);
 
@@ -145,19 +145,19 @@
             document.body.classList.toggle('modal-open', hasOpenModal);
         };
 
-        document.addEventListener('DOMContentLoaded', window.canopyFormatNumberInputs);
-        document.addEventListener('livewire:navigated', window.canopyFormatNumberInputs);
+        document.addEventListener('DOMContentLoaded', window.alokasiFormatNumberInputs);
+        document.addEventListener('livewire:navigated', window.alokasiFormatNumberInputs);
         document.addEventListener('DOMContentLoaded', () => {
-            window.canopySyncModalScrollLock();
-            document.addEventListener('wheel', window.canopyPreventDropdownBackgroundScroll, { passive: false });
-            document.addEventListener('touchmove', window.canopyPreventDropdownBackgroundScroll, { passive: false });
+            window.alokasiSyncModalScrollLock();
+            document.addEventListener('wheel', window.alokasiPreventDropdownBackgroundScroll, { passive: false });
+            document.addEventListener('touchmove', window.alokasiPreventDropdownBackgroundScroll, { passive: false });
 
             const modalObserver = new MutationObserver((mutations) => {
                 if (mutations.every((mutation) => mutation.target === document.body)) {
                     return;
                 }
 
-                window.canopyScheduleScrollLockSync();
+                window.alokasiScheduleScrollLockSync();
             });
             modalObserver.observe(document.body, {
                 attributes: true,
@@ -167,16 +167,16 @@
             });
         });
         document.addEventListener('livewire:navigated', () => {
-            window.canopyOpenDropdowns.clear();
-            window.canopySyncModalScrollLock();
+            window.alokasiOpenDropdowns.clear();
+            window.alokasiSyncModalScrollLock();
         });
 
-        window.canopyBudgetPage = function (initialOnboardingStep = null) {
+        window.alokasiBudgetPage = function (initialOnboardingStep = null) {
             return {
                 createBudget: false,
-                budgetMenu: canopyDropdown(),
-                allocationMenu: canopyDropdown({ minWidth: 300, maxWidth: 380 }),
-                investmentMenu: canopyDropdown({ minWidth: 336, maxWidth: 420 }),
+                budgetMenu: alokasiDropdown(),
+                allocationMenu: alokasiDropdown({ minWidth: 300, maxWidth: 380 }),
+                investmentMenu: alokasiDropdown({ minWidth: 336, maxWidth: 420 }),
                 createExpense: false,
                 renameBudget: false,
                 editIncome: false,
@@ -199,7 +199,7 @@
                     'budgets-menu': {
                         kicker: 'Langkah 1',
                         title: 'Menu Budgets',
-                        copy: 'Canopy menyusun income dan expenses dari sini. Kita mulai dari halaman Budgets.',
+                        copy: 'Alokasi menyusun income dan expenses dari sini. Kita mulai dari halaman Budgets.',
                         action: 'Lanjut',
                         next: 'new-budget',
                     },
@@ -270,7 +270,7 @@
 
                     window.addEventListener('resize', () => this.updateTour());
                     window.addEventListener('scroll', () => this.positionTour(), true);
-                    window.addEventListener('canopy-dropdown-positioned', () => this.positionTour());
+                    window.addEventListener('alokasi-dropdown-positioned', () => this.positionTour());
 
                     this.$nextTick(() => this.updateTour());
                 },
@@ -611,10 +611,10 @@
             };
         };
 
-        window.canopyDashboardPage = function (showWelcomeTour = false) {
+        window.alokasiDashboardPage = function (showWelcomeTour = false) {
             return {
-                budgetMenu: canopyDropdown(),
-                rangeMenu: canopyDropdown(),
+                budgetMenu: alokasiDropdown(),
+                rangeMenu: alokasiDropdown(),
                 welcomeTour: {
                     visible: showWelcomeTour,
                     style: '',
@@ -683,7 +683,7 @@
             };
         };
 
-        window.canopyDropdown = function (options = {}) {
+        window.alokasiDropdown = function (options = {}) {
             return {
                 lockId: `dropdown-${Math.random().toString(36).slice(2)}`,
                 open: false,
@@ -693,23 +693,23 @@
                 },
                 show(trigger, menu) {
                     this.open = true;
-                    window.canopyOpenDropdowns.add(this.lockId);
-                    window.canopySyncModalScrollLock?.();
+                    window.alokasiOpenDropdowns.add(this.lockId);
+                    window.alokasiSyncModalScrollLock?.();
                     requestAnimationFrame(() => {
                         this.position(trigger, menu);
-                        window.canopySyncModalScrollLock?.();
+                        window.alokasiSyncModalScrollLock?.();
                         requestAnimationFrame(() => {
                             if (this.open) {
                                 this.position(trigger, menu);
-                                window.canopySyncModalScrollLock?.();
+                                window.alokasiSyncModalScrollLock?.();
                             }
                         });
                     });
                 },
                 close() {
                     this.open = false;
-                    window.canopyOpenDropdowns.delete(this.lockId);
-                    window.canopySyncModalScrollLock?.();
+                    window.alokasiOpenDropdowns.delete(this.lockId);
+                    window.alokasiSyncModalScrollLock?.();
                 },
                 position(trigger, menu) {
                     if (!trigger || !menu) {
@@ -730,12 +730,12 @@
                         : Math.min(window.innerHeight - menuHeight - margin, rect.bottom + gap);
 
                     this.style = `top:${top}px;left:${left}px;width:${menuWidth}px;max-height:${menuHeight}px;`;
-                    window.dispatchEvent(new CustomEvent('canopy-dropdown-positioned'));
+                    window.dispatchEvent(new CustomEvent('alokasi-dropdown-positioned'));
                 },
             };
         };
 
-        window.canopyTooltip = {
+        window.alokasiTooltip = {
             element: null,
             target: null,
             ensure() {
@@ -744,7 +744,7 @@
                 }
 
                 const tooltip = document.createElement('div');
-                tooltip.className = 'canopy-ui-tooltip';
+                tooltip.className = 'alokasi-ui-tooltip';
                 tooltip.setAttribute('role', 'tooltip');
                 document.body.appendChild(tooltip);
                 this.element = tooltip;
@@ -808,37 +808,37 @@
         document.addEventListener('mouseover', function (event) {
             const target = event.target.closest?.('[data-tooltip], .btn-icon[aria-label], .summary-menu-button[aria-label], [data-icon-tooltip][aria-label]');
 
-            if (window.canopyTooltip.isTooltipTarget(target)) {
-                window.canopyTooltip.show(target);
+            if (window.alokasiTooltip.isTooltipTarget(target)) {
+                window.alokasiTooltip.show(target);
             }
         });
 
         document.addEventListener('mouseout', function (event) {
             const target = event.target.closest?.('[data-tooltip], .btn-icon[aria-label], .summary-menu-button[aria-label], [data-icon-tooltip][aria-label]');
 
-            if (window.canopyTooltip.isTooltipTarget(target) && !target.contains(event.relatedTarget)) {
-                window.canopyTooltip.hide(target);
+            if (window.alokasiTooltip.isTooltipTarget(target) && !target.contains(event.relatedTarget)) {
+                window.alokasiTooltip.hide(target);
             }
         });
 
         document.addEventListener('focusin', function (event) {
             const target = event.target.closest?.('[data-tooltip], .btn-icon[aria-label], .summary-menu-button[aria-label], [data-icon-tooltip][aria-label]');
 
-            if (window.canopyTooltip.isTooltipTarget(target)) {
-                window.canopyTooltip.show(target);
+            if (window.alokasiTooltip.isTooltipTarget(target)) {
+                window.alokasiTooltip.show(target);
             }
         });
 
         document.addEventListener('focusout', function (event) {
-            window.canopyTooltip.hide(event.target);
+            window.alokasiTooltip.hide(event.target);
         });
 
         document.addEventListener('scroll', function () {
-            window.canopyTooltip.position();
+            window.alokasiTooltip.position();
         }, true);
 
         window.addEventListener('resize', function () {
-            window.canopyTooltip.hide();
+            window.alokasiTooltip.hide();
         });
     </script>
     @livewireScripts

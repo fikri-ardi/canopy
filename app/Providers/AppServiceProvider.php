@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
-            $appName = config('app.name', 'Canopy');
+            $appName = config('app.name', 'Alokasi');
             $displayName = trim((string) ($notifiable->name ?? '')) ?: 'teman';
             $firstName = strtok($displayName, ' ') ?: $displayName;
             $expireMinutes = config('auth.verification.expire', 60);

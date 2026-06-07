@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AlokasiDataExport;
 use App\Exports\BudgetSpendsExport;
-use App\Exports\CanopyDataExport;
 use App\Models\Budget;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -40,13 +40,13 @@ class DataExportController extends Controller
             default => ExcelWriter::XLSX,
         };
 
-        $fileName = 'canopy-budget-export-'.now()->format('Ymd-His').'.'.$format;
+        $fileName = 'alokasi-budget-export-'.now()->format('Ymd-His').'.'.$format;
         $headers = $format === 'csv' ? ['Content-Type' => 'text/csv'] : [];
 
         return Excel::download(
             $format === 'csv'
                 ? new BudgetSpendsExport($request->user(), $budgetIds)
-                : new CanopyDataExport($request->user(), $budgetIds),
+                : new AlokasiDataExport($request->user(), $budgetIds),
             $fileName,
             $writerType,
             $headers,

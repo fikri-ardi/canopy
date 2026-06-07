@@ -63,7 +63,7 @@ class Settings extends Component
         }
 
         $this->dispatch(
-            'canopy-flash',
+            'alokasi-flash',
             tone: 'success',
             title: 'Berhasil',
             message: $emailChanged
@@ -93,7 +93,7 @@ class Settings extends Component
         $this->hasPassword = true;
 
         $this->dispatch(
-            'canopy-flash',
+            'alokasi-flash',
             tone: 'success',
             title: 'Berhasil',
             message: $wasPasswordless ? 'Password berhasil dibuat.' : 'Password updated.',
@@ -109,7 +109,7 @@ class Settings extends Component
         Excel::import(new BudgetSpendsImport(auth()->user()), $this->importFile);
 
         $this->reset('importFile');
-        $this->dispatch('canopy-flash', tone: 'success', title: 'Berhasil', message: 'Import finished.');
+        $this->dispatch('alokasi-flash', tone: 'success', title: 'Berhasil', message: 'Import finished.');
     }
 
     public function deleteAccount()

@@ -41,7 +41,7 @@ class BudgetSpendsImport implements SkipsUnknownSheets, WithMultipleSheets
     }
 }
 
-abstract class CanopyRowsImport implements ToCollection, WithHeadingRow
+abstract class AlokasiRowsImport implements ToCollection, WithHeadingRow
 {
     public function __construct(protected readonly User $user) {}
 
@@ -81,7 +81,7 @@ abstract class CanopyRowsImport implements ToCollection, WithHeadingRow
     }
 }
 
-class BudgetRowsImport extends CanopyRowsImport
+class BudgetRowsImport extends AlokasiRowsImport
 {
     public function collection(Collection $rows): void
     {
@@ -110,7 +110,7 @@ class BudgetRowsImport extends CanopyRowsImport
     }
 }
 
-class LabelRowsImport extends CanopyRowsImport
+class LabelRowsImport extends AlokasiRowsImport
 {
     public function collection(Collection $rows): void
     {
@@ -130,7 +130,7 @@ class LabelRowsImport extends CanopyRowsImport
     }
 }
 
-class PlatformRowsImport extends CanopyRowsImport
+class PlatformRowsImport extends AlokasiRowsImport
 {
     public function collection(Collection $rows): void
     {
@@ -144,7 +144,7 @@ class PlatformRowsImport extends CanopyRowsImport
     }
 }
 
-class StatusRowsImport extends CanopyRowsImport
+class StatusRowsImport extends AlokasiRowsImport
 {
     public function collection(Collection $rows): void
     {
@@ -158,7 +158,7 @@ class StatusRowsImport extends CanopyRowsImport
     }
 }
 
-class ExpenseRowsImport extends CanopyRowsImport
+class ExpenseRowsImport extends AlokasiRowsImport
 {
     public function collection(Collection $rows): void
     {
@@ -255,7 +255,7 @@ class ExpenseRowsImport extends CanopyRowsImport
     }
 }
 
-class InvestmentMovementRowsImport extends CanopyRowsImport
+class InvestmentMovementRowsImport extends AlokasiRowsImport
 {
     public function collection(Collection $rows): void
     {
@@ -307,7 +307,7 @@ class InvestmentMovementRowsImport extends CanopyRowsImport
     }
 }
 
-class InvestmentTargetRowsImport extends CanopyRowsImport
+class InvestmentTargetRowsImport extends AlokasiRowsImport
 {
     public function collection(Collection $rows): void
     {

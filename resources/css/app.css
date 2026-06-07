@@ -489,11 +489,11 @@
         scrollbar-width: thin;
     }
 
-    .canopy-ui-tooltip {
+    .alokasi-ui-tooltip {
         @apply pointer-events-none fixed left-0 top-0 z-[140] max-w-56 rounded-md border border-white/70 bg-white/95 px-2.5 py-1.5 text-xs font-semibold text-gray-700 opacity-0 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/5 backdrop-blur transition duration-150 dark:border-slate-700/80 dark:bg-slate-900/95 dark:text-slate-100 dark:shadow-black/30 dark:ring-white/10;
     }
 
-    .canopy-ui-tooltip.is-visible {
+    .alokasi-ui-tooltip.is-visible {
         @apply opacity-100;
     }
 
@@ -736,7 +736,9 @@ body,
 .app-sidebar .sidebar-link {
     position: relative;
     color: rgb(100 116 139);
+    font-size: 0.8125rem;
     font-weight: 400;
+    line-height: 1.15rem;
     box-shadow: none;
 }
 
@@ -756,13 +758,22 @@ body,
 .app-sidebar .sidebar-link.is-active::before {
     content: "";
     position: absolute;
-    left: 0.35rem;
+    left: 0.45rem;
     top: 50%;
     width: 2px;
-    height: 1.25rem;
+    height: 0.875rem;
     border-radius: 9999px;
     background: rgb(34 197 94);
     transform: translateY(-50%);
+}
+
+.app-sidebar .sidebar-link.is-active {
+    padding-left: 1.25rem;
+}
+
+.app-sidebar .sidebar-link svg {
+    width: 1.125rem;
+    height: 1.125rem;
 }
 
 .dark .app-sidebar .sidebar-link {
@@ -779,15 +790,15 @@ body,
     color: rgb(226 232 240);
 }
 
-.app-sidebar a:first-child span:first-child {
+.app-sidebar .sidebar-brand span:first-child {
     background: transparent;
     color: rgb(34 197 94);
     --tw-ring-color: transparent;
 }
 
-.app-sidebar a:first-child span:last-child {
+.app-sidebar .sidebar-brand span:last-child {
     font-size: 1.05rem;
-    font-weight: 650;
+    font-weight: 600;
 }
 
 .metric-card [class~="uppercase"],
@@ -973,11 +984,22 @@ body,
     }
 
     .app-sidebar .sidebar-link {
+        font-size: 10.5px;
         font-weight: 400;
+        line-height: 1rem;
+    }
+
+    .app-sidebar .sidebar-link.is-active {
+        padding-left: 1rem;
     }
 
     .app-sidebar .sidebar-link.is-active::before {
-        left: 0.45rem;
-        height: 1rem;
+        left: 0.35rem;
+        height: 0.7rem;
+    }
+
+    .app-sidebar .sidebar-link svg {
+        width: 1.1rem;
+        height: 1.1rem;
     }
 }

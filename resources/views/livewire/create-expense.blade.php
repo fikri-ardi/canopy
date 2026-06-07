@@ -31,7 +31,7 @@
                 </div>
 
                 @if ($labelsReady)
-                    <div x-data="{labelMenu: canopyDropdown()}" class="relative">
+                    <div x-data="{labelMenu: alokasiDropdown()}" class="relative">
                         <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Label</label>
                         <button x-ref="labelTrigger" type="button" x-on:click.stop="labelMenu.toggle($refs.labelTrigger, $refs.labelMenu)" class="btn-secondary w-full justify-between" data-onboarding-target="expense-label">
                             <span class="truncate">{{ $selectedLabel?->name ?? 'Select label' }}</span>
@@ -52,7 +52,7 @@
                     </div>
                 @endif
 
-                <div x-data="{platformMenu: canopyDropdown()}" class="relative">
+                <div x-data="{platformMenu: alokasiDropdown()}" class="relative">
                     <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Platform</label>
                     <button x-ref="platformTrigger" type="button" x-on:click.stop="platformMenu.toggle($refs.platformTrigger, $refs.platformMenu)" class="btn-secondary w-full justify-between" data-onboarding-target="expense-platform">
                         <span class="truncate">{{ $selectedPlatform?->name }}</span>
@@ -72,7 +72,7 @@
                     </template>
                 </div>
 
-                <div x-data="{statusMenu: canopyDropdown()}" class="relative">
+                <div x-data="{statusMenu: alokasiDropdown()}" class="relative">
                     <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Status</label>
                     <button x-ref="statusTrigger" type="button" x-on:click.stop="statusMenu.toggle($refs.statusTrigger, $refs.statusMenu)" class="btn-secondary w-full justify-between" data-onboarding-target="expense-status">
                         <span class="truncate">{{ $selectedStatus?->body }}</span>

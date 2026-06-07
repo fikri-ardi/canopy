@@ -1,4 +1,4 @@
-<div class="min-w-0" x-data="{budgetMenu: canopyDropdown(), rangeMenu: canopyDropdown()}">
+<div class="min-w-0" x-data="{budgetMenu: alokasiDropdown(), rangeMenu: alokasiDropdown()}">
     <header class="app-header">
         <div class="page-header-layout">
             <div class="page-header-copy">

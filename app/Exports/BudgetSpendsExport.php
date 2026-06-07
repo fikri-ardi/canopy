@@ -130,9 +130,9 @@ class BudgetSpendsExport implements FromCollection, ShouldAutoSize, WithColumnFo
     public function properties(): array
     {
         return [
-            'creator' => 'Canopy',
-            'title' => 'Canopy Budget Export',
-            'description' => 'Budgets and expenses exported from Canopy.',
+            'creator' => 'Alokasi',
+            'title' => 'Alokasi Budget Export',
+            'description' => 'Budgets and expenses exported from Alokasi.',
             'subject' => 'Budgets and expenses',
         ];
     }
