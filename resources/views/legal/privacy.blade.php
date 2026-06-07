@@ -31,12 +31,12 @@
                 <div class="mt-6 space-y-6 text-sm leading-6 text-gray-600 dark:text-slate-300">
                     <section>
                         <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">What Alokasi Collects</h2>
-                        <p class="mt-2">Alokasi stores the account and finance-management data you provide, including your name, email address, encrypted password when you set one, social sign-in provider identifiers, budgets, income values, expenses/spends, labels, platforms, statuses, investment movements, investment targets, imported files while they are being processed, and export preferences.</p>
+                        <p class="mt-2">Alokasi stores the account and finance-management data you provide, including your name, email address, encrypted password when you set one, social sign-in provider identifiers, plans, income values, expenses/spends, labels, platforms, statuses, investment movements, investment targets, imported files while they are being processed, and export preferences.</p>
                     </section>
 
                     <section>
                         <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">How The Data Is Used</h2>
-                        <p class="mt-2">The data is used to authenticate your account, verify your email, show dashboards and reports, manage budgets and expenses, group investment activity, import or export your Alokasi data, secure sessions, and maintain the application.</p>
+                        <p class="mt-2">The data is used to authenticate your account, verify your email, show dashboards and reports, manage plans and expenses, group investment activity, import or export your Alokasi data, secure sessions, and maintain the application.</p>
                     </section>
 
                     <section>
@@ -51,7 +51,7 @@
 
                     <section>
                         <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Security And Retention</h2>
-                        <p class="mt-2">Passwords are stored as hashes, and access to your account-owned data is scoped to your user account. Alokasi keeps your data while your account exists. When you delete your account, account-owned budgets, expenses, labels, platforms, statuses, and related records are removed according to the app's deletion flow.</p>
+                        <p class="mt-2">Passwords are stored as hashes, and access to your account-owned data is scoped to your user account. Alokasi keeps your data while your account exists. When you delete your account, account-owned plans, expenses, labels, platforms, statuses, and related records are removed according to the app's deletion flow.</p>
                     </section>
 
                     <section>

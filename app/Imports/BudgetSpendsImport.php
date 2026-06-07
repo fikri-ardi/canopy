@@ -45,6 +45,11 @@ abstract class AlokasiRowsImport implements ToCollection, WithHeadingRow
 {
     public function __construct(protected readonly User $user) {}
 
+    protected function rowValue(Collection $row, string $primary, ?string $fallback = null): mixed
+    {
+        return $row->get($primary) ?? ($fallback ? $row->get($fallback) : null);
+    }
+
     protected function integer(mixed $value): int
     {
         if (is_numeric($value)) {
@@ -86,20 +91,20 @@ class BudgetRowsImport extends AlokasiRowsImport
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            $name = trim((string) $row->get('budget_name'));
+            $name = trim((string) $this->rowValue($row, 'plan_name', 'budget_name'));
 
             if ($name === '') {
                 continue;
             }
 
-            $budget = $this->ownedBudget((int) $row->get('budget_id')) ?? Budget::firstOrNew([
+            $budget = $this->ownedBudget((int) $this->rowValue($row, 'plan_id', 'budget_id')) ?? Budget::firstOrNew([
                 'user_id' => $this->user->id,
                 'name' => $name,
             ]);
 
             $budget->fill([
                 'name' => $name,
-                'income' => $this->integer($row->get('budget_income')),
+                'income' => $this->integer($this->rowValue($row, 'plan_income', 'budget_income')),
             ])->save();
         }
     }
@@ -163,7 +168,7 @@ class ExpenseRowsImport extends AlokasiRowsImport
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            $budgetName = trim((string) $row->get('budget_name'));
+            $budgetName = trim((string) $this->rowValue($row, 'plan_name', 'budget_name'));
 
             if ($budgetName === '') {
                 continue;
@@ -206,8 +211,8 @@ class ExpenseRowsImport extends AlokasiRowsImport
 
     private function resolveBudget(Collection $row, string $budgetName): Budget
     {
-        $budgetId = (int) $row->get('budget_id');
-        $income = $this->integer($row->get('budget_income'));
+        $budgetId = (int) $this->rowValue($row, 'plan_id', 'budget_id');
+        $income = $this->integer($this->rowValue($row, 'plan_income', 'budget_income'));
 
         $budget = $budgetId > 0
             ? Budget::where('user_id', $this->user->id)->find($budgetId)

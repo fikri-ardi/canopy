@@ -10,7 +10,7 @@
 </div>
 
 <p style="text-align:center; color:#475569; margin-top:0;">
-    Halo {{ $displayName }}, tinggal satu langkah lagi supaya budget dan catatan finansialmu aman di {{ $appName }}.
+    Halo {{ $displayName }}, tinggal satu langkah lagi supaya plan dan catatan finansialmu aman di {{ $appName }}.
 </p>
 
 @component('mail::button', ['url' => $url, 'color' => 'success'])

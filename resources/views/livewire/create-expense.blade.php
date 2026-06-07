@@ -8,7 +8,7 @@
             </span>
             <div>
                 <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Create Expense</div>
-                <p class="text-sm text-gray-500 dark:text-slate-400">Add a transaction to this budget.</p>
+                <p class="text-sm text-gray-500 dark:text-slate-400">Add a transaction to this plan.</p>
             </div>
         </div>
 

@@ -103,7 +103,7 @@
                     <tr>
                         <th class="w-32 p-3 text-left">Date</th>
                         <th class="p-3 text-left">Expense</th>
-                        <th class="p-3 text-left">Budget</th>
+                        <th class="p-3 text-left">Plan</th>
                         <th class="p-3 text-left">Label</th>
                         <th class="p-3 text-left">Platform</th>
                         <th class="p-3 text-left">Status</th>
@@ -132,7 +132,7 @@
                                     </svg>
                                 </span>
                                 <div class="mt-3 font-semibold text-gray-950 dark:text-slate-50">No matching expenses</div>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Adjust filters or add a new expense from the budget page.</p>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Adjust filters or add a new expense from the plan page.</p>
                             </td>
                         </tr>
                     @endforelse

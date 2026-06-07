@@ -260,7 +260,11 @@ class Budget extends Component
 
     private function refreshBudgets()
     {
-        $this->budgets = $this->userBudgetsQuery()->get(['id', 'name']);
+        $this->budgets = ModelsBudget::query()
+            ->where('user_id', auth()->id())
+            ->latest('created_at')
+            ->latest('id')
+            ->get(['id', 'name']);
     }
 
     private function userBudgetsQuery()

@@ -125,7 +125,7 @@
                                 <div class="min-w-0">
                                     <div class="truncate text-sm font-semibold text-gray-950 dark:text-slate-50">{{ $group['name'] }}</div>
                                     <div class="mt-1 text-xs text-gray-500 dark:text-slate-400">
-                                        {{ $group['transactions'] }} spends / {{ $group['budgets'] }} budgets / {{ $group['movements'] }} movements
+                                        {{ $group['transactions'] }} spends / {{ $group['budgets'] }} plans / {{ $group['movements'] }} movements
                                     </div>
                                 </div>
                                 <div class="shrink-0 text-right">

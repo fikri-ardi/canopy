@@ -7,7 +7,7 @@
                 </svg>
             </span>
             <div>
-                <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Create Budget</div>
+                <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Create Plan</div>
                 <p class="text-sm text-gray-500 dark:text-slate-400">Start a new income plan.</p>
             </div>
         </div>

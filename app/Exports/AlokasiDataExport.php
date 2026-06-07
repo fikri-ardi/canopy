@@ -27,7 +27,7 @@ class AlokasiDataExport implements WithMultipleSheets
     {
         return [
             new BudgetSpendsExport($this->user, $this->budgetIds),
-            new AlokasiDataSheet('Budgets', $this->budgetHeadings(), $this->budgetRows(), ['C']),
+            new AlokasiDataSheet('Plans', $this->budgetHeadings(), $this->budgetRows(), ['C']),
             new AlokasiDataSheet('Labels', $this->labelHeadings(), $this->labelRows()),
             new AlokasiDataSheet('Platforms', $this->platformHeadings(), $this->platformRows()),
             new AlokasiDataSheet('Statuses', $this->statusHeadings(), $this->statusRows()),
@@ -147,7 +147,7 @@ class AlokasiDataExport implements WithMultipleSheets
 
     private function budgetHeadings(): array
     {
-        return ['Budget ID', 'Budget Name', 'Budget Income', 'Budget Created At', 'Budget Updated At'];
+        return ['Plan ID', 'Plan Name', 'Plan Income', 'Plan Created At', 'Plan Updated At'];
     }
 
     private function labelHeadings(): array

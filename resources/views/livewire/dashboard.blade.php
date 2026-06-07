@@ -108,7 +108,7 @@
         >
             <div class="onboarding-tour-kicker">Dashboard</div>
             <div class="onboarding-tour-title">Selamat datang di Dashboard</div>
-            <p class="onboarding-tour-copy">Di sini kamu bisa membaca ringkasan income, expense, grafik kategori, budget health, dan transaksi terbaru dalam satu tempat.</p>
+            <p class="onboarding-tour-copy">Di sini kamu bisa membaca ringkasan income, expense, grafik kategori, plan health, dan transaksi terbaru dalam satu tempat.</p>
             <div class="mt-3 flex justify-end">
                 <button
                     type="button"
@@ -247,7 +247,7 @@
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <div class="eyebrow">Category Flow</div>
-                    <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50 sm:text-lg">Spending by category across budgets</h2>
+                    <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50 sm:text-lg">Spending by category across plans</h2>
                     <p class="mt-1 text-xs text-gray-500 dark:text-slate-400 sm:text-sm">Each line tracks one category total in the selected view.</p>
                 </div>
                 <div class="rounded-lg bg-gray-50 px-2.5 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
@@ -262,7 +262,7 @@
                 </div>
             @elseif ($categoryBudgetChart['series']->isEmpty())
                 <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                    No category spending found for this budget view.
+                    No category spending found for this plan view.
                 </div>
             @else
                 <div class="mt-3 flex gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
@@ -286,7 +286,7 @@
                             class="block h-auto w-full"
                             viewBox="0 0 {{ $categoryBudgetChart['width'] }} {{ $categoryBudgetChart['height'] }}"
                             role="img"
-                            aria-label="Multi-line chart of spending by category across budgets"
+                            aria-label="Multi-line chart of spending by category across plans"
                             x-on:click.self="closeTooltip()"
                         >
                             <defs>
@@ -491,9 +491,9 @@
             <div class="panel px-4 py-4">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <div class="eyebrow">Budget Health</div>
-                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Spending pressure by budget</h2>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Latest 5 of {{ $budgetCount }} active budgets.</p>
+                        <div class="eyebrow">Plan Health</div>
+                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Spending pressure by plan</h2>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Latest 5 of {{ $budgetCount }} active plans.</p>
                     </div>
                     <div class="rounded-lg bg-gray-50 px-3 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Avg Spend</div>
@@ -519,7 +519,7 @@
                         </div>
                     @empty
                         <div class="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                            No budgets yet.
+                            No plans yet.
                         </div>
                     @endforelse
                 </div>

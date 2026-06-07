@@ -30,7 +30,7 @@ class DataExportController extends Controller
             ->all();
 
         if ($budgetIds === [] && ! Budget::where('user_id', $request->user()->id)->exists()) {
-            return back()->with('error', 'Belum ada budget yang bisa diexport.');
+            return back()->with('error', 'Belum ada plan yang bisa diexport.');
         }
 
         $format = $validated['format'];
@@ -40,7 +40,7 @@ class DataExportController extends Controller
             default => ExcelWriter::XLSX,
         };
 
-        $fileName = 'alokasi-budget-export-'.now()->format('Ymd-His').'.'.$format;
+        $fileName = 'alokasi-plan-export-'.now()->format('Ymd-His').'.'.$format;
         $headers = $format === 'csv' ? ['Content-Type' => 'text/csv'] : [];
 
         return Excel::download(

@@ -29,12 +29,12 @@
                         </svg>
                         <span class="truncate">Dashboard</span>
                     </a>
-                    <a href="/budgets" wire:navigate aria-label="Budgets" data-onboarding-target="budgets-menu" class="sidebar-link flex min-w-20 flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-[11px] font-normal transition md:min-w-0 md:flex-row md:justify-start md:gap-2 md:px-3 md:py-2.5 md:text-sm{{ request()->segment(1) == 'budgets' ? ' is-active bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-300' : ' text-gray-600 hover:bg-green-50 hover:text-green-600 dark:text-slate-400 dark:hover:bg-green-500/10 dark:hover:text-green-300' }}">
+                    <a href="{{ route('budgets') }}" wire:navigate aria-label="Plan" data-onboarding-target="budgets-menu" class="sidebar-link flex min-w-20 flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-[11px] font-normal transition md:min-w-0 md:flex-row md:justify-start md:gap-2 md:px-3 md:py-2.5 md:text-sm{{ request()->segment(1) == 'plan' ? ' is-active bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-300' : ' text-gray-600 hover:bg-green-50 hover:text-green-600 dark:text-slate-400 dark:hover:bg-green-500/10 dark:hover:text-green-300' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.75V18a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18V6a2.25 2.25 0 0 1 2.25-2.25h10.5L21 9v3.75Z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 3.75V9H21M7.5 13.5h9M7.5 16.5h5.25" />
                         </svg>
-                        <span class="truncate">Budgets</span>
+                        <span class="truncate">Plan</span>
                     </a>
                     <a href="{{ route('spends') }}" wire:navigate aria-label="Spends" class="sidebar-link flex min-w-20 flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-[11px] font-normal transition md:min-w-0 md:flex-row md:justify-start md:gap-2 md:px-3 md:py-2.5 md:text-sm{{ request()->routeIs('spends') ? ' is-active bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-300' : ' text-gray-600 hover:bg-green-50 hover:text-green-600 dark:text-slate-400 dark:hover:bg-green-500/10 dark:hover:text-green-300' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 shrink-0">

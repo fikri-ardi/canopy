@@ -217,35 +217,35 @@
                 tourSteps: {
                     'budgets-menu': {
                         kicker: 'Langkah 1',
-                        title: 'Menu Budgets',
-                        copy: 'Alokasi menyusun income dan expenses dari sini. Kita mulai dari halaman Budgets.',
+                        title: 'Menu Plan',
+                        copy: 'Alokasi menyusun income dan expenses dari sini. Kita mulai dari halaman Plan.',
                         action: 'Lanjut',
                         next: 'new-budget',
                     },
                     'new-budget': {
                         kicker: 'Langkah 2',
-                        title: 'Buat budget baru',
-                        copy: 'Klik tombol New Budget untuk membuat rencana income pertama.',
+                        title: 'Buat plan baru',
+                        copy: 'Klik tombol New Plan untuk membuat rencana income pertama.',
                     },
                     'budget-name': {
-                        kicker: 'Budget',
-                        title: 'Nama budget',
+                        kicker: 'Plan',
+                        title: 'Nama plan',
                         copy: 'Isi nama yang gampang dikenali, misalnya Juni 2026 atau Monthly Plan.',
                     },
                     'budget-income': {
-                        kicker: 'Budget',
+                        kicker: 'Plan',
                         title: 'Total income',
-                        copy: 'Masukkan income utama untuk budget ini. Angka akan dirapikan otomatis saat diketik.',
+                        copy: 'Masukkan income utama untuk plan ini. Angka akan dirapikan otomatis saat diketik.',
                     },
                     'budget-create': {
-                        kicker: 'Budget',
-                        title: 'Simpan budget',
-                        copy: 'Klik Create untuk menyimpan budget dan lanjut ke expense pertama.',
+                        kicker: 'Plan',
+                        title: 'Simpan plan',
+                        copy: 'Klik Create untuk menyimpan plan dan lanjut ke expense pertama.',
                     },
                     'expense-button': {
                         kicker: 'Langkah 3',
                         title: 'Tambah expense',
-                        copy: 'Klik New Expense supaya budget pertama punya transaksi awal.',
+                        copy: 'Klik New Expense supaya plan pertama punya transaksi awal.',
                     },
                     'expense-name': {
                         kicker: 'Expense',
@@ -280,7 +280,7 @@
                     'dashboard-menu': {
                         kicker: 'Langkah terakhir',
                         title: 'Buka Dashboard',
-                        copy: 'Klik menu Dashboard untuk melihat ringkasan dan grafik dari budget serta expense yang baru kamu buat.',
+                        copy: 'Klik menu Dashboard untuk melihat ringkasan dan grafik dari plan serta expense yang baru kamu buat.',
                     },
                 },
                 init() {

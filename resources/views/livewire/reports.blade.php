@@ -17,14 +17,14 @@
             <div class="page-header-actions">
                 <div class="min-w-0 flex-1 sm:w-44 sm:flex-none">
                     <button x-ref="budgetTrigger" type="button" x-on:click.stop="budgetMenu.toggle($refs.budgetTrigger, $refs.budgetMenu)" class="btn-secondary w-full justify-between">
-                        <span class="truncate">{{ $budgetId === 'all' ? 'All budgets' : $budgets->firstWhere('id', (int) $budgetId)?->name }}</span>
+                        <span class="truncate">{{ $budgetId === 'all' ? 'All plans' : $budgets->firstWhere('id', (int) $budgetId)?->name }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                         </svg>
                     </button>
                     <template x-teleport="body">
                         <div x-ref="budgetMenu" x-show="budgetMenu.open" x-cloak x-transition x-bind:style="budgetMenu.style" x-on:click.outside="budgetMenu.close()" x-on:resize.window="budgetMenu.close()" wire:key="reports-budget-menu" wire:ignore.self class="floating-select-menu">
-                            <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All budgets</button>
+                            <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', 'all')" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">All plans</button>
                             @foreach ($budgets as $budget)
                                 <button type="button" x-on:click="budgetMenu.close()" wire:click="$set('budgetId', '{{ $budget->id }}')" wire:key="reports-budget-option-{{ $budget->id }}" class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">{{ $budget->name }}</button>
                             @endforeach
@@ -80,8 +80,8 @@
             <div class="panel px-4 py-4">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <div class="eyebrow">Budget Progress</div>
-                        <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Income used per budget</h2>
+                        <div class="eyebrow">Plan Progress</div>
+                        <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Income used per plan</h2>
                     </div>
                 </div>
 
@@ -102,7 +102,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">No budgets yet.</div>
+                        <div class="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">No plans yet.</div>
                     @endforelse
                 </div>
             </div>

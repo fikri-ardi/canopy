@@ -75,13 +75,13 @@ class BudgetSpendsExport implements FromCollection, ShouldAutoSize, WithColumnFo
     public function headings(): array
     {
         return [
-            'Budget ID',
-            'Budget Name',
-            'Budget Income',
-            'Budget Expense Count',
-            'Budget Expense Total',
-            'Budget Remaining',
-            'Budget Created At',
+            'Plan ID',
+            'Plan Name',
+            'Plan Income',
+            'Plan Expense Count',
+            'Plan Expense Total',
+            'Plan Remaining',
+            'Plan Created At',
             'Expense ID',
             'Expense Name',
             'Expense Amount',
@@ -131,9 +131,9 @@ class BudgetSpendsExport implements FromCollection, ShouldAutoSize, WithColumnFo
     {
         return [
             'creator' => 'Alokasi',
-            'title' => 'Alokasi Budget Export',
-            'description' => 'Budgets and expenses exported from Alokasi.',
-            'subject' => 'Budgets and expenses',
+            'title' => 'Alokasi Plan Export',
+            'description' => 'Plans and expenses exported from Alokasi.',
+            'subject' => 'Plans and expenses',
         ];
     }
 

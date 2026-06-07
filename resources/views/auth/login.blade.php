@@ -3,7 +3,7 @@
         <div>
             <div class="eyebrow">Welcome back</div>
             <h1 class="page-title">Login</h1>
-            <p class="page-subtitle">Masuk untuk membuka budget management milikmu.</p>
+            <p class="page-subtitle">Masuk untuk membuka plan management milikmu.</p>
         </div>
 
         @include('auth.partials.social-buttons')

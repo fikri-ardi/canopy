@@ -66,7 +66,8 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', Dashboard::class)->name('dashboard');
-    Route::get('/budgets', Budget::class)->name('budgets');
+    Route::redirect('/budgets', '/plan');
+    Route::get('/plan', Budget::class)->name('budgets');
     Route::get('/spends', Spends::class)->name('spends');
     Route::get('/investment', Investment::class)->name('investment');
     Route::redirect('/reports', '/')->name('reports');

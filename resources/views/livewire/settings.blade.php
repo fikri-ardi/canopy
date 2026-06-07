@@ -81,7 +81,7 @@
             <section id="setup" class="panel scroll-mt-5 p-4 sm:p-5">
                 <div>
                     <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">App Setup</h2>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Manage the small building blocks used by expenses and budgets.</p>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Manage the small building blocks used by expenses and plans.</p>
                 </div>
 
                 <div class="mt-4 grid gap-3 sm:grid-cols-3">
@@ -208,7 +208,7 @@
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                             <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Export Data</h2>
-                            <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Download budgets, expenses, and related account data. Excel and spreadsheet formats include every backup sheet.</p>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Download plans, expenses, and related account data. Excel and spreadsheet formats include every backup sheet.</p>
                         </div>
                         <span class="inline-flex w-fit items-center rounded-md bg-green-50 px-2.5 py-1 text-xs font-bold uppercase text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">Ready</span>
                     </div>
@@ -237,15 +237,15 @@
                             <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white/70 p-3 text-sm dark:border-slate-700 dark:bg-slate-900/70">
                                 <input type="radio" name="budget_mode" value="all" x-model="budgetMode" class="size-4 border-gray-300 text-green-500 focus:ring-green-400">
                                 <span>
-                                    <span class="block font-bold text-gray-950 dark:text-slate-50">All Budgets</span>
-                                    <span class="block text-xs text-gray-500 dark:text-slate-400">{{ $budgets->count() }} budgets available</span>
+                                    <span class="block font-bold text-gray-950 dark:text-slate-50">All Plans</span>
+                                    <span class="block text-xs text-gray-500 dark:text-slate-400">{{ $budgets->count() }} plans available</span>
                                 </span>
                             </label>
                             <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white/70 p-3 text-sm dark:border-slate-700 dark:bg-slate-900/70">
                                 <input type="radio" name="budget_mode" value="selected" x-model="budgetMode" class="size-4 border-gray-300 text-green-500 focus:ring-green-400">
                                 <span>
-                                    <span class="block font-bold text-gray-950 dark:text-slate-50">Selected Budgets</span>
-                                    <span class="block text-xs text-gray-500 dark:text-slate-400">Pick one or more budgets</span>
+                                    <span class="block font-bold text-gray-950 dark:text-slate-50">Selected Plans</span>
+                                    <span class="block text-xs text-gray-500 dark:text-slate-400">Pick one or more plans</span>
                                 </span>
                             </label>
                         </div>
@@ -259,7 +259,7 @@
                                         <span class="shrink-0 text-xs text-gray-400 dark:text-slate-500">{{ $budget->spends_count }}</span>
                                     </label>
                                 @empty
-                                    <div class="rounded-md border border-dashed border-gray-200 px-3 py-6 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400 sm:col-span-2 xl:col-span-3">No budgets yet.</div>
+                                    <div class="rounded-md border border-dashed border-gray-200 px-3 py-6 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400 sm:col-span-2 xl:col-span-3">No plans yet.</div>
                                 @endforelse
                             </div>
                         </div>
@@ -281,7 +281,7 @@
 
                 <div class="panel p-4 sm:p-5">
                     <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Import Data</h2>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Upload an Alokasi export file to restore or merge budget and expense rows.</p>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Upload an Alokasi export file to restore or merge plan and expense rows.</p>
 
                     <form wire:submit="importData" class="mt-5 rounded-lg border border-dashed border-gray-300 bg-gray-50/70 p-4 dark:border-slate-700 dark:bg-slate-950/40">
                         <label for="settings-import-file" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">File</label>
@@ -346,7 +346,7 @@
     <div x-show="deleteAccount" x-cloak x-transition class="modal-backdrop">
         <div x-on:click.away="deleteAccount = false" class="modal-panel">
             <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Delete Account</div>
-            <p class="mt-3 text-sm text-gray-500 dark:text-slate-400">This removes your account, budgets, expenses, labels, platforms, and statuses.</p>
+            <p class="mt-3 text-sm text-gray-500 dark:text-slate-400">This removes your account, plans, expenses, labels, platforms, and statuses.</p>
 
             <div class="mt-4">
                 <label for="delete-account-password" class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">Password</label>

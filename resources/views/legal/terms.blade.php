@@ -31,12 +31,12 @@
                 <div class="mt-6 space-y-6 text-sm leading-6 text-gray-600 dark:text-slate-300">
                     <section>
                         <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Using Alokasi</h2>
-                        <p class="mt-2">By creating an account or using Alokasi, you agree to these terms. Alokasi is a personal budgeting and expense-tracking tool for organizing budgets, spends, labels, platforms, statuses, and investment movement records.</p>
+                        <p class="mt-2">By creating an account or using Alokasi, you agree to these terms. Alokasi is a personal planning and expense-tracking tool for organizing plans, spends, labels, platforms, statuses, and investment movement records.</p>
                     </section>
 
                     <section>
                         <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">No Financial Advice</h2>
-                        <p class="mt-2">Alokasi helps you record and review your own data. It is not a bank, broker, accountant, tax advisor, or financial advisor. Any decisions you make based on your budgets, expenses, reports, or investment records are your responsibility.</p>
+                        <p class="mt-2">Alokasi helps you record and review your own data. It is not a bank, broker, accountant, tax advisor, or financial advisor. Any decisions you make based on your plans, expenses, reports, or investment records are your responsibility.</p>
                     </section>
 
                     <section>
@@ -46,7 +46,7 @@
 
                     <section>
                         <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Your Data</h2>
-                        <p class="mt-2">You retain responsibility for the budget, expense, label, platform, status, and investment data you add to Alokasi. Import and export tools are provided to help move your data, but you should review imported files and exported spreadsheets for accuracy.</p>
+                        <p class="mt-2">You retain responsibility for the plan, expense, label, platform, status, and investment data you add to Alokasi. Import and export tools are provided to help move your data, but you should review imported files and exported spreadsheets for accuracy.</p>
                     </section>
 
                     <section>
