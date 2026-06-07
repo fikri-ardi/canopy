@@ -16,16 +16,38 @@
             </div>
 
             <div class="page-header-actions">
-                <label class="min-w-0 flex-1 sm:w-40 sm:flex-none">
+                <button type="button" x-on:click="dateFilterOpen = ! dateFilterOpen" class="btn-secondary w-full justify-between sm:hidden" aria-controls="dashboard-mobile-date-filter" x-bind:aria-expanded="dateFilterOpen.toString()">
+                    <span class="inline-flex min-w-0 items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3.75 8.25h16.5M5.25 5.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25Z" />
+                        </svg>
+                        <span class="truncate">Date range</span>
+                    </span>
+                    <span class="text-xs font-medium text-gray-400 dark:text-slate-500" x-text="dateFilterOpen ? 'Hide' : 'Set'"></span>
+                </button>
+
+                <label class="hidden min-w-0 flex-1 sm:block sm:w-40 sm:flex-none">
                     <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">Start Date</span>
                     <input wire:model.live="startDate" type="date" class="input-field">
                 </label>
 
-                <label class="min-w-0 flex-1 sm:w-40 sm:flex-none">
+                <label class="hidden min-w-0 flex-1 sm:block sm:w-40 sm:flex-none">
                     <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">End Date</span>
                     <input wire:model.live="endDate" type="date" class="input-field">
                 </label>
             </div>
+        </div>
+
+        <div id="dashboard-mobile-date-filter" x-show="dateFilterOpen" x-cloak x-transition class="mt-3 grid gap-2 sm:hidden">
+            <label class="min-w-0">
+                <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">Start Date</span>
+                <input wire:model.live="startDate" type="date" class="input-field">
+            </label>
+
+            <label class="min-w-0">
+                <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">End Date</span>
+                <input wire:model.live="endDate" type="date" class="input-field">
+            </label>
         </div>
     </header>
 

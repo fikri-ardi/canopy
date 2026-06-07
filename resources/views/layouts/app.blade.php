@@ -175,6 +175,7 @@
             return {
                 createBudget: false,
                 budgetMenu: alokasiDropdown(),
+                budgetSettingsMenu: alokasiDropdown({ minWidth: 220, maxWidth: 260 }),
                 allocationMenu: alokasiDropdown({ minWidth: 300, maxWidth: 380 }),
                 investmentMenu: alokasiDropdown({ minWidth: 336, maxWidth: 420 }),
                 createExpense: false,
@@ -613,6 +614,7 @@
 
         window.alokasiDashboardPage = function (showWelcomeTour = false) {
             return {
+                dateFilterOpen: false,
                 welcomeTour: {
                     visible: showWelcomeTour,
                     style: '',
