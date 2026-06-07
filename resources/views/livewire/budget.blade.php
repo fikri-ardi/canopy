@@ -35,7 +35,6 @@
                 <div class="min-w-0">
                     <div class="eyebrow">Active Budget</div>
                     <h1 class="page-title">{{ $activeBudget?->name ?? 'No budget yet' }}</h1>
-                    <p class="page-subtitle max-w-2xl">Track income, allocations, and spending health in one place.</p>
                 </div>
             </div>
 

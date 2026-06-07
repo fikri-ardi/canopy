@@ -12,7 +12,6 @@
                 <div class="min-w-0">
                     <div class="eyebrow">Account</div>
                     <h1 class="page-title">Settings</h1>
-                    <p class="page-subtitle max-w-2xl">Profile, security, data portability, and account controls in one place.</p>
                 </div>
             </div>
         </div>

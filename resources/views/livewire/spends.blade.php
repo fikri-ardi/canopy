@@ -12,7 +12,6 @@
                 <div class="min-w-0">
                     <div class="eyebrow">Spends</div>
                     <h1 class="page-title">Transaction Explorer</h1>
-                    <p class="page-subtitle max-w-2xl">Search, filter, and inspect every expense across your budgets.</p>
                 </div>
             </div>
 

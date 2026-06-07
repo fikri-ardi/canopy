@@ -3,7 +3,6 @@
         <div>
             <div class="eyebrow">Verify email</div>
             <h1 class="page-title">Cek inbox kamu</h1>
-            <p class="page-subtitle">Kami sudah mengirim link verifikasi ke email akunmu. Verifikasi dulu sebelum masuk ke dashboard.</p>
         </div>
 
         <div class="mt-6 space-y-3">

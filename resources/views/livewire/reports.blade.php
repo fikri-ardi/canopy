@@ -11,7 +11,6 @@
                 <div class="min-w-0">
                     <div class="eyebrow">Reports</div>
                     <h1 class="page-title">Spending Reports</h1>
-                    <p class="page-subtitle max-w-2xl">Analyze budget health, category pressure, payment mix, and high-impact expenses.</p>
                 </div>
             </div>
 

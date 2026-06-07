@@ -12,7 +12,6 @@
                 <div class="min-w-0">
                     <div class="eyebrow">Dashboard</div>
                     <h1 class="page-title">Financial Command Center</h1>
-                    <p class="page-subtitle max-w-2xl">A quick read on income, spending pressure, budgets, and recent movement.</p>
                 </div>
             </div>
 

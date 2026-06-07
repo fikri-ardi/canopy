@@ -12,7 +12,6 @@
                 <div class="min-w-0">
                     <div class="eyebrow">Settings</div>
                     <h1 class="page-title">Labels</h1>
-                    <p class="page-subtitle max-w-2xl">Organize expenses into clean spending categories.</p>
                 </div>
             </div>
         </div>

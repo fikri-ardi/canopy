@@ -27,7 +27,6 @@
             <article class="panel p-5 sm:p-8">
                 <div class="eyebrow">Legal</div>
                 <h1 class="page-title">Terms and Conditions</h1>
-                <p class="page-subtitle">Last updated: June 4, 2026</p>
 
                 <div class="mt-6 space-y-6 text-sm leading-6 text-gray-600 dark:text-slate-300">
                     <section>

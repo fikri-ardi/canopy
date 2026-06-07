@@ -3,7 +3,6 @@
         <div>
             <div class="eyebrow">New account</div>
             <h1 class="page-title">Register</h1>
-            <p class="page-subtitle">Buat akun supaya budget dan expense hanya terlihat olehmu.</p>
         </div>
 
         @include('auth.partials.social-buttons')

@@ -12,7 +12,6 @@
                 <div class="min-w-0">
                     <div class="eyebrow">Investment</div>
                     <h1 class="page-title">Investment Ledger</h1>
-                    <p class="page-subtitle max-w-2xl">Track investment balances without changing the original expense records.</p>
                 </div>
             </div>
 

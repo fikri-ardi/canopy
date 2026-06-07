@@ -11,7 +11,6 @@
                 <div class="min-w-0">
                     <div class="eyebrow">Settings</div>
                     <h1 class="page-title">Platforms</h1>
-                    <p class="page-subtitle max-w-2xl">Manage payment sources, wallets, banks, and cash accounts for your expenses.</p>
                 </div>
             </div>
         </div>
