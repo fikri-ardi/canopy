@@ -3,6 +3,7 @@
         <div>
             <div class="eyebrow">New account</div>
             <h1 class="page-title">Register</h1>
+            <p class="page-subtitle">Buat akun dan mulai Alokasi.</p>
         </div>
 
         @include('auth.partials.social-buttons')
@@ -12,7 +13,7 @@
 
             <div>
                 <label for="name" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Name</label>
-                <input id="name" name="name" type="text" value="{{ old('name') }}" autocomplete="name" autofocus class="input-field">
+                <input id="name" name="name" type="text" value="{{ old('name') }}" autocomplete="name" autofocus placeholder="Your name" class="input-field">
                 @error('name')
                     <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                 @enderror
@@ -20,7 +21,7 @@
 
             <div>
                 <label for="email" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Email</label>
-                <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" class="input-field">
+                <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" placeholder="your@email.com" class="input-field">
                 @error('email')
                     <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                 @enderror
@@ -28,7 +29,7 @@
 
             <div>
                 <label for="password" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Password</label>
-                <input id="password" name="password" type="password" autocomplete="new-password" class="input-field">
+                <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Create a password" class="input-field">
                 @error('password')
                     <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                 @enderror
@@ -36,18 +37,11 @@
 
             <div>
                 <label for="password_confirmation" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Confirm Password</label>
-                <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" class="input-field">
+                <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" placeholder="Repeat your password" class="input-field">
             </div>
 
             <button type="submit" class="btn-primary w-full">Create Account</button>
         </form>
-
-        <p class="mt-4 text-center text-xs leading-5 text-gray-400 dark:text-slate-500">
-            By creating an account, you agree to Alokasi's
-            <a href="{{ route('terms') }}" class="font-semibold text-green-600 hover:text-green-700 dark:text-green-400">Terms</a>
-            and
-            <a href="{{ route('privacy') }}" class="font-semibold text-green-600 hover:text-green-700 dark:text-green-400">Privacy Policy</a>.
-        </p>
 
         <p class="mt-5 text-center text-sm text-gray-500 dark:text-slate-400">
             Sudah punya akun?

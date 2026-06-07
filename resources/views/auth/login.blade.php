@@ -3,6 +3,7 @@
         <div>
             <div class="eyebrow">Welcome back</div>
             <h1 class="page-title">Login</h1>
+            <p class="page-subtitle">Masuk untuk membuka budget management milikmu.</p>
         </div>
 
         @include('auth.partials.social-buttons')
@@ -12,7 +13,7 @@
 
             <div>
                 <label for="email" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Email</label>
-                <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" autofocus class="input-field">
+                <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" autofocus placeholder="your@email.com" class="input-field">
                 @error('email')
                     <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                 @enderror
@@ -20,7 +21,7 @@
 
             <div>
                 <label for="password" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Password</label>
-                <input id="password" name="password" type="password" autocomplete="current-password" class="input-field">
+                <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" class="input-field">
                 @error('password')
                     <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                 @enderror
