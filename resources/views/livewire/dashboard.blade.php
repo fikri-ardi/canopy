@@ -466,6 +466,24 @@
                         </div>
                     </div>
                 </div>
+
+                @if ($labelActivityHeatmap['canExpand'])
+                    <div class="mt-4 flex justify-center border-t border-gray-100 pt-4 dark:border-slate-800">
+                        <button type="button" wire:click="toggleLabelActivityRows" class="btn-secondary px-3 py-2 text-xs">
+                            @if ($labelActivityHeatmap['isExpanded'])
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                                </svg>
+                                <span>Show less</span>
+                            @else
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
+                                <span>Show all {{ $labelActivityHeatmap['totalRows'] }} labels</span>
+                            @endif
+                        </button>
+                    </div>
+                @endif
             @endif
         </section>
 

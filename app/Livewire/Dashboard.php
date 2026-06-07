@@ -16,6 +16,7 @@ class Dashboard extends Component
     public $startDate = '';
     public $endDate = '';
     public $labelActivityYear;
+    public $showAllLabelActivity = false;
 
     public function mount(): void
     {
@@ -31,6 +32,16 @@ class Dashboard extends Component
         auth()->user()->forceFill([
             'onboarding_completed_at' => now(),
         ])->save();
+    }
+
+    public function toggleLabelActivityRows(): void
+    {
+        $this->showAllLabelActivity = ! $this->showAllLabelActivity;
+    }
+
+    public function updatedLabelActivityYear(): void
+    {
+        $this->showAllLabelActivity = false;
     }
 
     private function shouldShowOnboardingWelcome(): bool
@@ -130,6 +141,10 @@ class Dashboard extends Component
                 'ready' => false,
                 'rows' => collect(),
                 'weeks' => collect(),
+                'totalRows' => 0,
+                'hiddenRows' => 0,
+                'canExpand' => false,
+                'isExpanded' => false,
                 'totalTransactions' => 0,
                 'periodLabel' => '',
             ];
@@ -173,7 +188,7 @@ class Dashboard extends Component
 
         $maxCell = max((int) $cellTotals->max(), 1);
 
-        $rows = $spends
+        $labelRows = $spends
             ->groupBy('label_name')
             ->map(fn ($items, string $label) => [
                 'label' => $label,
@@ -182,36 +197,43 @@ class Dashboard extends Component
                 'items' => $items,
             ])
             ->sortByDesc('total')
-            ->take(7)
-            ->values()
-            ->map(function (array $row) use ($weeks, $cellTotals, $maxCell) {
-                return [
-                    'label' => $row['label'],
-                    'total' => $row['total'],
-                    'transactions' => $row['transactions'],
-                    'weeks' => $weeks->map(function (array $week) use ($row, $cellTotals, $maxCell) {
-                        return [
-                            'key' => $week['key'],
-                            'days' => $week['days']->map(function (array $day) use ($row, $cellTotals, $maxCell) {
-                                $amount = (int) ($cellTotals->get($row['label'].'|'.$day['key']) ?? 0);
-                                $level = $amount === 0 ? 0 : max(1, min(4, (int) ceil(($amount / $maxCell) * 4)));
+            ->values();
 
-                                return [
-                                    'amount' => $amount,
-                                    'formatted' => $this->rupiah($amount),
-                                    'level' => $level,
-                                    'day' => $day['label'],
-                                    'date' => $day['short'],
-                                ];
-                            }),
-                        ];
-                    }),
-                ];
-            });
+        $totalRows = $labelRows->count();
+        $visibleRows = $this->showAllLabelActivity ? $labelRows : $labelRows->take(3);
+
+        $rows = $visibleRows->map(function (array $row) use ($weeks, $cellTotals, $maxCell) {
+            return [
+                'label' => $row['label'],
+                'total' => $row['total'],
+                'transactions' => $row['transactions'],
+                'weeks' => $weeks->map(function (array $week) use ($row, $cellTotals, $maxCell) {
+                    return [
+                        'key' => $week['key'],
+                        'days' => $week['days']->map(function (array $day) use ($row, $cellTotals, $maxCell) {
+                            $amount = (int) ($cellTotals->get($row['label'].'|'.$day['key']) ?? 0);
+                            $level = $amount === 0 ? 0 : max(1, min(4, (int) ceil(($amount / $maxCell) * 4)));
+
+                            return [
+                                'amount' => $amount,
+                                'formatted' => $this->rupiah($amount),
+                                'level' => $level,
+                                'day' => $day['label'],
+                                'date' => $day['short'],
+                            ];
+                        }),
+                    ];
+                }),
+            ];
+        });
 
         return [
             'ready' => true,
             'rows' => $rows,
+            'totalRows' => $totalRows,
+            'hiddenRows' => max(0, $totalRows - $rows->count()),
+            'canExpand' => $totalRows > 3,
+            'isExpanded' => (bool) $this->showAllLabelActivity,
             'weeks' => $weeks,
             'totalTransactions' => $spends->count(),
             'periodLabel' => $periodStart->format('M').' - '.$periodEnd->format('M Y'),
