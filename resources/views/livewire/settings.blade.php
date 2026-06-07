@@ -23,6 +23,7 @@
             <div class="panel p-2">
                 @foreach ([
                     ['href' => '#appearance', 'label' => 'Appearance'],
+                    ['href' => '#setup', 'label' => 'App Setup'],
                     ['href' => '#profile', 'label' => 'Profile'],
                     ['href' => '#security', 'label' => 'Security'],
                     ['href' => '#data', 'label' => 'Export / Import'],
@@ -75,6 +76,52 @@
                             Dark
                         </button>
                     </div>
+                </div>
+            </section>
+
+            <section id="setup" class="panel scroll-mt-5 p-4 sm:p-5">
+                <div>
+                    <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">App Setup</h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Manage the small building blocks used by expenses and budgets.</p>
+                </div>
+
+                <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                    <a href="{{ route('labels') }}" wire:navigate class="group flex min-w-0 items-center gap-3 rounded-lg border border-gray-200 bg-white/70 p-3 text-sm transition hover:border-green-200 hover:bg-green-50/60 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-green-500/30 dark:hover:bg-green-500/10">
+                        <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100 dark:bg-emerald-500/10 dark:ring-emerald-500/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.008v.008H6.75V6.75Z" />
+                            </svg>
+                        </span>
+                        <span class="min-w-0 flex-1">
+                            <span class="block font-semibold text-gray-900 dark:text-slate-100">Labels</span>
+                            <span class="block truncate text-xs text-gray-500 dark:text-slate-400">Expense categories</span>
+                        </span>
+                    </a>
+
+                    <a href="{{ route('platforms') }}" wire:navigate class="group flex min-w-0 items-center gap-3 rounded-lg border border-gray-200 bg-white/70 p-3 text-sm transition hover:border-green-200 hover:bg-green-50/60 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-green-500/30 dark:hover:bg-green-500/10">
+                        <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-cyan-50 text-cyan-500 ring-1 ring-cyan-100 dark:bg-cyan-500/10 dark:ring-cyan-500/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5m-18 0V6A2.25 2.25 0 0 1 6 3.75h12A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V8.25Zm3 6h4.5" />
+                            </svg>
+                        </span>
+                        <span class="min-w-0 flex-1">
+                            <span class="block font-semibold text-gray-900 dark:text-slate-100">Platforms</span>
+                            <span class="block truncate text-xs text-gray-500 dark:text-slate-400">Banks and wallets</span>
+                        </span>
+                    </a>
+
+                    <a href="{{ route('statuses') }}" wire:navigate class="group flex min-w-0 items-center gap-3 rounded-lg border border-gray-200 bg-white/70 p-3 text-sm transition hover:border-green-200 hover:bg-green-50/60 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-green-500/30 dark:hover:bg-green-500/10">
+                        <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-500 ring-1 ring-violet-100 dark:bg-violet-500/10 dark:ring-violet-500/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M4.5 6.75h15M4.5 17.25h15M6.75 21h10.5A2.25 2.25 0 0 0 19.5 18.75V5.25A2.25 2.25 0 0 0 17.25 3H6.75A2.25 2.25 0 0 0 4.5 5.25v13.5A2.25 2.25 0 0 0 6.75 21Z" />
+                            </svg>
+                        </span>
+                        <span class="min-w-0 flex-1">
+                            <span class="block font-semibold text-gray-900 dark:text-slate-100">Statuses</span>
+                            <span class="block truncate text-xs text-gray-500 dark:text-slate-400">Allocation states</span>
+                        </span>
+                    </a>
                 </div>
             </section>
 
