@@ -1,4 +1,4 @@
-<div class="min-w-0">
+<div class="min-w-0" wire:poll.30s>
     <header class="app-header">
         <div class="page-header-layout">
             <div class="page-header-copy">
@@ -12,6 +12,11 @@
                     <div class="eyebrow">Admin</div>
                     <h1 class="page-title">User Analytics</h1>
                 </div>
+            </div>
+            <div class="hidden items-center gap-2 rounded-lg border border-gray-200 bg-white/60 px-3 py-2 text-xs font-medium text-gray-500 backdrop-blur dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-400 sm:flex">
+                <span class="inline-flex size-2 rounded-full bg-green-500"></span>
+                <span>Auto refresh 30s</span>
+                <span class="text-gray-400 dark:text-slate-600">{{ $refreshedAt->format('H:i:s') }}</span>
             </div>
         </div>
     </header>
@@ -105,26 +110,56 @@
         </section>
 
         <section class="panel p-4 sm:p-5">
+            @php
+                $recentUserSortLabel = function (string $field, string $label) use ($recentUsersSortField, $recentUsersSortDirection) {
+                    $isActive = $recentUsersSortField === $field;
+                    $icon = $isActive && $recentUsersSortDirection === 'asc'
+                        ? 'M4.5 15.75 12 8.25l7.5 7.5'
+                        : 'm19.5 8.25-7.5 7.5-7.5-7.5';
+
+                    return compact('isActive', 'icon', 'label');
+                };
+            @endphp
+
             <div>
                 <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Recent Users</h2>
                 <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Newest accounts and their assigned role.</p>
             </div>
 
-            <div class="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-slate-800">
-                <div class="hidden grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_8rem_9rem] bg-gray-50 px-3 py-2 text-xs font-semibold uppercase text-gray-400 dark:bg-slate-900 dark:text-slate-500 md:grid">
-                    <span>User</span>
-                    <span>Email</span>
-                    <span>Role</span>
-                    <span class="text-right">Joined</span>
+            <div id="recent-users-table" class="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-slate-800">
+                <div class="hidden grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_7rem_8.5rem_9rem] bg-gray-50 px-3 py-2 text-xs font-semibold uppercase text-gray-400 dark:bg-slate-900 dark:text-slate-500 md:grid">
+                    @foreach ([
+                        ['field' => 'name', 'label' => 'User', 'align' => 'text-left'],
+                        ['field' => 'email', 'label' => 'Email', 'align' => 'text-left'],
+                        ['field' => 'role', 'label' => 'Role', 'align' => 'text-left'],
+                        ['field' => 'last_seen_at', 'label' => 'Last seen', 'align' => 'text-right justify-end'],
+                        ['field' => 'created_at', 'label' => 'Joined', 'align' => 'text-right justify-end'],
+                    ] as $heading)
+                        @php($sort = $recentUserSortLabel($heading['field'], $heading['label']))
+                        <button type="button" wire:click="sortRecentUsers('{{ $heading['field'] }}')" class="{{ $heading['align'] }} inline-flex items-center gap-1 rounded-md px-1.5 py-1 transition hover:bg-white hover:text-gray-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 {{ $sort['isActive'] ? 'text-green-600 dark:text-green-300' : '' }}">
+                            <span>{{ $sort['label'] }}</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5 {{ $sort['isActive'] ? 'opacity-100' : 'opacity-35' }}">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $sort['icon'] }}" />
+                            </svg>
+                        </button>
+                    @endforeach
                 </div>
 
                 <div class="divide-y divide-gray-100 dark:divide-slate-800">
                     @forelse ($recentUsers as $user)
-                        <div class="grid gap-2 px-3 py-3 text-sm md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_8rem_9rem] md:items-center">
+                        <div class="grid gap-2 px-3 py-3 text-sm md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_7rem_8.5rem_9rem] md:items-center">
                             <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $user->name }}</div>
                             <div class="truncate text-gray-500 dark:text-slate-400">{{ $user->email }}</div>
                             <div>
                                 <span class="rounded-md bg-gray-100 px-2 py-1 text-xs font-semibold capitalize text-gray-500 dark:bg-slate-800 dark:text-slate-300">{{ $user->role?->label ?? 'User' }}</span>
+                            </div>
+                            <div class="text-gray-500 dark:text-slate-400 md:text-right">
+                                @if ($user->last_seen_at)
+                                    <span class="block">{{ $user->last_seen_at->diffForHumans() }}</span>
+                                    <span class="block text-xs text-gray-400 dark:text-slate-500">{{ $user->last_seen_at->format('d M, H:i') }}</span>
+                                @else
+                                    <span class="text-gray-400 dark:text-slate-500">Never</span>
+                                @endif
                             </div>
                             <div class="text-gray-500 dark:text-slate-400 md:text-right">{{ $user->created_at?->format('d M Y') }}</div>
                         </div>
@@ -133,6 +168,34 @@
                     @endforelse
                 </div>
             </div>
+
+            @if ($recentUsersTotal > 0)
+                <div class="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="text-sm text-gray-500 dark:text-slate-400">
+                        Showing <span class="font-semibold text-gray-800 dark:text-slate-200">{{ $recentUsersShowing }}</span> of <span class="font-semibold text-gray-800 dark:text-slate-200">{{ $recentUsersTotal }}</span> users
+                    </div>
+
+                    <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                        @if ($recentUsersShowing < $recentUsersTotal)
+                            <button type="button" wire:click="showMoreRecentUsers" aria-controls="recent-users-table" class="btn-secondary w-full sm:w-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
+                                Show {{ $recentUsersNextCount }} more
+                            </button>
+                        @endif
+
+                        @if ($recentUsersShowing > 6)
+                            <button type="button" wire:click="showLessRecentUsers" aria-controls="recent-users-table" class="btn-secondary w-full sm:w-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                                </svg>
+                                Show less
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </section>
     </main>
 </div>

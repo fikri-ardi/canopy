@@ -26,6 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'role_id',
         'email_verified_at',
         'last_seen_at',
+        'online_until',
         'onboarding_completed_at',
     ];
 
@@ -49,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'last_seen_at' => 'datetime',
+            'online_until' => 'datetime',
             'onboarding_completed_at' => 'datetime',
             'password' => 'hashed',
         ];
@@ -94,6 +96,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function feedback(): HasMany
     {
         return $this->hasMany(Feedback::class);
+    }
+
+    public function activityDays(): HasMany
+    {
+        return $this->hasMany(UserActivityDay::class);
     }
 
     public function labels(): HasMany
