@@ -14,40 +14,6 @@
                     <h1 class="page-title">Financial Command Center</h1>
                 </div>
             </div>
-
-            <div class="page-header-actions">
-                <button type="button" x-on:click="dateFilterOpen = ! dateFilterOpen" class="btn-secondary w-full justify-between sm:hidden" aria-controls="dashboard-mobile-date-filter" x-bind:aria-expanded="dateFilterOpen.toString()">
-                    <span class="inline-flex min-w-0 items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4 shrink-0">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3.75 8.25h16.5M5.25 5.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25Z" />
-                        </svg>
-                        <span class="truncate">Date range</span>
-                    </span>
-                    <span class="text-xs font-medium text-gray-400 dark:text-slate-500" x-text="dateFilterOpen ? 'Hide' : 'Set'"></span>
-                </button>
-
-                <label class="hidden min-w-0 flex-1 sm:block sm:w-40 sm:flex-none">
-                    <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">Start Date</span>
-                    <input wire:model.live="startDate" type="date" class="input-field">
-                </label>
-
-                <label class="hidden min-w-0 flex-1 sm:block sm:w-40 sm:flex-none">
-                    <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">End Date</span>
-                    <input wire:model.live="endDate" type="date" class="input-field">
-                </label>
-            </div>
-        </div>
-
-        <div id="dashboard-mobile-date-filter" x-show="dateFilterOpen" x-cloak x-transition class="mt-3 grid gap-2 sm:hidden">
-            <label class="min-w-0">
-                <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">Start Date</span>
-                <input wire:model.live="startDate" type="date" class="input-field">
-            </label>
-
-            <label class="min-w-0">
-                <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">End Date</span>
-                <input wire:model.live="endDate" type="date" class="input-field">
-            </label>
         </div>
     </header>
 
@@ -122,6 +88,75 @@
     </template>
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+        <section class="rounded-lg border border-slate-200/55 bg-white/[0.46] px-3 py-2.5 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/[0.28]">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <button type="button" x-on:click="dateFilterOpen = ! dateFilterOpen" class="flex min-w-0 items-center justify-between gap-3 rounded-md px-1 py-1 text-left sm:pointer-events-none sm:cursor-default" aria-controls="dashboard-mobile-date-filter" x-bind:aria-expanded="dateFilterOpen.toString()">
+                    <span class="flex min-w-0 items-center gap-2.5">
+                        <span class="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-green-50/80 text-green-600 ring-1 ring-green-100/80 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3.75 8.25h16.5M5.25 5.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25Z" />
+                            </svg>
+                        </span>
+                        <span class="min-w-0">
+                            <span class="block text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Date range</span>
+                            <span class="block truncate text-sm font-medium text-slate-700 dark:text-slate-200">
+                                @if ($startDate || $endDate)
+                                    {{ $startDate ?: 'Any start' }} - {{ $endDate ?: 'Today' }}
+                                @else
+                                    All data
+                                @endif
+                            </span>
+                        </span>
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4 shrink-0 text-slate-400 transition sm:hidden" x-bind:class="dateFilterOpen ? 'rotate-180' : ''">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </button>
+
+                <div class="hidden items-center gap-2 sm:flex">
+                    <label class="min-w-0">
+                        <span class="sr-only">Start Date</span>
+                        <input wire:model.live="startDate" type="date" class="input-field h-9 w-40 text-sm">
+                    </label>
+
+                    <span class="text-xs font-medium text-slate-300 dark:text-slate-600">to</span>
+
+                    <label class="min-w-0">
+                        <span class="sr-only">End Date</span>
+                        <input wire:model.live="endDate" type="date" class="input-field h-9 w-40 text-sm">
+                    </label>
+
+                    @if ($startDate || $endDate)
+                        <button type="button" wire:click="clearDateRange" class="btn-secondary h-9 px-3" aria-label="Clear date range" data-tooltip="Clear date range">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    @endif
+                </div>
+            </div>
+
+            <div id="dashboard-mobile-date-filter" x-show="dateFilterOpen" x-cloak x-transition class="mt-3 grid gap-2 border-t border-slate-200/60 pt-3 dark:border-slate-800/70 sm:hidden">
+                <div class="grid grid-cols-1 gap-2 min-[420px]:grid-cols-2">
+                    <label class="min-w-0">
+                        <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">Start</span>
+                        <input wire:model.live="startDate" type="date" class="input-field h-10">
+                    </label>
+
+                    <label class="min-w-0">
+                        <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">End</span>
+                        <input wire:model.live="endDate" type="date" class="input-field h-10">
+                    </label>
+                </div>
+
+                @if ($startDate || $endDate)
+                    <button type="button" wire:click="clearDateRange" class="btn-secondary h-10 w-full">
+                        Clear
+                    </button>
+                @endif
+            </div>
+        </section>
+
         <section class="summary-grid">
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">

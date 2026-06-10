@@ -23,6 +23,11 @@ class Dashboard extends Component
         $this->labelActivityYear ??= now()->year;
     }
 
+    public function clearDateRange(): void
+    {
+        $this->reset(['startDate', 'endDate']);
+    }
+
     public function completeOnboarding(): void
     {
         if (! auth()->user()->needsOnboarding()) {
