@@ -232,7 +232,7 @@
                                 <span class="text-gray-400 dark:text-slate-500">/</span>
                                 <span
                                     class="rounded-full px-2 py-0.5 text-xs font-medium"
-                                    x-bind:class="summary?.changeTone === 'up' ? 'bg-red-50 text-red-500 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20' : (summary?.changeTone === 'down' ? 'bg-green-50 text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20' : 'bg-white/70 text-gray-500 ring-1 ring-gray-100 dark:bg-slate-950/30 dark:text-slate-400 dark:ring-slate-700')"
+                                    x-bind:class="summary?.changeTone === 'up' ? 'bg-green-50 text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20' : (summary?.changeTone === 'down' ? 'bg-red-50 text-red-500 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20' : 'bg-white/70 text-gray-500 ring-1 ring-gray-100 dark:bg-slate-950/30 dark:text-slate-400 dark:ring-slate-700')"
                                     x-text="summary?.changePercentageLabel ?? @js($categoryBudgetChart['topCategory']['changePercentageLabel'])"
                                 >{{ $categoryBudgetChart['topCategory']['changePercentageLabel'] }}</span>
                             </div>

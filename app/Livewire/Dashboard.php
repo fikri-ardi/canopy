@@ -582,81 +582,38 @@ class Dashboard extends Component
 
         if ($period === '1M') {
             $start = $this->clampActivityStart($end->copy()->subDays(29)->startOfDay(), $activityStart);
-            $format = 'Y-m-d';
-            $buckets = collect();
-            $cursor = $start->copy();
 
-            while ($cursor->lte($end)) {
-                $bucket = $cursor->copy();
-
-                $buckets->push([
-                    'key' => $bucket->format('Y-m-d'),
-                    'label' => $bucket->format('d'),
-                    'fullLabel' => $bucket->format('d M Y'),
-                ]);
-
-                $cursor->addDay();
-            }
-
-            return [$start, $end, $buckets, $format, $start->format('d M').' - '.$end->format('d M Y')];
+            return [$start, $end, $this->dailyBuckets($start, $end, 'd'), 'Y-m-d', $start->format('d M').' - '.$end->format('d M Y')];
         }
 
         if ($period === '3M') {
-            $start = $this->clampActivityStart($end->copy()->subWeeks(11)->startOfWeek(), $activityStart);
-            $format = 'o-W';
-            $buckets = collect();
-            $cursor = $start->copy()->startOfWeek();
+            $start = $this->clampActivityStart($end->copy()->subMonths(3)->addDay()->startOfDay(), $activityStart);
 
-            while ($cursor->lte($end)) {
-                $bucket = $cursor->copy();
-
-                $buckets->push([
-                    'key' => $bucket->format('o-W'),
-                    'label' => $bucket->format('d M'),
-                    'fullLabel' => $bucket->format('d M').' - '.$bucket->copy()->endOfWeek()->format('d M Y'),
-                ]);
-
-                $cursor->addWeek();
-            }
-
-            return [$start, $end, $buckets, $format, $start->format('d M').' - '.$end->format('d M Y')];
+            return [$start, $end, $this->dailyBuckets($start, $end, 'd M'), 'Y-m-d', $start->format('d M').' - '.$end->format('d M Y')];
         }
 
         if ($period === 'YTD') {
             $start = $this->clampActivityStart($end->copy()->startOfYear(), $activityStart);
 
-            return [$start, $end, $this->monthlyBuckets($start, $end), $format, 'YTD '.$end->year];
+            return [$start, $end, $this->dailyBuckets($start, $end, 'd M'), 'Y-m-d', 'YTD '.$end->year];
         }
 
         if ($period === '3Y' || $period === '5Y') {
             $years = $period === '3Y' ? 3 : 5;
-            $start = $this->clampActivityStart($end->copy()->subYears($years)->addDay()->startOfQuarter(), $activityStart);
-            $format = 'quarter';
-            $buckets = collect();
-            $cursor = $start->copy();
+            $start = $this->clampActivityStart($end->copy()->subYears($years)->addDay()->startOfDay(), $activityStart);
 
-            while ($cursor->lte($end)) {
-                $buckets->push([
-                    'key' => $cursor->format('Y-').'Q'.$cursor->quarter,
-                    'label' => 'Q'.$cursor->quarter,
-                    'fullLabel' => 'Q'.$cursor->quarter.' '.$cursor->year,
-                ]);
-
-                $cursor->addQuarter();
-            }
-
-            return [$start, $end, $buckets, $format, $start->format('Y').' - '.$end->format('Y')];
+            return [$start, $end, $this->dailyBuckets($start, $end, 'd M y'), 'Y-m-d', $start->format('d M Y').' - '.$end->format('d M Y')];
         }
 
         if ($period === 'ALL') {
-            $start = $activityStart->copy()->startOfMonth();
+            $start = $activityStart->copy()->startOfDay();
 
-            return [$start, $end, $this->monthlyBuckets($start, $end), $format, $start->format('M Y').' - '.$end->format('M Y')];
+            return [$start, $end, $this->dailyBuckets($start, $end, 'd M y'), 'Y-m-d', $start->format('d M Y').' - '.$end->format('d M Y')];
         }
 
-        $start = $this->clampActivityStart($end->copy()->subMonths(11)->startOfMonth(), $activityStart);
+        $start = $this->clampActivityStart($end->copy()->subYear()->addDay()->startOfDay(), $activityStart);
 
-        return [$start, $end, $this->monthlyBuckets($start, $end), $format, $start->format('M Y').' - '.$end->format('M Y')];
+        return [$start, $end, $this->dailyBuckets($start, $end, 'd M'), 'Y-m-d', $start->format('d M Y').' - '.$end->format('d M Y')];
     }
 
     private function userActivityBounds(): array
@@ -698,19 +655,19 @@ class Dashboard extends Component
         return $candidate->lt($activityStart) ? $activityStart->copy() : $candidate;
     }
 
-    private function monthlyBuckets(Carbon $start, Carbon $end)
+    private function dailyBuckets(Carbon $start, Carbon $end, string $labelFormat)
     {
         $buckets = collect();
-        $cursor = $start->copy()->startOfMonth();
+        $cursor = $start->copy()->startOfDay();
 
         while ($cursor->lte($end)) {
             $buckets->push([
-                'key' => $cursor->format('Y-m'),
-                'label' => $cursor->format('M'),
-                'fullLabel' => $cursor->format('M Y'),
+                'key' => $cursor->format('Y-m-d'),
+                'label' => $cursor->format($labelFormat),
+                'fullLabel' => $cursor->format('d M Y'),
             ]);
 
-            $cursor->addMonth();
+            $cursor->addDay();
         }
 
         return $buckets;
@@ -769,9 +726,21 @@ class Dashboard extends Component
             return '';
         }
 
-        return collect($points)
-            ->map(fn (array $point, int $index) => ($index === 0 ? 'M ' : 'L ').$point['x'].' '.$point['y'])
-            ->join(' ');
+        if (count($points) === 1) {
+            return 'M '.$points[0]['x'].' '.$points[0]['y'];
+        }
+
+        $path = 'M '.$points[0]['x'].' '.$points[0]['y'];
+
+        for ($index = 0; $index < count($points) - 1; $index++) {
+            $current = $points[$index];
+            $next = $points[$index + 1];
+            $midX = round(($current['x'] + $next['x']) / 2, 2);
+
+            $path .= ' C '.$midX.' '.$current['y'].', '.$midX.' '.$next['y'].', '.$next['x'].' '.$next['y'];
+        }
+
+        return $path;
     }
 
     private function areaPath(array $points, float $baseline): string
