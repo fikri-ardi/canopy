@@ -554,12 +554,12 @@ class Dashboard extends Component
 
     private function categoryChartRange(string $period): array
     {
-        [$activityStart, $activityEnd] = $this->userActivityBounds();
-        $end = $activityEnd->copy();
+        [$spendStart, $spendEnd] = $this->userSpendBounds();
+        $end = $spendEnd->copy();
         $format = 'Y-m';
 
         if ($period === '1D') {
-            $start = $this->clampActivityStart($end->copy()->startOfDay(), $activityStart);
+            $start = $this->clampActivityStart($end->copy()->startOfDay(), $spendStart);
             $format = 'Y-m-d H';
             $bucketStart = $start->copy()->setTime(intdiv((int) $start->format('H'), 2) * 2, 0);
             $buckets = collect();
@@ -581,55 +581,49 @@ class Dashboard extends Component
         }
 
         if ($period === '1M') {
-            $start = $this->clampActivityStart($end->copy()->subDays(29)->startOfDay(), $activityStart);
+            $start = $this->clampActivityStart($end->copy()->subMonth()->startOfDay(), $spendStart);
 
             return [$start, $end, $this->dailyBuckets($start, $end, 'd'), 'Y-m-d', $start->format('d M').' - '.$end->format('d M Y')];
         }
 
         if ($period === '3M') {
-            $start = $this->clampActivityStart($end->copy()->subMonths(3)->addDay()->startOfDay(), $activityStart);
+            $start = $this->clampActivityStart($end->copy()->subMonths(3)->startOfDay(), $spendStart);
 
             return [$start, $end, $this->dailyBuckets($start, $end, 'd M'), 'Y-m-d', $start->format('d M').' - '.$end->format('d M Y')];
         }
 
         if ($period === 'YTD') {
-            $start = $this->clampActivityStart($end->copy()->startOfYear(), $activityStart);
+            $start = $this->clampActivityStart($end->copy()->startOfYear(), $spendStart);
 
             return [$start, $end, $this->dailyBuckets($start, $end, 'd M'), 'Y-m-d', 'YTD '.$end->year];
         }
 
         if ($period === '3Y' || $period === '5Y') {
             $years = $period === '3Y' ? 3 : 5;
-            $start = $this->clampActivityStart($end->copy()->subYears($years)->addDay()->startOfDay(), $activityStart);
+            $start = $this->clampActivityStart($end->copy()->subYears($years)->startOfDay(), $spendStart);
 
             return [$start, $end, $this->dailyBuckets($start, $end, 'd M y'), 'Y-m-d', $start->format('d M Y').' - '.$end->format('d M Y')];
         }
 
         if ($period === 'ALL') {
-            $start = $activityStart->copy()->startOfDay();
+            $start = $spendStart->copy()->startOfDay();
 
             return [$start, $end, $this->dailyBuckets($start, $end, 'd M y'), 'Y-m-d', $start->format('d M Y').' - '.$end->format('d M Y')];
         }
 
-        $start = $this->clampActivityStart($end->copy()->subYear()->addDay()->startOfDay(), $activityStart);
+        $start = $this->clampActivityStart($end->copy()->subYear()->startOfDay(), $spendStart);
 
         return [$start, $end, $this->dailyBuckets($start, $end, 'd M'), 'Y-m-d', $start->format('d M Y').' - '.$end->format('d M Y')];
     }
 
-    private function userActivityBounds(): array
+    private function userSpendBounds(): array
     {
-        $budgetRange = $this->userBudgetQuery()
-            ->selectRaw('min(created_at) as first_activity, max(created_at) as last_activity')
-            ->first();
-
         $spendRange = Spend::query()
             ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
             ->selectRaw('min(created_at) as first_activity, max(created_at) as last_activity')
             ->first();
 
         $dates = collect([
-            $budgetRange?->first_activity,
-            $budgetRange?->last_activity,
             $spendRange?->first_activity,
             $spendRange?->last_activity,
         ])

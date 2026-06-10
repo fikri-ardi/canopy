@@ -157,6 +157,7 @@
         </section>
 
         <section
+            wire:key="dashboard-category-chart-{{ $categoryBudgetChart['selectedPeriod'] ?? 'unready' }}"
             class="panel overflow-hidden px-4 py-4 sm:px-5 sm:py-5"
             x-data="{
                 selectedLine: @js($categoryBudgetChart['topCategory']['name'] ?? null),
@@ -238,23 +239,23 @@
                             </div>
                         </div>
 
-                        <div class="flex max-w-full gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:justify-end sm:overflow-visible">
+                        <div class="grid w-full grid-cols-2 gap-1.5 sm:flex sm:max-w-full sm:flex-wrap sm:justify-end">
                             @foreach ($categoryBudgetChart['series'] as $seriesItem)
                                 <button
                                     type="button"
                                     wire:key="dashboard-chart-legend-{{ str($seriesItem['name'])->slug() }}"
-                                    class="inline-flex shrink-0 items-center gap-2 rounded-full bg-white/65 px-2.5 py-1 text-[11px] font-medium text-gray-600 ring-1 ring-green-100/70 transition dark:bg-slate-950/30 dark:text-slate-300 dark:ring-green-500/15"
+                                    class="inline-flex min-w-0 items-center justify-center gap-2 rounded-full bg-white/65 px-2.5 py-1 text-[11px] font-medium text-gray-600 ring-1 ring-green-100/70 transition dark:bg-slate-950/30 dark:text-slate-300 dark:ring-green-500/15 sm:shrink-0"
                                     x-bind:class="selectedLine === @js($seriesItem['name']) ? 'text-gray-950 ring-green-200 dark:text-slate-50 dark:ring-green-500/30' : ''"
                                     x-on:click="selectSeries(@js($seriesItem))"
                                 >
                                     <span class="size-2 rounded-full" style="background-color: {{ $seriesItem['color'] }}"></span>
-                                    <span class="max-w-28 truncate">{{ $seriesItem['label'] }}</span>
+                                    <span class="min-w-0 truncate sm:max-w-28">{{ $seriesItem['label'] }}</span>
                                 </button>
                             @endforeach
                         </div>
                     </div>
 
-                    <div class="relative mt-5 min-h-[15rem] sm:min-h-72" style="aspect-ratio: {{ $categoryBudgetChart['width'] }} / {{ $categoryBudgetChart['height'] }};">
+                    <div class="relative mt-5 h-[clamp(13.5rem,58vw,18rem)] w-full max-w-full sm:h-72">
                         <svg
                             class="absolute inset-0 block h-full w-full overflow-visible"
                             viewBox="0 0 {{ $categoryBudgetChart['width'] }} {{ $categoryBudgetChart['height'] }}"
@@ -338,14 +339,14 @@
                     </div>
                 </div>
 
-                <div class="mt-4 overflow-x-auto pb-1">
-                    <div class="mx-auto flex min-w-max w-fit items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 shadow-sm shadow-slate-900/5 dark:border-slate-800/70 dark:bg-slate-950/35">
+                <div class="mt-4">
+                    <div class="mx-auto grid w-full grid-cols-4 gap-1 rounded-2xl border border-slate-200/70 bg-white/70 p-1 shadow-sm shadow-slate-900/5 dark:border-slate-800/70 dark:bg-slate-950/35 sm:flex sm:w-fit sm:min-w-max sm:rounded-full">
                         @foreach ($categoryBudgetChart['periodOptions'] as $periodKey => $periodLabel)
                             <button
                                 type="button"
                                 wire:click="setCategoryChartPeriod('{{ $periodKey }}')"
                                 wire:key="dashboard-category-period-{{ $periodKey }}"
-                                class="{{ $categoryBudgetChart['selectedPeriod'] === $periodKey ? 'bg-green-50 text-green-700 shadow-sm ring-1 ring-green-100 dark:bg-green-500/12 dark:text-green-300 dark:ring-green-500/20' : 'text-gray-500 hover:bg-slate-50 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100' }} rounded-full px-3 py-1.5 text-xs font-medium transition sm:px-4"
+                                class="{{ $categoryBudgetChart['selectedPeriod'] === $periodKey ? 'bg-green-50 text-green-700 shadow-sm ring-1 ring-green-100 dark:bg-green-500/12 dark:text-green-300 dark:ring-green-500/20' : 'text-gray-500 hover:bg-slate-50 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100' }} rounded-full px-2 py-1.5 text-center text-xs font-medium transition sm:px-4"
                             >
                                 {{ $periodLabel }}
                             </button>
