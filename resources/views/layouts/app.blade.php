@@ -634,7 +634,6 @@
 
         window.alokasiDashboardPage = function (showWelcomeTour = false) {
             return {
-                dateFilterOpen: false,
                 welcomeTour: {
                     visible: showWelcomeTour,
                     style: '',

@@ -14,13 +14,6 @@
                     <h1 class="page-title">Investment Ledger</h1>
                 </div>
             </div>
-
-            <div class="grid grid-cols-2 gap-2 sm:flex sm:items-center lg:justify-end">
-                <div class="header-balance-chip">
-                    <span class="text-gray-400 dark:text-slate-500">Balance</span>
-                    <span class="money-value font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($summary['balance']) }}</span>
-                </div>
-            </div>
         </div>
     </header>
 

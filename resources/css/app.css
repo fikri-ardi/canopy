@@ -222,7 +222,7 @@
     }
 
     .sticky-summary {
-        @apply sticky top-0 z-30 -mx-4 border-b border-transparent bg-transparent px-4 py-2.5 transition-all duration-200 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8;
+        @apply sticky top-0 z-30 border-b border-transparent bg-transparent py-2.5 transition-all duration-200;
     }
 
     .sticky-summary-stuck {
@@ -263,6 +263,10 @@
 
     .dashboard-chart-axis-text {
         @apply fill-gray-400 text-[9px] font-medium dark:fill-slate-500;
+    }
+
+    .dashboard-chart-crosshair-text {
+        @apply fill-gray-500 text-[11px] font-medium dark:fill-slate-400;
     }
 
     .dashboard-chart-line {

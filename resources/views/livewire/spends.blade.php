@@ -14,20 +14,6 @@
                     <h1 class="page-title">Transaction Explorer</h1>
                 </div>
             </div>
-
-            <div class="page-header-actions">
-                <div class="header-insight-chip">
-                    <span class="header-insight-dot bg-green-500"></span>
-                    <span class="truncate">{{ number_format($transactionCount, 0, ',', '.') }} transactions</span>
-                </div>
-
-                <a href="{{ route('budgets') }}#expenses" wire:navigate class="btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    <span>Add Expense</span>
-                </a>
-            </div>
         </div>
     </header>
 

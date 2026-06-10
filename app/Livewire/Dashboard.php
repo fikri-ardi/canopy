@@ -7,25 +7,18 @@ use App\Models\Spend;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
-use Throwable;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
     public $search = '';
-    public $startDate = '';
-    public $endDate = '';
+    public $categoryChartPeriod = '1Y';
     public $labelActivityYear;
     public $showAllLabelActivity = false;
 
     public function mount(): void
     {
         $this->labelActivityYear ??= now()->year;
-    }
-
-    public function clearDateRange(): void
-    {
-        $this->reset(['startDate', 'endDate']);
     }
 
     public function completeOnboarding(): void
@@ -49,6 +42,15 @@ class Dashboard extends Component
         $this->showAllLabelActivity = false;
     }
 
+    public function setCategoryChartPeriod(string $period): void
+    {
+        if (! array_key_exists($period, $this->categoryChartPeriodOptions())) {
+            return;
+        }
+
+        $this->categoryChartPeriod = $period;
+    }
+
     private function shouldShowOnboardingWelcome(): bool
     {
         return auth()->user()->needsOnboarding()
@@ -68,8 +70,7 @@ class Dashboard extends Component
 
         return Spend::query()
             ->when($withRelations, fn ($query) => $query->with($relations))
-            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
-            ->tap(fn (Builder $query) => $this->applyDateRange($query));
+            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()));
     }
 
     private function userBudgetQuery(): Builder
@@ -87,7 +88,6 @@ class Dashboard extends Component
         $labels = Spend::query()
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
             ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
-            ->tap(fn (Builder $query) => $this->applyDateRange($query))
             ->when($this->search, function ($query) {
                 $query->where(function ($query) {
                     $query->where('labels.name', 'like', '%'.$this->search.'%')
@@ -105,7 +105,6 @@ class Dashboard extends Component
                 ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
                 ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
                 ->whereRaw("coalesce(labels.name, 'Unlabeled') = ?", [$label->label_name])
-                ->tap(fn (Builder $query) => $this->applyDateRange($query))
                 ->when($this->search, function ($query) {
                     $query->where(function ($query) {
                         $query->where('labels.name', 'like', '%'.$this->search.'%')
@@ -306,9 +305,7 @@ class Dashboard extends Component
     private function budgetHealth()
     {
         return $this->userBudgetQuery()
-            ->withSum(['spends as total_spent' => function ($query) {
-                $this->applyDateRange($query, 'created_at');
-            }], 'amount')
+            ->withSum('spends as total_spent', 'amount')
             ->latest('created_at')
             ->latest('id')
             ->take(5)
@@ -375,130 +372,137 @@ class Dashboard extends Component
 
     private function categoryBudgetChart(): array
     {
+        $width = 760;
+        $height = 330;
+        $padding = ['left' => 42, 'right' => 24, 'top' => 30, 'bottom' => 56];
+        $periodOptions = $this->categoryChartPeriodOptions();
+        $selectedPeriod = array_key_exists($this->categoryChartPeriod, $periodOptions) ? $this->categoryChartPeriod : '1Y';
+
         if (! $this->labelsSchemaReady()) {
             return [
                 'ready' => false,
                 'series' => collect(),
-                'budgets' => collect(),
+                'buckets' => collect(),
                 'yTicks' => collect(),
-                'width' => 700,
-                'height' => 300,
+                'width' => $width,
+                'height' => $height,
+                'periodOptions' => $periodOptions,
+                'selectedPeriod' => $selectedPeriod,
             ];
         }
 
-        $rows = Spend::query()
+        [$periodStart, $periodEnd, $buckets, $bucketFormat, $periodLabel] = $this->categoryChartRange($selectedPeriod);
+
+        $spends = Spend::query()
             ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
             ->where('budgets.user_id', auth()->id())
-            ->tap(fn (Builder $query) => $this->applyDateRange($query))
-            ->selectRaw("spends.budget_id as budget_id, coalesce(labels.name, 'Unlabeled') as category, sum(spends.amount) as total")
-            ->groupBy('spends.budget_id')
-            ->groupByRaw("coalesce(labels.name, 'Unlabeled')")
+            ->whereBetween('spends.created_at', [$periodStart, $periodEnd])
+            ->selectRaw("coalesce(labels.name, 'Unlabeled') as category, spends.amount as raw_amount, spends.created_at")
             ->get();
 
-        if ($rows->isEmpty()) {
+        if ($spends->isEmpty()) {
             return [
                 'ready' => true,
                 'series' => collect(),
-                'budgets' => collect(),
+                'buckets' => $buckets,
                 'yTicks' => collect(),
-                'width' => 700,
-                'height' => 300,
+                'width' => $width,
+                'height' => $height,
+                'periodLabel' => $periodLabel,
+                'periodOptions' => $periodOptions,
+                'selectedPeriod' => $selectedPeriod,
             ];
         }
 
-        $budgetIds = $rows->pluck('budget_id')->unique()->values();
-        $budgets = Budget::query()
-            ->where('user_id', auth()->id())
-            ->whereIn('id', $budgetIds)
-            ->orderBy('created_at')
-            ->orderBy('id')
-            ->get(['id', 'name'])
-            ->values();
-
-        $width = 700;
-        $height = 300;
-        $padding = ['left' => 48, 'right' => 20, 'top' => 18, 'bottom' => 46];
         $plotWidth = $width - $padding['left'] - $padding['right'];
         $plotHeight = $height - $padding['top'] - $padding['bottom'];
-        $maxValue = max((int) $rows->max('total'), 1);
-        $chartMax = $maxValue;
         $colors = $this->chartColors();
+        $xStep = $buckets->count() > 1 ? $plotWidth / ($buckets->count() - 1) : 0;
 
-        $chartBudgets = $budgets
-            ->map(fn (Budget $budget) => [
-                'id' => $budget->id,
-                'name' => $budget->name,
-                'shortName' => str($budget->name)->limit(14)->toString(),
-                'baseline' => false,
-            ])
-            ->values();
-
-        if ($chartBudgets->count() === 1) {
-            $chartBudgets->prepend([
-                'id' => '__baseline',
-                'name' => 'Start',
-                'shortName' => 'Start',
-                'baseline' => true,
-            ]);
-        }
-
-        $xStep = $chartBudgets->count() > 1 ? $plotWidth / ($chartBudgets->count() - 1) : 0;
-
-        $budgetPoints = $chartBudgets->map(function (array $budget, int $index) use ($padding, $xStep, $plotWidth) {
-            return [
-                'id' => $budget['id'],
-                'name' => $budget['name'],
-                'shortName' => $budget['shortName'],
-                'baseline' => $budget['baseline'],
-                'x' => $padding['left'] + ($xStep ? $index * $xStep : $plotWidth / 2),
-            ];
-        });
-
-        $valuesByCategory = $rows
+        $valuesByCategory = $spends
             ->groupBy('category')
             ->map(fn ($items) => [
-                'total' => (int) $items->sum('total'),
-                'values' => $items->keyBy('budget_id')->map(fn ($item) => (int) $item->total),
+                'total' => (int) $items->sum(fn ($item) => (int) $item->raw_amount),
+                'transactions' => $items->count(),
+                'values' => $items
+                    ->groupBy(fn ($item) => $this->categoryChartBucketKey(Carbon::parse($item->created_at), $bucketFormat))
+                    ->map(fn ($bucketItems) => [
+                        'amount' => (int) $bucketItems->sum(fn ($item) => (int) $item->raw_amount),
+                        'datesLabel' => $this->spendDatesLabel($bucketItems, $bucketFormat),
+                    ]),
             ])
             ->sortByDesc('total');
 
-        $series = $valuesByCategory->values()->map(function (array $category, int $index) use ($budgetPoints, $chartMax, $colors, $padding, $plotHeight) {
-            $points = $budgetPoints->map(function (array $budget) use ($category, $chartMax, $padding, $plotHeight) {
-                $amount = (int) ($category['values']->get($budget['id']) ?? 0);
-                $y = $padding['top'] + $plotHeight - (($amount / $chartMax) * $plotHeight);
+        $chartMax = max((int) $valuesByCategory->take(5)->max(
+            fn (array $category) => $category['values']->max(fn (array $bucket) => (int) ($bucket['amount'] ?? 0)) ?? 0
+        ), 1);
+
+        $bucketCount = max($buckets->count(), 1);
+        $labelStep = max(1, (int) ceil($bucketCount / 4));
+        $chartBuckets = $buckets->values()->map(fn (array $bucket, int $index) => [
+            ...$bucket,
+            'x' => round($padding['left'] + ($xStep * $index), 2),
+            'showLabel' => $bucketCount <= 12 || $index === 0 || $index === $bucketCount - 1 || $index % $labelStep === 0,
+        ]);
+
+        $seriesIndex = 0;
+        $series = $valuesByCategory
+            ->take(5)
+            ->map(function (array $category, string $name) use ($chartBuckets, $chartMax, $colors, $padding, $plotHeight, $periodLabel, &$seriesIndex) {
+                $points = $chartBuckets->map(function (array $bucket) use ($category, $chartMax, $padding, $plotHeight) {
+                    $bucketData = $category['values']->get($bucket['key']);
+                    $amount = (int) ($bucketData['amount'] ?? 0);
+                    $y = $padding['top'] + $plotHeight - (($amount / $chartMax) * $plotHeight);
+
+                    return [
+                        'label' => $bucket['label'],
+                        'fullLabel' => $bucket['fullLabel'],
+                        'spendDateLabel' => $bucketData['datesLabel'] ?? $bucket['fullLabel'],
+                        'amount' => $amount,
+                        'formatted' => $this->rupiah($amount),
+                        'x' => $bucket['x'],
+                        'y' => round($y, 2),
+                    ];
+                })->values();
+
+                $color = $colors[$seriesIndex % count($colors)];
+                $seriesIndex++;
+                $firstAmount = (int) (($points->firstWhere('amount', '>', 0)['amount'] ?? null) ?: $points->first()['amount']);
+                $points = $points
+                    ->map(function (array $point) use ($firstAmount) {
+                        $changePercentage = $this->percentageChange($firstAmount, (int) $point['amount']);
+
+                        return [
+                            ...$point,
+                            'changePercentageLabel' => $this->formatPercentage($changePercentage),
+                            'changeTone' => $changePercentage > 0 ? 'up' : ($changePercentage < 0 ? 'down' : 'flat'),
+                        ];
+                    })
+                    ->values();
+                $defaultPoint = $points->filter(fn (array $point) => $point['amount'] > 0)->last() ?? $points->last();
 
                 return [
-                    'budget' => $budget['name'],
-                    'amount' => $amount,
-                    'formatted' => $this->rupiah($amount),
-                    'x' => round($budget['x'], 2),
-                    'y' => round($y, 2),
-                ];
-            })->values();
-
-            $latestPoint = $points->filter(fn ($point) => $point['amount'] > 0)->last() ?? $points->last();
-
-            return [
-                'name' => $category['values']->keys()->isNotEmpty() ? $category['values']->keys()->first() : null,
-                'label' => null,
-                'total' => $category['total'],
-                'formattedTotal' => $this->rupiah($category['total']),
-                'color' => $colors[$index % count($colors)],
-                'points' => $points,
-                'path' => $this->smoothPath($points->all()),
-                'areaPath' => $this->areaPath($points->all(), $padding['top'] + $plotHeight),
-                'latestPoint' => $latestPoint,
-            ];
-        });
-
-        $series = $valuesByCategory->keys()->values()->map(function (string $name, int $index) use ($series) {
-            $item = $series[$index];
-            $item['name'] = $name;
-            $item['label'] = str($name)->limit(18)->toString();
-
-            return $item;
-        });
+                    'name' => $name,
+                    'label' => str($name)->limit(18)->toString(),
+                    'total' => $category['total'],
+                    'formattedTotal' => $this->rupiah($category['total']),
+                    'transactions' => $category['transactions'],
+                        'color' => $color,
+                        'points' => $points,
+                    'path' => $this->linePath($points->all()),
+                        'latestPoint' => $points->filter(fn (array $point) => $point['amount'] > 0)->last() ?? $points->last(),
+                        'summary' => [
+                            'name' => $name,
+                            'label' => str($name)->limit(22)->toString(),
+                            'dateLabel' => $periodLabel,
+                            'formattedTotal' => $this->rupiah($category['total']),
+                            'changePercentageLabel' => $defaultPoint['changePercentageLabel'],
+                            'changeTone' => $defaultPoint['changeTone'],
+                        ],
+                    ];
+                })
+            ->values();
 
         $yTicks = collect([0, 0.5, 1])->map(function (float $tick) use ($chartMax, $padding, $plotHeight) {
             $value = (int) round($chartMax * $tick);
@@ -511,13 +515,19 @@ class Dashboard extends Component
             ];
         })->reverse()->values();
 
+        $topCategory = $series->first()['summary'] ?? null;
+
         return [
             'ready' => true,
             'series' => $series,
-            'budgets' => $budgetPoints,
+            'buckets' => $chartBuckets,
             'yTicks' => $yTicks,
+            'topCategory' => $topCategory,
             'width' => $width,
             'height' => $height,
+            'periodLabel' => $periodLabel,
+            'periodOptions' => $periodOptions,
+            'selectedPeriod' => $selectedPeriod,
             'plot' => [
                 'left' => $padding['left'],
                 'right' => $width - $padding['right'],
@@ -528,51 +538,240 @@ class Dashboard extends Component
         ];
     }
 
+    private function categoryChartPeriodOptions(): array
+    {
+        return [
+            '1D' => '1D',
+            '1M' => '1M',
+            '3M' => '3M',
+            'YTD' => 'YTD',
+            '1Y' => '1Y',
+            '3Y' => '3Y',
+            '5Y' => '5Y',
+            'ALL' => 'All',
+        ];
+    }
+
+    private function categoryChartRange(string $period): array
+    {
+        [$activityStart, $activityEnd] = $this->userActivityBounds();
+        $end = $activityEnd->copy();
+        $format = 'Y-m';
+
+        if ($period === '1D') {
+            $start = $this->clampActivityStart($end->copy()->startOfDay(), $activityStart);
+            $format = 'Y-m-d H';
+            $bucketStart = $start->copy()->setTime(intdiv((int) $start->format('H'), 2) * 2, 0);
+            $buckets = collect();
+            $cursor = $bucketStart->copy();
+
+            while ($cursor->lte($end)) {
+                $bucket = $cursor->copy();
+
+                $buckets->push([
+                    'key' => $bucket->format('Y-m-d H'),
+                    'label' => $bucket->format('H:i'),
+                    'fullLabel' => $bucket->format('d M, H:i'),
+                ]);
+
+                $cursor->addHours(2);
+            }
+
+            return [$start, $end, $buckets, 'two-hour', $end->format('d M Y')];
+        }
+
+        if ($period === '1M') {
+            $start = $this->clampActivityStart($end->copy()->subDays(29)->startOfDay(), $activityStart);
+            $format = 'Y-m-d';
+            $buckets = collect();
+            $cursor = $start->copy();
+
+            while ($cursor->lte($end)) {
+                $bucket = $cursor->copy();
+
+                $buckets->push([
+                    'key' => $bucket->format('Y-m-d'),
+                    'label' => $bucket->format('d'),
+                    'fullLabel' => $bucket->format('d M Y'),
+                ]);
+
+                $cursor->addDay();
+            }
+
+            return [$start, $end, $buckets, $format, $start->format('d M').' - '.$end->format('d M Y')];
+        }
+
+        if ($period === '3M') {
+            $start = $this->clampActivityStart($end->copy()->subWeeks(11)->startOfWeek(), $activityStart);
+            $format = 'o-W';
+            $buckets = collect();
+            $cursor = $start->copy()->startOfWeek();
+
+            while ($cursor->lte($end)) {
+                $bucket = $cursor->copy();
+
+                $buckets->push([
+                    'key' => $bucket->format('o-W'),
+                    'label' => $bucket->format('d M'),
+                    'fullLabel' => $bucket->format('d M').' - '.$bucket->copy()->endOfWeek()->format('d M Y'),
+                ]);
+
+                $cursor->addWeek();
+            }
+
+            return [$start, $end, $buckets, $format, $start->format('d M').' - '.$end->format('d M Y')];
+        }
+
+        if ($period === 'YTD') {
+            $start = $this->clampActivityStart($end->copy()->startOfYear(), $activityStart);
+
+            return [$start, $end, $this->monthlyBuckets($start, $end), $format, 'YTD '.$end->year];
+        }
+
+        if ($period === '3Y' || $period === '5Y') {
+            $years = $period === '3Y' ? 3 : 5;
+            $start = $this->clampActivityStart($end->copy()->subYears($years)->addDay()->startOfQuarter(), $activityStart);
+            $format = 'quarter';
+            $buckets = collect();
+            $cursor = $start->copy();
+
+            while ($cursor->lte($end)) {
+                $buckets->push([
+                    'key' => $cursor->format('Y-').'Q'.$cursor->quarter,
+                    'label' => 'Q'.$cursor->quarter,
+                    'fullLabel' => 'Q'.$cursor->quarter.' '.$cursor->year,
+                ]);
+
+                $cursor->addQuarter();
+            }
+
+            return [$start, $end, $buckets, $format, $start->format('Y').' - '.$end->format('Y')];
+        }
+
+        if ($period === 'ALL') {
+            $start = $activityStart->copy()->startOfMonth();
+
+            return [$start, $end, $this->monthlyBuckets($start, $end), $format, $start->format('M Y').' - '.$end->format('M Y')];
+        }
+
+        $start = $this->clampActivityStart($end->copy()->subMonths(11)->startOfMonth(), $activityStart);
+
+        return [$start, $end, $this->monthlyBuckets($start, $end), $format, $start->format('M Y').' - '.$end->format('M Y')];
+    }
+
+    private function userActivityBounds(): array
+    {
+        $budgetRange = $this->userBudgetQuery()
+            ->selectRaw('min(created_at) as first_activity, max(created_at) as last_activity')
+            ->first();
+
+        $spendRange = Spend::query()
+            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+            ->selectRaw('min(created_at) as first_activity, max(created_at) as last_activity')
+            ->first();
+
+        $dates = collect([
+            $budgetRange?->first_activity,
+            $budgetRange?->last_activity,
+            $spendRange?->first_activity,
+            $spendRange?->last_activity,
+        ])
+            ->filter()
+            ->map(fn ($date) => Carbon::parse($date))
+            ->sort()
+            ->values();
+
+        if ($dates->isEmpty()) {
+            $now = now();
+
+            return [$now->copy()->startOfDay(), $now->copy()->endOfDay()];
+        }
+
+        return [
+            $dates->first()->copy()->startOfDay(),
+            $dates->last()->copy()->endOfDay(),
+        ];
+    }
+
+    private function clampActivityStart(Carbon $candidate, Carbon $activityStart): Carbon
+    {
+        return $candidate->lt($activityStart) ? $activityStart->copy() : $candidate;
+    }
+
+    private function monthlyBuckets(Carbon $start, Carbon $end)
+    {
+        $buckets = collect();
+        $cursor = $start->copy()->startOfMonth();
+
+        while ($cursor->lte($end)) {
+            $buckets->push([
+                'key' => $cursor->format('Y-m'),
+                'label' => $cursor->format('M'),
+                'fullLabel' => $cursor->format('M Y'),
+            ]);
+
+            $cursor->addMonth();
+        }
+
+        return $buckets;
+    }
+
+    private function categoryChartBucketKey(Carbon $date, string $bucketFormat): string
+    {
+        if ($bucketFormat === 'two-hour') {
+            $hour = intdiv((int) $date->format('H'), 2) * 2;
+
+            return $date->copy()->setTime($hour, 0)->format('Y-m-d H');
+        }
+
+        if ($bucketFormat === 'quarter') {
+            return $date->format('Y-').'Q'.$date->quarter;
+        }
+
+        return $date->format($bucketFormat);
+    }
+
+    private function spendDatesLabel($spends, string $bucketFormat): string
+    {
+        $format = $bucketFormat === 'two-hour' ? 'd M Y, H:i' : 'd M Y';
+        $dates = $spends
+            ->pluck('created_at')
+            ->filter()
+            ->map(fn ($date) => Carbon::parse($date)->format($format))
+            ->unique()
+            ->values();
+
+        if ($dates->isEmpty()) {
+            return 'No spend date';
+        }
+
+        if ($dates->count() <= 2) {
+            return $dates->join(', ');
+        }
+
+        return $dates->take(2)->join(', ').' +'.($dates->count() - 2).' dates';
+    }
+
     private function chartColors(): array
     {
         return [
-            '#22c55e',
+            '#10b981',
             '#0ea5e9',
             '#8b5cf6',
             '#f59e0b',
             '#ef4444',
-            '#14b8a6',
-            '#6366f1',
-            '#84cc16',
-            '#ec4899',
-            '#f97316',
-            '#06b6d4',
-            '#64748b',
         ];
     }
 
-    private function smoothPath(array $points): string
+    private function linePath(array $points): string
     {
         if (count($points) === 0) {
             return '';
         }
 
-        if (count($points) === 1) {
-            return 'M '.$points[0]['x'].' '.$points[0]['y'];
-        }
-
-        $path = 'M '.$points[0]['x'].' '.$points[0]['y'];
-
-        for ($index = 0; $index < count($points) - 1; $index++) {
-            $current = $points[$index];
-            $next = $points[$index + 1];
-            $previous = $points[$index - 1] ?? $current;
-            $afterNext = $points[$index + 2] ?? $next;
-
-            $controlOneX = $current['x'] + ($next['x'] - $previous['x']) / 6;
-            $controlOneY = $current['y'] + ($next['y'] - $previous['y']) / 6;
-            $controlTwoX = $next['x'] - ($afterNext['x'] - $current['x']) / 6;
-            $controlTwoY = $next['y'] - ($afterNext['y'] - $current['y']) / 6;
-
-            $path .= ' C '.round($controlOneX, 2).' '.round($controlOneY, 2).', '.round($controlTwoX, 2).' '.round($controlTwoY, 2).', '.$next['x'].' '.$next['y'];
-        }
-
-        return $path;
+        return collect($points)
+            ->map(fn (array $point, int $index) => ($index === 0 ? 'M ' : 'L ').$point['x'].' '.$point['y'])
+            ->join(' ');
     }
 
     private function areaPath(array $points, float $baseline): string
@@ -581,7 +780,7 @@ class Dashboard extends Component
             return '';
         }
 
-        $linePath = $this->smoothPath($points);
+        $linePath = $this->linePath($points);
         $last = $points[count($points) - 1];
         $first = $points[0];
 
@@ -603,11 +802,21 @@ class Dashboard extends Component
         return number_format($amount, 0, ',', '.');
     }
 
-    private function applyDateRange(Builder $query, string $column = 'spends.created_at'): Builder
+    private function percentageChange(int $start, int $end): float
     {
-        return $query
-            ->when($this->dateBoundary($this->startDate), fn (Builder $query, Carbon $start) => $query->where($column, '>=', $start))
-            ->when($this->dateBoundary($this->endDate, true), fn (Builder $query, Carbon $end) => $query->where($column, '<=', $end));
+        if ($start === 0) {
+            return $end > 0 ? 100.0 : 0.0;
+        }
+
+        return (($end - $start) / $start) * 100;
+    }
+
+    private function formatPercentage(float $percentage): string
+    {
+        $rounded = round($percentage, 1);
+        $formatted = number_format($rounded, abs($rounded) === floor(abs($rounded)) ? 0 : 1, ',', '.');
+
+        return ($rounded > 0 ? '+' : '').$formatted.'%';
     }
 
     private function labelActivityRange(): array
@@ -646,21 +855,6 @@ class Dashboard extends Component
             ->values();
 
         return $years;
-    }
-
-    private function dateBoundary(?string $date, bool $endOfDay = false): ?Carbon
-    {
-        if (! is_string($date) || trim($date) === '') {
-            return null;
-        }
-
-        try {
-            $boundary = Carbon::createFromFormat('Y-m-d', trim($date));
-        } catch (Throwable) {
-            return null;
-        }
-
-        return $endOfDay ? $boundary->endOfDay() : $boundary->startOfDay();
     }
 
     public function rupiah($amount): string

@@ -88,75 +88,6 @@
     </template>
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-        <section class="rounded-lg border border-slate-200/55 bg-white/[0.46] px-3 py-2.5 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/[0.28]">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <button type="button" x-on:click="dateFilterOpen = ! dateFilterOpen" class="flex min-w-0 items-center justify-between gap-3 rounded-md px-1 py-1 text-left sm:pointer-events-none sm:cursor-default" aria-controls="dashboard-mobile-date-filter" x-bind:aria-expanded="dateFilterOpen.toString()">
-                    <span class="flex min-w-0 items-center gap-2.5">
-                        <span class="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-green-50/80 text-green-600 ring-1 ring-green-100/80 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3.75 8.25h16.5M5.25 5.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25Z" />
-                            </svg>
-                        </span>
-                        <span class="min-w-0">
-                            <span class="block text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Date range</span>
-                            <span class="block truncate text-sm font-medium text-slate-700 dark:text-slate-200">
-                                @if ($startDate || $endDate)
-                                    {{ $startDate ?: 'Any start' }} - {{ $endDate ?: 'Today' }}
-                                @else
-                                    All data
-                                @endif
-                            </span>
-                        </span>
-                    </span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4 shrink-0 text-slate-400 transition sm:hidden" x-bind:class="dateFilterOpen ? 'rotate-180' : ''">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                    </svg>
-                </button>
-
-                <div class="hidden items-center gap-2 sm:flex">
-                    <label class="min-w-0">
-                        <span class="sr-only">Start Date</span>
-                        <input wire:model.live="startDate" type="date" class="input-field h-9 w-40 text-sm">
-                    </label>
-
-                    <span class="text-xs font-medium text-slate-300 dark:text-slate-600">to</span>
-
-                    <label class="min-w-0">
-                        <span class="sr-only">End Date</span>
-                        <input wire:model.live="endDate" type="date" class="input-field h-9 w-40 text-sm">
-                    </label>
-
-                    @if ($startDate || $endDate)
-                        <button type="button" wire:click="clearDateRange" class="btn-secondary h-9 px-3" aria-label="Clear date range" data-tooltip="Clear date range">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    @endif
-                </div>
-            </div>
-
-            <div id="dashboard-mobile-date-filter" x-show="dateFilterOpen" x-cloak x-transition class="mt-3 grid gap-2 border-t border-slate-200/60 pt-3 dark:border-slate-800/70 sm:hidden">
-                <div class="grid grid-cols-1 gap-2 min-[420px]:grid-cols-2">
-                    <label class="min-w-0">
-                        <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">Start</span>
-                        <input wire:model.live="startDate" type="date" class="input-field h-10">
-                    </label>
-
-                    <label class="min-w-0">
-                        <span class="mb-1 block text-[11px] font-semibold uppercase text-gray-400 dark:text-slate-500">End</span>
-                        <input wire:model.live="endDate" type="date" class="input-field h-10">
-                    </label>
-                </div>
-
-                @if ($startDate || $endDate)
-                    <button type="button" wire:click="clearDateRange" class="btn-secondary h-10 w-full">
-                        Clear
-                    </button>
-                @endif
-            </div>
-        </section>
-
         <section class="summary-grid">
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
@@ -226,69 +157,59 @@
         </section>
 
         <section
-            class="panel overflow-hidden px-3 py-3 sm:px-4 sm:py-4"
+            class="panel overflow-hidden px-4 py-4 sm:px-5 sm:py-5"
             x-data="{
-                activeLine: null,
-                tooltip: { show: false, x: 0, y: 0, category: '', period: '', total: '' },
-                closeTooltip() {
-                    this.activeLine = null;
-                    this.tooltip.show = false;
+                selectedLine: @js($categoryBudgetChart['topCategory']['name'] ?? null),
+                summary: @js($categoryBudgetChart['topCategory'] ?? null),
+                seriesData: @js($categoryBudgetChart['series'] ?? collect()),
+                crosshair: { show: false, x: 0, y: 0, label: '' },
+                selectedSeries() {
+                    return this.seriesData.find((series) => series.name === this.selectedLine) ?? this.seriesData[0] ?? null;
                 },
-                placeTooltip(event) {
-                    const offsetX = 8;
-                    const offsetY = 8;
+                selectSeries(series) {
+                    this.selectedLine = series.name;
+                    this.summary = series.summary;
+                    this.crosshair.show = false;
+                },
+                showCrosshair(event) {
+                    const series = this.selectedSeries();
 
-                    return {
-                        x: Math.round(event.clientX + offsetX),
-                        y: Math.round(event.clientY + offsetY),
-                    };
-                },
-                showPointTooltip(event, category, point) {
-                    event.stopPropagation();
-                    const position = this.placeTooltip(event);
+                    if (! series || ! series.points.length) {
+                        return;
+                    }
 
-                    this.activeLine = category;
-                    this.tooltip = {
-                        show: true,
-                        x: position.x,
-                        y: position.y,
-                        category,
-                        period: point.budget,
-                        total: point.formatted,
-                    };
-                },
-                showLineTooltip(event, category, points) {
-                    event.stopPropagation();
-                    const svg = event.target.ownerSVGElement;
+                    const svg = event.currentTarget.ownerSVGElement;
                     const rect = svg.getBoundingClientRect();
                     const viewBox = svg.viewBox.baseVal;
                     const pointerX = (event.clientX - rect.left) * (viewBox.width / rect.width);
-                    const nearest = points.reduce((closest, point) => Math.abs(point.x - pointerX) < Math.abs(closest.x - pointerX) ? point : closest, points[0]);
-                    const position = this.placeTooltip(event);
+                    const point = series.points.reduce((closest, item) => Math.abs(item.x - pointerX) < Math.abs(closest.x - pointerX) ? item : closest, series.points[0]);
 
-                    this.activeLine = category;
-                    this.tooltip = {
-                        show: true,
-                        x: position.x,
-                        y: position.y,
-                        category,
-                        period: nearest.budget,
-                        total: nearest.formatted,
+                    this.summary = {
+                        ...series.summary,
+                        dateLabel: point.fullLabel,
+                        formattedTotal: point.formatted,
+                        changePercentageLabel: point.changePercentageLabel,
+                        changeTone: point.changeTone,
                     };
+                    this.crosshair = { show: true, x: point.x, y: point.y, label: point.fullLabel };
+                },
+                closeTooltip() {
+                    const series = this.selectedSeries();
+
+                    this.crosshair.show = false;
+                    this.summary = series?.summary ?? this.summary;
                 }
             }"
             x-on:click.self="closeTooltip()"
         >
             <div class="flex flex-wrap items-start justify-between gap-3">
-                <div>
+                <div class="min-w-0">
                     <div class="eyebrow">Category Flow</div>
-                    <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50 sm:text-lg">Spending by category across plans</h2>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-slate-400 sm:text-sm">Each line tracks one category total in the selected view.</p>
+                    <h2 class="mt-1 text-base font-semibold text-gray-950 dark:text-slate-50 sm:text-lg">Spending trend</h2>
                 </div>
-                <div class="rounded-lg bg-gray-50 px-2.5 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
-                    <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Categories</div>
-                    <div class="font-bold text-gray-950 dark:text-slate-50">{{ $categoryBudgetChart['series']->count() }}</div>
-                </div>
+                <span class="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">
+                    {{ $categoryBudgetChart['periodLabel'] ?? 'Last 12 months' }}
+                </span>
             </div>
 
             @if (! $categoryBudgetChart['ready'])
@@ -297,81 +218,69 @@
                 </div>
             @elseif ($categoryBudgetChart['series']->isEmpty())
                 <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                    No category spending found for this plan view.
+                    No category spending found in this period.
                 </div>
             @else
-                <div class="mt-3 flex gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
-                    @foreach ($categoryBudgetChart['series'] as $seriesItem)
-                        <div
-                            wire:key="dashboard-chart-legend-{{ str($seriesItem['name'])->slug() }}"
-                            class="inline-flex shrink-0 items-center gap-2 rounded-md bg-gray-50 px-2 py-1 text-[11px] font-semibold text-gray-600 ring-1 ring-gray-100 transition dark:bg-slate-800/70 dark:text-slate-300 dark:ring-slate-700"
-                            x-bind:class="activeLine === @js($seriesItem['name']) ? 'ring-green-200 dark:ring-green-500/30' : ''"
-                            x-on:mouseenter="activeLine = @js($seriesItem['name'])"
-                            x-on:mouseleave="activeLine = null"
-                        >
-                            <span class="size-2 rounded-full" style="background-color: {{ $seriesItem['color'] }}"></span>
-                            <span class="max-w-32 truncate">{{ $seriesItem['label'] }}</span>
+                <div class="mt-4 -mx-4 bg-green-50/45 px-4 py-4 dark:bg-green-500/[0.06] sm:-mx-5 sm:px-5 sm:py-5">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div class="min-w-0">
+                            <div class="text-xs font-semibold uppercase text-green-700/70 dark:text-green-300/70">Category</div>
+                            <h3 class="mt-1 truncate text-xl font-semibold text-gray-950 dark:text-slate-50" x-text="summary?.label ?? @js($categoryBudgetChart['topCategory']['label'])">{{ $categoryBudgetChart['topCategory']['label'] }}</h3>
+                            <div class="mt-1 text-xs font-medium text-gray-500 dark:text-slate-400" x-text="summary?.dateLabel ?? @js($categoryBudgetChart['topCategory']['dateLabel'])">{{ $categoryBudgetChart['topCategory']['dateLabel'] }}</div>
+                            <div class="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                                <span class="money-value font-semibold text-green-700 dark:text-green-300" x-text="summary?.formattedTotal ?? @js($categoryBudgetChart['topCategory']['formattedTotal'])">{{ $categoryBudgetChart['topCategory']['formattedTotal'] }}</span>
+                                <span class="text-gray-400 dark:text-slate-500">/</span>
+                                <span
+                                    class="rounded-full px-2 py-0.5 text-xs font-medium"
+                                    x-bind:class="summary?.changeTone === 'up' ? 'bg-red-50 text-red-500 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20' : (summary?.changeTone === 'down' ? 'bg-green-50 text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20' : 'bg-white/70 text-gray-500 ring-1 ring-gray-100 dark:bg-slate-950/30 dark:text-slate-400 dark:ring-slate-700')"
+                                    x-text="summary?.changePercentageLabel ?? @js($categoryBudgetChart['topCategory']['changePercentageLabel'])"
+                                >{{ $categoryBudgetChart['topCategory']['changePercentageLabel'] }}</span>
+                            </div>
                         </div>
-                    @endforeach
-                </div>
 
-                <div class="mt-2 overflow-hidden pb-1">
-                    <div class="-mx-3 w-[calc(100%+1.5rem)] sm:mx-auto sm:w-[95%]">
+                        <div class="flex max-w-full gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:justify-end sm:overflow-visible">
+                            @foreach ($categoryBudgetChart['series'] as $seriesItem)
+                                <button
+                                    type="button"
+                                    wire:key="dashboard-chart-legend-{{ str($seriesItem['name'])->slug() }}"
+                                    class="inline-flex shrink-0 items-center gap-2 rounded-full bg-white/65 px-2.5 py-1 text-[11px] font-medium text-gray-600 ring-1 ring-green-100/70 transition dark:bg-slate-950/30 dark:text-slate-300 dark:ring-green-500/15"
+                                    x-bind:class="selectedLine === @js($seriesItem['name']) ? 'text-gray-950 ring-green-200 dark:text-slate-50 dark:ring-green-500/30' : ''"
+                                    x-on:click="selectSeries(@js($seriesItem))"
+                                >
+                                    <span class="size-2 rounded-full" style="background-color: {{ $seriesItem['color'] }}"></span>
+                                    <span class="max-w-28 truncate">{{ $seriesItem['label'] }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="relative mt-5 min-h-[15rem] sm:min-h-72" style="aspect-ratio: {{ $categoryBudgetChart['width'] }} / {{ $categoryBudgetChart['height'] }};">
                         <svg
-                            class="block h-auto w-full"
+                            class="absolute inset-0 block h-full w-full overflow-visible"
                             viewBox="0 0 {{ $categoryBudgetChart['width'] }} {{ $categoryBudgetChart['height'] }}"
+                            preserveAspectRatio="xMidYMid meet"
                             role="img"
-                            aria-label="Multi-line chart of spending by category across plans"
-                            x-on:click.self="closeTooltip()"
+                            aria-label="Multi-line chart of spending by category"
                         >
-                            <defs>
-                                @foreach ($categoryBudgetChart['series'] as $seriesIndex => $seriesItem)
-                                    <linearGradient id="dashboard-chart-gradient-{{ $seriesIndex }}" x1="0" x2="0" y1="0" y2="1">
-                                        <stop offset="0%" stop-color="{{ $seriesItem['color'] }}" stop-opacity="0.22" />
-                                        <stop offset="70%" stop-color="{{ $seriesItem['color'] }}" stop-opacity="0.06" />
-                                        <stop offset="100%" stop-color="{{ $seriesItem['color'] }}" stop-opacity="0" />
-                                    </linearGradient>
-                                @endforeach
-                            </defs>
-
                             <rect x="0" y="0" width="{{ $categoryBudgetChart['width'] }}" height="{{ $categoryBudgetChart['height'] }}" fill="transparent" x-on:click="closeTooltip()"></rect>
 
                             @foreach ($categoryBudgetChart['yTicks'] as $tick)
                                 <line x1="{{ $categoryBudgetChart['plot']['left'] }}" y1="{{ $tick['y'] }}" x2="{{ $categoryBudgetChart['plot']['right'] }}" y2="{{ $tick['y'] }}" class="dashboard-chart-grid" />
-                                <text x="12" y="{{ $tick['y'] + 4 }}" class="dashboard-chart-axis-text">{{ $tick['label'] }}</text>
+                                <text x="8" y="{{ $tick['y'] + 4 }}" class="dashboard-chart-axis-text">{{ $tick['label'] }}</text>
                             @endforeach
 
-                            @foreach ($categoryBudgetChart['budgets'] as $budget)
-                                <line x1="{{ $budget['x'] }}" y1="{{ $categoryBudgetChart['plot']['top'] }}" x2="{{ $budget['x'] }}" y2="{{ $categoryBudgetChart['plot']['bottom'] }}" class="dashboard-chart-guide" />
-                                <text x="{{ $budget['x'] }}" y="{{ $categoryBudgetChart['height'] - 28 }}" text-anchor="middle" class="dashboard-chart-axis-text">{{ $budget['shortName'] }}</text>
-                            @endforeach
-
-                            @foreach ($categoryBudgetChart['series'] as $seriesIndex => $seriesItem)
-                                <path
-                                    d="{{ $seriesItem['areaPath'] }}"
-                                    class="dashboard-chart-area"
-                                    x-bind:class="activeLine && activeLine !== @js($seriesItem['name']) ? 'dashboard-chart-area-muted' : (activeLine === @js($seriesItem['name']) ? 'dashboard-chart-area-active' : '')"
-                                    fill="url(#dashboard-chart-gradient-{{ $seriesIndex }})"
-                                ></path>
+                            @foreach ($categoryBudgetChart['buckets'] as $bucket)
+                                @if ($bucket['showLabel'])
+                                    <text x="{{ $bucket['x'] }}" y="{{ $categoryBudgetChart['height'] - 24 }}" text-anchor="middle" class="dashboard-chart-axis-text">{{ $bucket['label'] }}</text>
+                                @endif
                             @endforeach
 
                             @foreach ($categoryBudgetChart['series'] as $seriesItem)
                                 <path
                                     d="{{ $seriesItem['path'] }}"
                                     class="dashboard-chart-line"
-                                    x-bind:class="activeLine && activeLine !== @js($seriesItem['name']) ? 'dashboard-chart-line-muted' : (activeLine === @js($seriesItem['name']) ? 'dashboard-chart-line-active' : '')"
+                                    x-bind:class="selectedLine && selectedLine !== @js($seriesItem['name']) ? 'dashboard-chart-line-muted' : (selectedLine === @js($seriesItem['name']) ? 'dashboard-chart-line-active' : '')"
                                     style="stroke: {{ $seriesItem['color'] }}"
-                                ></path>
-                            @endforeach
-
-                            @foreach ($categoryBudgetChart['series'] as $seriesItem)
-                                <path
-                                    d="{{ $seriesItem['path'] }}"
-                                    class="dashboard-chart-hitbox"
-                                    x-on:mouseenter="showLineTooltip($event, @js($seriesItem['name']), @js($seriesItem['points']))"
-                                    x-on:mousemove="showLineTooltip($event, @js($seriesItem['name']), @js($seriesItem['points']))"
-                                    x-on:mouseleave="if (!window.matchMedia('(pointer: coarse)').matches) closeTooltip()"
-                                    x-on:click="showLineTooltip($event, @js($seriesItem['name']), @js($seriesItem['points']))"
                                 ></path>
                             @endforeach
 
@@ -382,47 +291,67 @@
                                         cy="{{ $seriesItem['latestPoint']['y'] }}"
                                         r="4"
                                         class="dashboard-chart-marker"
-                                        x-bind:class="activeLine && activeLine !== @js($seriesItem['name']) ? 'dashboard-chart-marker-muted' : ''"
+                                        x-bind:class="selectedLine && selectedLine !== @js($seriesItem['name']) ? 'dashboard-chart-marker-muted' : ''"
                                         style="fill: {{ $seriesItem['color'] }}"
                                     ></circle>
                                 @endif
                             @endforeach
 
-                            @foreach ($categoryBudgetChart['series'] as $seriesItem)
-                                @foreach ($seriesItem['points'] as $point)
-                                    <circle
-                                        cx="{{ $point['x'] }}"
-                                        cy="{{ $point['y'] }}"
-                                        r="13"
-                                        fill="transparent"
-                                        class="cursor-pointer"
-                                        x-on:mouseenter="showPointTooltip($event, @js($seriesItem['name']), @js($point))"
-                                        x-on:mousemove="showPointTooltip($event, @js($seriesItem['name']), @js($point))"
-                                        x-on:mouseleave="if (!window.matchMedia('(pointer: coarse)').matches) closeTooltip()"
-                                        x-on:click.stop="showPointTooltip($event, @js($seriesItem['name']), @js($point))"
-                                    ></circle>
-                                @endforeach
-                            @endforeach
+                            <g x-show="crosshair.show" x-cloak>
+                                <line
+                                    x-bind:x1="crosshair.x"
+                                    y1="{{ $categoryBudgetChart['plot']['top'] }}"
+                                    x-bind:x2="crosshair.x"
+                                    y2="{{ $categoryBudgetChart['plot']['bottom'] }}"
+                                    class="stroke-green-500 dark:stroke-green-400"
+                                    stroke-width="1.35"
+                                    vector-effect="non-scaling-stroke"
+                                />
+                                <circle
+                                    x-bind:cx="crosshair.x"
+                                    x-bind:cy="crosshair.y"
+                                    r="5.5"
+                                    class="fill-green-500 dark:fill-green-400"
+                                />
+                                <text
+                                    x-bind:x="crosshair.x"
+                                    y="{{ $categoryBudgetChart['plot']['top'] - 10 }}"
+                                    text-anchor="middle"
+                                    class="dashboard-chart-crosshair-text"
+                                    x-text="crosshair.label"
+                                ></text>
+                            </g>
+
+                            <rect
+                                x="{{ $categoryBudgetChart['plot']['left'] }}"
+                                y="{{ $categoryBudgetChart['plot']['top'] }}"
+                                width="{{ $categoryBudgetChart['plot']['right'] - $categoryBudgetChart['plot']['left'] }}"
+                                height="{{ $categoryBudgetChart['plot']['bottom'] - $categoryBudgetChart['plot']['top'] }}"
+                                fill="transparent"
+                                class="cursor-crosshair"
+                                x-on:mouseenter="showCrosshair($event)"
+                                x-on:mousemove="showCrosshair($event)"
+                                x-on:mouseleave="closeTooltip()"
+                                x-on:click="showCrosshair($event)"
+                            ></rect>
                         </svg>
                     </div>
                 </div>
 
-                <template x-teleport="body">
-                    <div
-                        x-show="tooltip.show"
-                        x-cloak
-                        x-transition.opacity
-                        class="pointer-events-none fixed z-[90] rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30"
-                        x-bind:style="`left:${tooltip.x}px;top:${tooltip.y}px;`"
-                    >
-                        <div class="text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Kategori</div>
-                        <div class="font-bold text-gray-950 dark:text-slate-50" x-text="tooltip.category"></div>
-                        <div class="mt-2 text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Periode</div>
-                        <div class="text-gray-600 dark:text-slate-300" x-text="tooltip.period"></div>
-                        <div class="mt-2 text-[10px] font-semibold uppercase text-gray-400 dark:text-slate-500">Total pengeluaran</div>
-                        <div class="font-semibold text-green-600 dark:text-green-400" x-text="tooltip.total"></div>
+                <div class="mt-4 overflow-x-auto pb-1">
+                    <div class="mx-auto flex min-w-max w-fit items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 shadow-sm shadow-slate-900/5 dark:border-slate-800/70 dark:bg-slate-950/35">
+                        @foreach ($categoryBudgetChart['periodOptions'] as $periodKey => $periodLabel)
+                            <button
+                                type="button"
+                                wire:click="setCategoryChartPeriod('{{ $periodKey }}')"
+                                wire:key="dashboard-category-period-{{ $periodKey }}"
+                                class="{{ $categoryBudgetChart['selectedPeriod'] === $periodKey ? 'bg-green-50 text-green-700 shadow-sm ring-1 ring-green-100 dark:bg-green-500/12 dark:text-green-300 dark:ring-green-500/20' : 'text-gray-500 hover:bg-slate-50 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100' }} rounded-full px-3 py-1.5 text-xs font-medium transition sm:px-4"
+                            >
+                                {{ $periodLabel }}
+                            </button>
+                        @endforeach
                     </div>
-                </template>
+                </div>
             @endif
         </section>
 
