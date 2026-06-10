@@ -255,7 +255,7 @@
                         </div>
                     </div>
 
-                    <div class="relative mt-5 h-[clamp(13.5rem,58vw,18rem)] w-full max-w-full sm:h-72">
+                    <div class="relative mt-5 min-h-[13rem] w-full max-w-full sm:min-h-[18rem] lg:min-h-0" style="aspect-ratio: {{ $categoryBudgetChart['width'] }} / {{ $categoryBudgetChart['height'] }};">
                         <svg
                             class="absolute inset-0 block h-full w-full overflow-visible"
                             viewBox="0 0 {{ $categoryBudgetChart['width'] }} {{ $categoryBudgetChart['height'] }}"
