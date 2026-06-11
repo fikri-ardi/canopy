@@ -11,7 +11,7 @@
 
                 <div class="min-w-0">
                     <div class="eyebrow">Dashboard</div>
-                    <h1 class="page-title">Financial Command Center</h1>
+                    <h1 class="page-title">Dashboard</h1>
                 </div>
             </div>
         </div>
@@ -205,8 +205,8 @@
         >
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div class="min-w-0">
-                    <div class="eyebrow">Category Flow</div>
-                    <h2 class="mt-1 text-base font-semibold text-gray-950 dark:text-slate-50 sm:text-lg">Spending trend</h2>
+                    <div class="eyebrow">Chart</div>
+                    <h2 class="mt-1 text-base font-semibold text-gray-950 dark:text-slate-50 sm:text-lg">Tren kategori</h2>
                 </div>
                 <span class="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">
                     {{ $categoryBudgetChart['periodLabel'] ?? 'Last 12 months' }}
@@ -359,8 +359,8 @@
         <section class="panel overflow-hidden px-4 py-4">
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                    <div class="eyebrow">Label Activity</div>
-                    <h2 class="mt-1 text-lg font-semibold text-gray-950 dark:text-slate-50">Spending trends</h2>
+                    <div class="eyebrow">Activity</div>
+                    <h2 class="mt-1 text-lg font-semibold text-gray-950 dark:text-slate-50">Aktivitas label</h2>
                     <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ $labelActivityHeatmap['totalTransactions'] }} transactions / {{ $labelActivityHeatmap['periodLabel'] }}</p>
                 </div>
                 <label class="relative w-full sm:w-40">
@@ -456,9 +456,8 @@
             <div class="panel px-4 py-4">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <div class="eyebrow">Plan Health</div>
-                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Spending pressure by plan</h2>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Latest 5 of {{ $budgetCount }} active plans.</p>
+                        <div class="eyebrow">Plans</div>
+                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Kondisi plan</h2>
                     </div>
                     <div class="rounded-lg bg-gray-50 px-3 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Avg Spend</div>
@@ -493,8 +492,8 @@
             <div class="panel px-4 py-4">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <div class="eyebrow">Recent Movement</div>
-                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Latest expenses</h2>
+                        <div class="eyebrow">Recent</div>
+                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Expense terbaru</h2>
                     </div>
                     <span class="icon-box-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -535,8 +534,8 @@
 
         <section class="grid gap-4 xl:grid-cols-3">
             <div class="panel px-4 py-4">
-                <div class="eyebrow">Top Expenses</div>
-                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Highest-impact transactions</h2>
+                <div class="eyebrow">Top</div>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Expense terbesar</h2>
 
                 <div class="mt-4 divide-y divide-gray-100 dark:divide-slate-800">
                     @forelse ($topExpenses as $expense)
@@ -558,7 +557,7 @@
 
             <div class="panel px-4 py-4">
                 <div class="eyebrow">Platforms</div>
-                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Payment mix</h2>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Metode bayar</h2>
 
                 <div class="mt-4 space-y-3">
                     @forelse ($platformBreakdown as $platform)

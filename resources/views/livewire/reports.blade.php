@@ -10,7 +10,7 @@
 
                 <div class="min-w-0">
                     <div class="eyebrow">Reports</div>
-                    <h1 class="page-title">Spending Reports</h1>
+                    <h1 class="page-title">Laporan</h1>
                 </div>
             </div>
 
@@ -80,8 +80,8 @@
             <div class="panel px-4 py-4">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <div class="eyebrow">Plan Progress</div>
-                        <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Income used per plan</h2>
+                        <div class="eyebrow">Plans</div>
+                        <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Progress plan</h2>
                     </div>
                 </div>
 
@@ -108,8 +108,8 @@
             </div>
 
             <div class="panel px-4 py-4">
-                <div class="eyebrow">Top Expenses</div>
-                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Highest-impact transactions</h2>
+                <div class="eyebrow">Top</div>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Expense terbesar</h2>
 
                 <div class="mt-4 divide-y divide-gray-100 dark:divide-slate-800">
                     @forelse ($topExpenses as $expense)
@@ -133,7 +133,7 @@
         <section class="grid gap-4 xl:grid-cols-3">
             <div class="panel px-4 py-4">
                 <div class="eyebrow">Labels</div>
-                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Spending by label</h2>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Per label</h2>
 
                 <div class="mt-4 space-y-3">
                     @forelse ($labelBreakdown as $label)
@@ -156,7 +156,7 @@
 
             <div class="panel px-4 py-4">
                 <div class="eyebrow">Platforms</div>
-                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Payment mix</h2>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Metode bayar</h2>
 
                 <div class="mt-4 space-y-3">
                     @forelse ($platformBreakdown as $platform)

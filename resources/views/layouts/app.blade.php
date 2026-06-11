@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-    class="h-full dark"
+    class="h-full"
 >
 
 <head>
@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        document.documentElement.classList.toggle('dark', localStorage.getItem('theme') === 'dark');
+    </script>
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
     <title>Alokasi - Your Income Pal</title>
@@ -18,7 +21,7 @@
 
 <body
     class="h-full font-sans"
-    x-data="{ theme: localStorage.getItem('theme') || 'dark', sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true' }"
+    x-data="{ theme: localStorage.getItem('theme') || 'light', sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true' }"
     x-bind:class="{ 'sidebar-collapsed': sidebarCollapsed }"
     x-init="
         document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -34,8 +37,8 @@
     <div class="relative z-10 flex min-h-full">
         <livewire:sidebar />
 
-        <main class="min-w-0 flex-1 pb-24 lg:pb-0">
-            <div class="w-full">
+        <main class="min-w-0 flex-1 pb-28">
+            <div class="mx-auto w-full max-w-6xl">
                 {{ $slot }}
             </div>
         </main>

@@ -403,7 +403,6 @@
                 <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-gray-950 dark:text-slate-50">Expenses</h2>
-                        <p class="text-sm text-gray-500 dark:text-slate-400">Inline edit any transaction, label, platform, or status.</p>
                     </div>
 
                     <button type="button" x-on:click="openExpenseModalFromTour()" class="btn-primary" data-onboarding-target="expense-button">
@@ -421,8 +420,8 @@
                 <div class="panel px-4 py-4">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <div class="eyebrow">Plan Intelligence</div>
-                            <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Current plan signals</h2>
+                            <div class="eyebrow">Plan</div>
+                            <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Ringkasan plan</h2>
                         </div>
                         <span class="icon-box-muted">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -446,8 +445,8 @@
                 <div class="panel px-4 py-4">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <div class="eyebrow">Top Expenses</div>
-                            <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Largest items in this plan</h2>
+                            <div class="eyebrow">Top</div>
+                            <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Expense terbesar</h2>
                         </div>
                         <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} money-value text-sm font-semibold">
                             {{ $this->rupiah($remainingBalance) }} left

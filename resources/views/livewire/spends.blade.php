@@ -11,7 +11,7 @@
 
                 <div class="min-w-0">
                     <div class="eyebrow">Spends</div>
-                    <h1 class="page-title">Transaction Explorer</h1>
+                    <h1 class="page-title">Transaksi</h1>
                 </div>
             </div>
         </div>

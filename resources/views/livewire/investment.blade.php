@@ -11,7 +11,7 @@
 
                 <div class="min-w-0">
                     <div class="eyebrow">Investment</div>
-                    <h1 class="page-title">Investment Ledger</h1>
+                    <h1 class="page-title">Investasi</h1>
                 </div>
             </div>
         </div>
@@ -107,8 +107,7 @@
         <section class="grid gap-4 xl:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
             <div class="panel overflow-hidden">
                 <div class="border-b border-gray-100 px-4 py-3 dark:border-slate-800">
-                    <div class="text-sm font-bold text-gray-950 dark:text-slate-50">Investment Items</div>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-slate-400">Grouped from all spends labeled investment.</p>
+                    <div class="text-sm font-bold text-gray-950 dark:text-slate-50">Item Investasi</div>
                 </div>
 
                 <div class="max-h-[34rem] divide-y divide-gray-100 overflow-y-auto dark:divide-slate-800">
@@ -117,9 +116,7 @@
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <div class="truncate text-sm font-semibold text-gray-950 dark:text-slate-50">{{ $group['name'] }}</div>
-                                    <div class="mt-1 text-xs text-gray-500 dark:text-slate-400">
-                                        {{ $group['transactions'] }} spends / {{ $group['budgets'] }} plans / {{ $group['movements'] }} movements
-                                    </div>
+                                    <div class="mt-1 text-xs text-gray-500 dark:text-slate-400">{{ $group['transactions'] }} transaksi</div>
                                 </div>
                                 <div class="shrink-0 text-right">
                                     <div class="money-value text-sm font-bold {{ $group['balance'] < 0 ? 'text-red-500' : 'text-gray-950 dark:text-slate-50' }}">{{ $this->rupiah($group['balance']) }}</div>
