@@ -37,7 +37,7 @@
     <div class="relative z-10 flex min-h-full">
         <livewire:sidebar />
 
-        <main class="min-w-0 flex-1 pb-28">
+        <main class="min-w-0 flex-1 pb-28 lg:pb-0">
             <div class="mx-auto w-full max-w-6xl">
                 {{ $slot }}
             </div>

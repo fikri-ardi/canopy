@@ -1652,3 +1652,179 @@ select.input-field {
         width: 2.85rem;
     }
 }
+
+@media (min-width: 1024px) {
+    .app-sidebar {
+        position: sticky;
+        inset: 0 auto auto 0;
+        width: 14rem;
+        max-width: none;
+        height: 100vh;
+        flex-shrink: 0;
+        overflow: hidden;
+        transform: none;
+        border-width: 0 1px 0 0;
+        border-radius: 0;
+        border-color: rgb(226 232 240 / 0.62);
+        background: rgb(255 255 255 / 0.72);
+        box-shadow: 10px 0 30px rgb(15 23 42 / 0.035);
+    }
+
+    .dark .app-sidebar {
+        border-color: rgb(255 255 255 / 0.08);
+        background: rgb(7 13 20 / 0.74);
+        box-shadow: 10px 0 30px rgb(0 0 0 / 0.2);
+    }
+
+    .app-sidebar > div {
+        display: block;
+        height: 100vh;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .app-sidebar > div > div {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .app-sidebar > div > div > div {
+        display: block;
+        height: auto;
+        overflow: visible;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .app-sidebar .sidebar-brand {
+        display: flex !important;
+    }
+
+    .app-sidebar .sidebar-collapse-toggle {
+        display: flex !important;
+    }
+
+    .app-sidebar .mb-3 {
+        display: block !important;
+    }
+
+    .app-sidebar > div > div > div > div:last-child {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.35rem;
+        padding: 0;
+    }
+
+    .app-sidebar .sidebar-link {
+        width: 100%;
+        height: auto;
+        justify-content: flex-start;
+        gap: 0.65rem;
+        border-radius: 0.5rem;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .app-sidebar .sidebar-link span {
+        display: block;
+    }
+
+    .app-sidebar .sidebar-link svg {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+    .sidebar-collapsed .app-sidebar {
+        width: 5.25rem;
+    }
+
+    .sidebar-collapsed .app-sidebar > div {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .sidebar-collapsed .app-sidebar .sidebar-brand {
+        justify-content: center;
+    }
+
+    .sidebar-collapsed .app-sidebar .sidebar-brand span:last-child,
+    .sidebar-collapsed .app-sidebar .sidebar-collapse-label,
+    .sidebar-collapsed .app-sidebar .sidebar-link span,
+    .sidebar-collapsed .app-sidebar .mb-3 {
+        display: none !important;
+    }
+
+    .sidebar-collapsed .app-sidebar .sidebar-collapse-toggle,
+    .sidebar-collapsed .app-sidebar .sidebar-link {
+        justify-content: center;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
+/* Light comfort tuning */
+body {
+    color: rgb(49 55 60);
+    background-color: rgb(241 244 241);
+    background-image:
+        linear-gradient(180deg, rgb(244 247 244), rgb(238 242 239) 46%, rgb(235 239 236));
+}
+
+.page-title {
+    color: rgb(42 47 51);
+}
+
+.panel,
+.table-shell {
+    border-color: rgb(216 224 220 / 0.9);
+    background: rgb(250 252 250 / 0.84);
+    box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.74) inset,
+        0 8px 24px rgb(31 41 35 / 0.045);
+}
+
+.metric-card {
+    background: rgb(220 241 233 / 0.86);
+}
+
+.metric-card:nth-child(4n + 2) {
+    background: rgb(248 231 229 / 0.88);
+}
+
+.metric-card:nth-child(4n + 3) {
+    background: rgb(225 237 245 / 0.88);
+}
+
+.metric-card:nth-child(4n + 4) {
+    background: rgb(235 231 248 / 0.88);
+}
+
+.btn-secondary,
+.btn-icon,
+.input-field {
+    border-color: rgb(212 221 216 / 0.95);
+    background: rgb(250 252 250 / 0.76);
+}
+
+.table-shell thead,
+.expense-table-head {
+    background: rgb(242 246 243 / 0.92);
+}
+
+.table-shell tbody tr:hover {
+    background: rgb(244 248 245 / 0.82);
+}
+
+.app-sidebar {
+    background: rgb(250 252 250 / 0.86);
+}
+
+@media (min-width: 1024px) {
+    .app-sidebar {
+        border-color: rgb(214 223 218 / 0.9);
+        background: rgb(248 251 248 / 0.78);
+    }
+}
