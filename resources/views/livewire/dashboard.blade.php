@@ -209,7 +209,7 @@
                     <h2 class="mt-1 text-base font-semibold text-gray-950 dark:text-slate-50 sm:text-lg">Tren kategori</h2>
                 </div>
                 <span class="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">
-                    {{ $categoryBudgetChart['periodLabel'] ?? 'Last 12 months' }}
+                    {{ $categoryBudgetChart['periodLabel'] ?? now()->year }}
                 </span>
             </div>
 
@@ -219,7 +219,7 @@
                 </div>
             @elseif ($categoryBudgetChart['series']->isEmpty())
                 <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                    No category spending found in this period.
+                    No category spending found in this year.
                 </div>
             @else
                 <div class="mt-4 -mx-4 bg-green-50/45 px-4 py-4 dark:bg-green-500/[0.06] sm:-mx-5 sm:px-5 sm:py-5">
@@ -340,13 +340,13 @@
                 </div>
 
                 <div class="mt-4">
-                    <div class="mx-auto grid w-full grid-cols-4 gap-1 rounded-2xl border border-slate-200/70 bg-white/70 p-1 shadow-sm shadow-slate-900/5 dark:border-slate-800/70 dark:bg-slate-950/35 sm:flex sm:w-fit sm:min-w-max sm:rounded-full">
+                    <div class="mx-auto flex w-fit max-w-full flex-wrap justify-center gap-1 rounded-2xl border border-slate-200/70 bg-white/70 p-1 shadow-sm shadow-slate-900/5 dark:border-slate-800/70 dark:bg-slate-950/35 sm:min-w-max sm:rounded-full">
                         @foreach ($categoryBudgetChart['periodOptions'] as $periodKey => $periodLabel)
                             <button
                                 type="button"
                                 wire:click="setCategoryChartPeriod('{{ $periodKey }}')"
                                 wire:key="dashboard-category-period-{{ $periodKey }}"
-                                class="{{ $categoryBudgetChart['selectedPeriod'] === $periodKey ? 'bg-green-50 text-green-700 shadow-sm ring-1 ring-green-100 dark:bg-green-500/12 dark:text-green-300 dark:ring-green-500/20' : 'text-gray-500 hover:bg-slate-50 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100' }} rounded-full px-2 py-1.5 text-center text-xs font-medium transition sm:px-4"
+                                class="{{ $categoryBudgetChart['selectedPeriod'] === $periodKey ? 'bg-green-50 text-green-700 shadow-sm ring-1 ring-green-100 dark:bg-green-500/12 dark:text-green-300 dark:ring-green-500/20' : 'text-gray-500 hover:bg-slate-50 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100' }} rounded-full px-3 py-1.5 text-center text-xs font-medium transition sm:px-4"
                             >
                                 {{ $periodLabel }}
                             </button>

@@ -12,13 +12,14 @@ use Livewire\Component;
 class Dashboard extends Component
 {
     public $search = '';
-    public $categoryChartPeriod = '1Y';
+    public $categoryChartPeriod;
     public $labelActivityYear;
     public $showAllLabelActivity = false;
 
     public function mount(): void
     {
         $this->labelActivityYear ??= now()->year;
+        $this->categoryChartPeriod ??= $this->defaultCategoryChartYear();
     }
 
     public function completeOnboarding(): void
@@ -376,7 +377,9 @@ class Dashboard extends Component
         $height = 330;
         $padding = ['left' => 42, 'right' => 24, 'top' => 30, 'bottom' => 56];
         $periodOptions = $this->categoryChartPeriodOptions();
-        $selectedPeriod = array_key_exists($this->categoryChartPeriod, $periodOptions) ? $this->categoryChartPeriod : '1Y';
+        $selectedPeriod = array_key_exists((string) $this->categoryChartPeriod, $periodOptions)
+            ? (string) $this->categoryChartPeriod
+            : $this->defaultCategoryChartYear();
 
         if (! $this->labelsSchemaReady()) {
             return [
@@ -391,7 +394,7 @@ class Dashboard extends Component
             ];
         }
 
-        [$periodStart, $periodEnd, $buckets, $bucketFormat, $periodLabel] = $this->categoryChartRange($selectedPeriod);
+        [$periodStart, $periodEnd, $buckets, $bucketFormat, $periodLabel] = $this->categoryChartRange((int) $selectedPeriod);
 
         $spends = Spend::query()
             ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
@@ -540,141 +543,34 @@ class Dashboard extends Component
 
     private function categoryChartPeriodOptions(): array
     {
-        return [
-            '1D' => '1D',
-            '1M' => '1M',
-            '3M' => '3M',
-            'YTD' => 'YTD',
-            '1Y' => '1Y',
-            '3Y' => '3Y',
-            '5Y' => '5Y',
-            'ALL' => 'All',
-        ];
+        return $this->categoryChartYears()
+            ->mapWithKeys(fn (int $year) => [(string) $year => (string) $year])
+            ->all();
     }
 
-    private function categoryChartRange(string $period): array
+    private function categoryChartRange(int $year): array
     {
-        [$spendStart, $spendEnd] = $this->userSpendBounds();
-        $end = $spendEnd->copy();
-        $format = 'Y-m';
+        $start = Carbon::create($year, 1, 1)->startOfDay();
+        $end = Carbon::create($year, 12, 31)->endOfDay();
 
-        if ($period === '1D') {
-            $start = $this->clampActivityStart($end->copy()->startOfDay(), $spendStart);
-            $format = 'Y-m-d H';
-            $bucketStart = $start->copy()->setTime(intdiv((int) $start->format('H'), 2) * 2, 0);
-            $buckets = collect();
-            $cursor = $bucketStart->copy();
-
-            while ($cursor->lte($end)) {
-                $bucket = $cursor->copy();
-
-                $buckets->push([
-                    'key' => $bucket->format('Y-m-d H'),
-                    'label' => $bucket->format('H:i'),
-                    'fullLabel' => $bucket->format('d M, H:i'),
-                ]);
-
-                $cursor->addHours(2);
-            }
-
-            return [$start, $end, $buckets, 'two-hour', $end->format('d M Y')];
-        }
-
-        if ($period === '1M') {
-            $start = $this->clampActivityStart($end->copy()->subMonth()->startOfDay(), $spendStart);
-
-            return [$start, $end, $this->dailyBuckets($start, $end, 'd'), 'Y-m-d', $start->format('d M').' - '.$end->format('d M Y')];
-        }
-
-        if ($period === '3M') {
-            $start = $this->clampActivityStart($end->copy()->subMonths(3)->startOfDay(), $spendStart);
-
-            return [$start, $end, $this->dailyBuckets($start, $end, 'd M'), 'Y-m-d', $start->format('d M').' - '.$end->format('d M Y')];
-        }
-
-        if ($period === 'YTD') {
-            $start = $this->clampActivityStart($end->copy()->startOfYear(), $spendStart);
-
-            return [$start, $end, $this->dailyBuckets($start, $end, 'd M'), 'Y-m-d', 'YTD '.$end->year];
-        }
-
-        if ($period === '3Y' || $period === '5Y') {
-            $years = $period === '3Y' ? 3 : 5;
-            $start = $this->clampActivityStart($end->copy()->subYears($years)->startOfDay(), $spendStart);
-
-            return [$start, $end, $this->dailyBuckets($start, $end, 'd M y'), 'Y-m-d', $start->format('d M Y').' - '.$end->format('d M Y')];
-        }
-
-        if ($period === 'ALL') {
-            $start = $spendStart->copy()->startOfDay();
-
-            return [$start, $end, $this->dailyBuckets($start, $end, 'd M y'), 'Y-m-d', $start->format('d M Y').' - '.$end->format('d M Y')];
-        }
-
-        $start = $this->clampActivityStart($end->copy()->subYear()->startOfDay(), $spendStart);
-
-        return [$start, $end, $this->dailyBuckets($start, $end, 'd M'), 'Y-m-d', $start->format('d M Y').' - '.$end->format('d M Y')];
+        return [$start, $end, $this->monthlyBuckets($year), 'Y-m', (string) $year];
     }
 
-    private function userSpendBounds(): array
+    private function monthlyBuckets(int $year)
     {
-        $spendRange = Spend::query()
-            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
-            ->selectRaw('min(created_at) as first_activity, max(created_at) as last_activity')
-            ->first();
+        return collect(range(1, 12))->map(function (int $month) use ($year) {
+            $date = Carbon::create($year, $month, 1)->startOfMonth();
 
-        $dates = collect([
-            $spendRange?->first_activity,
-            $spendRange?->last_activity,
-        ])
-            ->filter()
-            ->map(fn ($date) => Carbon::parse($date))
-            ->sort()
-            ->values();
-
-        if ($dates->isEmpty()) {
-            $now = now();
-
-            return [$now->copy()->startOfDay(), $now->copy()->endOfDay()];
-        }
-
-        return [
-            $dates->first()->copy()->startOfDay(),
-            $dates->last()->copy()->endOfDay(),
-        ];
-    }
-
-    private function clampActivityStart(Carbon $candidate, Carbon $activityStart): Carbon
-    {
-        return $candidate->lt($activityStart) ? $activityStart->copy() : $candidate;
-    }
-
-    private function dailyBuckets(Carbon $start, Carbon $end, string $labelFormat)
-    {
-        $buckets = collect();
-        $cursor = $start->copy()->startOfDay();
-
-        while ($cursor->lte($end)) {
-            $buckets->push([
-                'key' => $cursor->format('Y-m-d'),
-                'label' => $cursor->format($labelFormat),
-                'fullLabel' => $cursor->format('d M Y'),
-            ]);
-
-            $cursor->addDay();
-        }
-
-        return $buckets;
+            return [
+                'key' => $date->format('Y-m'),
+                'label' => $date->format('M'),
+                'fullLabel' => $date->format('F Y'),
+            ];
+        });
     }
 
     private function categoryChartBucketKey(Carbon $date, string $bucketFormat): string
     {
-        if ($bucketFormat === 'two-hour') {
-            $hour = intdiv((int) $date->format('H'), 2) * 2;
-
-            return $date->copy()->setTime($hour, 0)->format('Y-m-d H');
-        }
-
         if ($bucketFormat === 'quarter') {
             return $date->format('Y-').'Q'.$date->quarter;
         }
@@ -684,7 +580,7 @@ class Dashboard extends Component
 
     private function spendDatesLabel($spends, string $bucketFormat): string
     {
-        $format = $bucketFormat === 'two-hour' ? 'd M Y, H:i' : 'd M Y';
+        $format = 'd M Y';
         $dates = $spends
             ->pluck('created_at')
             ->filter()
@@ -818,6 +714,23 @@ class Dashboard extends Component
             ->values();
 
         return $years;
+    }
+
+    private function categoryChartYears()
+    {
+        return Spend::query()
+            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+            ->pluck('created_at')
+            ->filter()
+            ->map(fn ($date) => Carbon::parse($date)->year)
+            ->unique()
+            ->sortDesc()
+            ->values();
+    }
+
+    private function defaultCategoryChartYear(): string
+    {
+        return (string) ($this->categoryChartYears()->first() ?? now()->year);
     }
 
     public function rupiah($amount): string
