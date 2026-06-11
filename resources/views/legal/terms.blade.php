@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
-    <title>Terms and Conditions - Alokasi</title>
+    <title>Syarat dan Ketentuan - Alokasi</title>
 </head>
 
 <body class="h-full font-sans">
@@ -26,52 +26,52 @@
 
             <article class="panel p-5 sm:p-8">
                 <div class="eyebrow">Legal</div>
-                <h1 class="page-title">Terms and Conditions</h1>
+                <h1 class="page-title">Syarat dan Ketentuan</h1>
 
                 <div class="mt-6 space-y-6 text-sm leading-6 text-gray-600 dark:text-slate-300">
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Using Alokasi</h2>
-                        <p class="mt-2">By creating an account or using Alokasi, you agree to these terms. Alokasi is a personal planning and expense-tracking tool for organizing plans, spends, labels, platforms, statuses, and investment movement records.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Menggunakan Alokasi</h2>
+                        <p class="mt-2">Dengan membuat akun atau menggunakan Alokasi, kamu menyetujui syarat ini. Alokasi adalah alat perencanaan pribadi dan pencatatan pengeluaran untuk mengatur rencana, pengeluaran, label, platform, status, dan catatan mutasi investasi.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">No Financial Advice</h2>
-                        <p class="mt-2">Alokasi helps you record and review your own data. It is not a bank, broker, accountant, tax advisor, or financial advisor. Any decisions you make based on your plans, expenses, reports, or investment records are your responsibility.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Bukan Nasihat Keuangan</h2>
+                        <p class="mt-2">Alokasi membantu kamu mencatat dan meninjau data milikmu sendiri. Alokasi bukan bank, broker, akuntan, konsultan pajak, atau penasihat keuangan. Keputusan apa pun yang kamu buat berdasarkan rencana, pengeluaran, laporan, atau catatan investasi adalah tanggung jawab kamu.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Your Account</h2>
-                        <p class="mt-2">You are responsible for keeping your account credentials secure and for the accuracy of the information you enter or import. You should not use another person's account or attempt to access data that does not belong to you.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Akun Kamu</h2>
+                        <p class="mt-2">Kamu bertanggung jawab menjaga kredensial akun tetap aman dan memastikan informasi yang kamu masukkan atau impor akurat. Kamu tidak boleh menggunakan akun orang lain atau mencoba mengakses data yang bukan milikmu.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Your Data</h2>
-                        <p class="mt-2">You retain responsibility for the plan, expense, label, platform, status, and investment data you add to Alokasi. Import and export tools are provided to help move your data, but you should review imported files and exported spreadsheets for accuracy.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Data Kamu</h2>
+                        <p class="mt-2">Kamu tetap bertanggung jawab atas data rencana, pengeluaran, label, platform, status, dan investasi yang kamu tambahkan ke Alokasi. Fitur impor dan ekspor disediakan untuk membantu memindahkan data, tetapi kamu tetap perlu meninjau file impor dan spreadsheet ekspor agar akurat.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Acceptable Use</h2>
-                        <p class="mt-2">Do not misuse Alokasi, interfere with the application, attempt unauthorized access, upload malicious files, reverse engineer protected parts of the service, or use the app in a way that violates applicable law.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Penggunaan Yang Diperbolehkan</h2>
+                        <p class="mt-2">Jangan menyalahgunakan Alokasi, mengganggu aplikasi, mencoba akses tanpa izin, mengunggah file berbahaya, merekayasa balik bagian layanan yang dilindungi, atau memakai aplikasi dengan cara yang melanggar hukum yang berlaku.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Availability And Changes</h2>
-                        <p class="mt-2">Alokasi may change, pause, or discontinue parts of the service. Features such as reports, social sign-in, imports, exports, and email verification may depend on third-party services or local configuration.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Ketersediaan Dan Perubahan</h2>
+                        <p class="mt-2">Alokasi dapat mengubah, menjeda, atau menghentikan sebagian layanan. Fitur seperti laporan, login sosial, impor, ekspor, dan verifikasi email dapat bergantung pada layanan pihak ketiga atau konfigurasi lokal.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Account Deletion</h2>
-                        <p class="mt-2">You can delete your account from Settings. Deleting an account removes account-owned Alokasi data according to the app's deletion flow. You should export anything you want to keep before deleting your account.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Penghapusan Akun</h2>
+                        <p class="mt-2">Kamu bisa menghapus akun dari Pengaturan. Menghapus akun akan menghapus data Alokasi milik akun sesuai alur penghapusan aplikasi. Ekspor data yang ingin kamu simpan sebelum menghapus akun.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Limitation Of Liability</h2>
-                        <p class="mt-2">Alokasi is provided as-is. To the maximum extent allowed by law, the application owner is not responsible for indirect losses, incorrect user-entered data, financial decisions, unavailable third-party services, or issues caused by imported files.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Batasan Tanggung Jawab</h2>
+                        <p class="mt-2">Alokasi disediakan apa adanya. Sejauh diizinkan oleh hukum, pemilik aplikasi tidak bertanggung jawab atas kerugian tidak langsung, data yang salah dimasukkan pengguna, keputusan keuangan, layanan pihak ketiga yang tidak tersedia, atau masalah yang disebabkan oleh file impor.</p>
                     </section>
 
                     <section>
                         <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Contact</h2>
-                        <p class="mt-2">For questions about these terms, contact the Alokasi administrator at <span class="font-semibold text-gray-950 dark:text-slate-50">{{ config('mail.from.address') }}</span>.</p>
+                        <p class="mt-2">Untuk pertanyaan tentang syarat ini, hubungi administrator Alokasi di <span class="font-semibold text-gray-950 dark:text-slate-50">{{ config('mail.from.address') }}</span>.</p>
                     </section>
                 </div>
             </article>

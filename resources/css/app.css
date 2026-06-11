@@ -416,35 +416,35 @@
         box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.035);
     }
 
-    .label-activity-level-1 {
-        background: rgb(187 247 208 / 0.72);
+    .label-activity-cell.label-activity-level-1 {
+        background: rgb(167 243 208 / 0.9);
     }
 
-    .label-activity-level-2 {
-        background: rgb(134 239 172 / 0.8);
+    .label-activity-cell.label-activity-level-2 {
+        background: rgb(110 231 183 / 0.94);
     }
 
-    .label-activity-level-3 {
-        background: rgb(34 197 94 / 0.78);
+    .label-activity-cell.label-activity-level-3 {
+        background: rgb(16 185 129 / 0.96);
     }
 
-    .label-activity-level-4 {
-        background: rgb(21 128 61 / 0.88);
+    .label-activity-cell.label-activity-level-4 {
+        background: rgb(5 150 105 / 0.98);
     }
 
-    .dark .label-activity-level-1 {
+    .dark .label-activity-cell.label-activity-level-1 {
         background: rgb(20 83 45 / 0.72);
     }
 
-    .dark .label-activity-level-2 {
+    .dark .label-activity-cell.label-activity-level-2 {
         background: rgb(22 101 52 / 0.82);
     }
 
-    .dark .label-activity-level-3 {
+    .dark .label-activity-cell.label-activity-level-3 {
         background: rgb(22 163 74 / 0.78);
     }
 
-    .dark .label-activity-level-4 {
+    .dark .label-activity-cell.label-activity-level-4 {
         background: rgb(74 222 128 / 0.84);
     }
 

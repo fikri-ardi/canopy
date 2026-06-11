@@ -10,7 +10,7 @@
                 </span>
 
                 <div class="min-w-0">
-                    <div class="eyebrow">Spends</div>
+                    <div class="eyebrow">Pengeluaran</div>
                     <h1 class="page-title">Transaksi</h1>
                 </div>
             </div>
@@ -22,7 +22,7 @@
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Filtered Total</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Filter</div>
                         <div class="metric-value money-value">{{ $this->rupiah($totalAmount) }}</div>
                     </div>
                     <span class="icon-box">
@@ -35,7 +35,7 @@
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transaksi</div>
                         <div class="metric-value">{{ number_format($transactionCount, 0, ',', '.') }}</div>
                     </div>
                     <span class="icon-box-muted">
@@ -48,7 +48,7 @@
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Average Spend</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Rata-rata</div>
                         <div class="metric-value money-value">{{ $this->rupiah($averageAmount) }}</div>
                     </div>
                     <span class="icon-box-muted">
@@ -61,7 +61,7 @@
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Largest Spend</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Terbesar</div>
                         <div class="metric-value money-value">{{ $this->rupiah($largestAmount) }}</div>
                     </div>
                     <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 ring-1 ring-amber-100 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/20">
@@ -79,7 +79,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400 dark:text-slate-500">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197M15.803 15.803A7.5 7.5 0 1 0 5.197 5.197a7.5 7.5 0 0 0 10.606 10.606Z" />
                 </svg>
-                <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search expenses" class="input-field h-11 rounded-xl bg-white/75 pl-9 text-sm shadow-sm shadow-slate-900/5 dark:bg-slate-900/70">
+                <input wire:model.live.debounce.300ms="search" type="search" placeholder="Cari pengeluaran" class="input-field h-11 rounded-xl bg-white/75 pl-9 text-sm shadow-sm shadow-slate-900/5 dark:bg-slate-900/70">
             </div>
         </section>
 
@@ -87,13 +87,13 @@
             <table class="w-full min-w-[980px] table-fixed">
                 <thead class="bg-gray-50 text-xs font-semibold uppercase text-gray-500 dark:bg-slate-950 dark:text-slate-400">
                     <tr>
-                        <th class="w-32 p-3 text-left">Date</th>
-                        <th class="p-3 text-left">Expense</th>
-                        <th class="p-3 text-left">Plan</th>
+                        <th class="w-32 p-3 text-left">Tanggal</th>
+                        <th class="p-3 text-left">Pengeluaran</th>
+                        <th class="p-3 text-left">Rencana</th>
                         <th class="p-3 text-left">Label</th>
                         <th class="p-3 text-left">Platform</th>
                         <th class="p-3 text-left">Status</th>
-                        <th class="w-36 p-3 text-right">Amount</th>
+                        <th class="w-36 p-3 text-right">Nominal</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-sm dark:divide-slate-800">
@@ -104,7 +104,7 @@
                                 <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $spend->name }}</div>
                             </td>
                             <td class="p-3 text-gray-600 dark:text-slate-300">{{ $spend->budget?->name }}</td>
-                            <td class="p-3 text-gray-600 dark:text-slate-300">{{ $spend->label?->name ?? 'Unlabeled' }}</td>
+                            <td class="p-3 text-gray-600 dark:text-slate-300">{{ $spend->label?->name ?? 'Tanpa label' }}</td>
                             <td class="p-3 text-gray-600 dark:text-slate-300">{{ $spend->platform?->name }}</td>
                             <td class="p-3 text-gray-600 dark:text-slate-300">{{ $spend->status?->body }}</td>
                             <td class="money-value p-3 text-right font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($spend->getRawOriginal('amount')) }}</td>
@@ -117,8 +117,8 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
                                     </svg>
                                 </span>
-                                <div class="mt-3 font-semibold text-gray-950 dark:text-slate-50">No matching expenses</div>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Adjust filters or add a new expense from the plan page.</p>
+                                <div class="mt-3 font-semibold text-gray-950 dark:text-slate-50">Tidak ada pengeluaran yang cocok</div>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Ubah pencarian atau tambah pengeluaran dari halaman rencana.</p>
                             </td>
                         </tr>
                     @endforelse

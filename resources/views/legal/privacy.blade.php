@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
-    <title>Privacy Policy - Alokasi</title>
+    <title>Kebijakan Privasi - Alokasi</title>
 </head>
 
 <body class="h-full font-sans">
@@ -26,42 +26,42 @@
 
             <article class="panel p-5 sm:p-8">
                 <div class="eyebrow">Legal</div>
-                <h1 class="page-title">Privacy Policy</h1>
+                <h1 class="page-title">Kebijakan Privasi</h1>
 
                 <div class="mt-6 space-y-6 text-sm leading-6 text-gray-600 dark:text-slate-300">
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">What Alokasi Collects</h2>
-                        <p class="mt-2">Alokasi stores the account and finance-management data you provide, including your name, email address, encrypted password when you set one, social sign-in provider identifiers, plans, income values, expenses/spends, labels, platforms, statuses, investment movements, investment targets, imported files while they are being processed, and export preferences.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Data Yang Dikumpulkan</h2>
+                        <p class="mt-2">Alokasi menyimpan data akun dan pengelolaan keuangan yang kamu berikan, termasuk nama, alamat email, password terenkripsi saat kamu membuatnya, identitas provider login sosial, rencana, nilai pemasukan, pengeluaran, label, platform, status, mutasi investasi, target investasi, file impor saat diproses, dan preferensi ekspor.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">How The Data Is Used</h2>
-                        <p class="mt-2">The data is used to authenticate your account, verify your email, show dashboards and reports, manage plans and expenses, group investment activity, import or export your Alokasi data, secure sessions, and maintain the application.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Cara Data Dipakai</h2>
+                        <p class="mt-2">Data dipakai untuk autentikasi akun, verifikasi email, menampilkan dashboard dan laporan, mengelola rencana dan pengeluaran, mengelompokkan aktivitas investasi, impor atau ekspor data Alokasi, menjaga sesi tetap aman, dan memelihara aplikasi.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Social Sign In</h2>
-                        <p class="mt-2">If you sign in with Google or GitHub, Alokasi receives account information from that provider, such as your email address, display name, provider user ID, and avatar when available. Alokasi uses this only to create or connect your account.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Login Sosial</h2>
+                        <p class="mt-2">Jika kamu masuk dengan Google atau GitHub, Alokasi menerima informasi akun dari provider tersebut, seperti alamat email, nama tampilan, ID pengguna provider, dan avatar jika tersedia. Alokasi hanya memakai data ini untuk membuat atau menghubungkan akun kamu.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Sharing</h2>
-                        <p class="mt-2">Alokasi does not sell your personal or financial data. Data may be processed by infrastructure or service providers needed to run the app, such as hosting, email delivery, authentication providers, and storage. Data may also be disclosed if required by law or to protect the security of the service.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Pembagian Data</h2>
+                        <p class="mt-2">Alokasi tidak menjual data pribadi atau data keuangan kamu. Data dapat diproses oleh penyedia infrastruktur atau layanan yang dibutuhkan untuk menjalankan aplikasi, seperti hosting, pengiriman email, provider autentikasi, dan penyimpanan. Data juga dapat dibuka jika diwajibkan hukum atau untuk melindungi keamanan layanan.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Security And Retention</h2>
-                        <p class="mt-2">Passwords are stored as hashes, and access to your account-owned data is scoped to your user account. Alokasi keeps your data while your account exists. When you delete your account, account-owned plans, expenses, labels, platforms, statuses, and related records are removed according to the app's deletion flow.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Keamanan Dan Retensi</h2>
+                        <p class="mt-2">Password disimpan dalam bentuk hash, dan akses ke data milik akun dibatasi pada akun pengguna kamu. Alokasi menyimpan data selama akun kamu masih ada. Saat kamu menghapus akun, rencana, pengeluaran, label, platform, status, dan catatan terkait milik akun akan dihapus sesuai alur penghapusan aplikasi.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Your Choices</h2>
-                        <p class="mt-2">You can update your profile, set or change your password, export/import data, and delete your account from Settings. You can also avoid social sign-in and use email/password sign-in when a password is set.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Pilihan Kamu</h2>
+                        <p class="mt-2">Kamu bisa memperbarui profil, mengatur atau mengubah password, ekspor/impor data, dan menghapus akun dari Pengaturan. Kamu juga bisa tidak memakai login sosial dan memakai email/password jika password sudah dibuat.</p>
                     </section>
 
                     <section>
                         <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Contact</h2>
-                        <p class="mt-2">For privacy questions, contact the Alokasi administrator at <span class="font-semibold text-gray-950 dark:text-slate-50">{{ config('mail.from.address') }}</span>.</p>
+                        <p class="mt-2">Untuk pertanyaan privasi, hubungi administrator Alokasi di <span class="font-semibold text-gray-950 dark:text-slate-50">{{ config('mail.from.address') }}</span>.</p>
                     </section>
                 </div>
             </article>

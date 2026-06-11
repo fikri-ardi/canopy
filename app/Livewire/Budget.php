@@ -287,7 +287,7 @@ class Budget extends Component
 
     private function duplicateBudgetName(string $name): string
     {
-        $baseName = $name.' Copy';
+        $baseName = $name.' Salinan';
         $copyName = $baseName;
         $copyNumber = 2;
 
@@ -303,29 +303,29 @@ class Budget extends Component
     {
         if (! $this->activeBudget) {
             return [
-                ['label' => 'TOTAL INCOME', 'amount' => 0, 'key' => 'income'],
-                ['label' => 'ALLOCATION', 'amount' => 0, 'key' => 'allocation', 'detail' => 'No platform allocation'],
-                ['label' => 'REMAINING', 'amount' => 0, 'key' => 'remaining'],
-                ['label' => 'MAIN BANK', 'amount' => 0, 'key' => 'main_bank'],
-                ['label' => 'INVESTMENT', 'amount' => 0, 'key' => 'investment', 'detail' => 'No investment spend'],
+                ['label' => 'TOTAL PEMASUKAN', 'amount' => 0, 'key' => 'income'],
+                ['label' => 'ALOKASI', 'amount' => 0, 'key' => 'allocation', 'detail' => 'Belum ada alokasi platform'],
+                ['label' => 'SISA', 'amount' => 0, 'key' => 'remaining'],
+                ['label' => 'BANK UTAMA', 'amount' => 0, 'key' => 'main_bank'],
+                ['label' => 'INVESTASI', 'amount' => 0, 'key' => 'investment', 'detail' => 'Belum ada pengeluaran investasi'],
             ];
         }
 
         return [
-            ['label' => 'TOTAL INCOME', 'amount' => (int) $this->activeBudget->income, 'key' => 'income'],
+            ['label' => 'TOTAL PEMASUKAN', 'amount' => (int) $this->activeBudget->income, 'key' => 'income'],
             [
-                'label' => 'ALLOCATION',
+                'label' => 'ALOKASI',
                 'amount' => (int) ($allocation['amount'] ?? 0),
                 'key' => 'allocation',
-                'detail' => $allocation['name'] ?? 'No platform allocation',
+                'detail' => $allocation['name'] ?? 'Belum ada alokasi platform',
             ],
-            ['label' => 'REMAINING', 'amount' => $this->remainingBalance(), 'key' => 'remaining'],
-            ['label' => 'MAIN BANK', 'amount' => $this->mainBankBalance(), 'key' => 'main_bank'],
+            ['label' => 'SISA', 'amount' => $this->remainingBalance(), 'key' => 'remaining'],
+            ['label' => 'BANK UTAMA', 'amount' => $this->mainBankBalance(), 'key' => 'main_bank'],
             [
-                'label' => 'INVESTMENT',
+                'label' => 'INVESTASI',
                 'amount' => (int) ($investment['amount'] ?? 0),
                 'key' => 'investment',
-                'detail' => $investment['name'] ?? 'No investment spend',
+                'detail' => $investment['name'] ?? 'Belum ada pengeluaran investasi',
             ],
         ];
     }
@@ -377,7 +377,7 @@ class Budget extends Component
         return (int) Spend::query()
             ->join('statuses', 'spends.status_id', '=', 'statuses.id')
             ->where('spends.budget_id', $this->activeBudget->id)
-            ->whereIn(DB::raw('lower(statuses.body)'), ['unallocated', 'unalocated'])
+            ->whereIn(DB::raw('lower(statuses.body)'), ['unallocated', 'unalocated', 'belum dialokasi'])
             ->sum('spends.amount');
     }
 
@@ -399,7 +399,7 @@ class Budget extends Component
         $managedExpense = Spend::query()
             ->join('statuses', 'spends.status_id', '=', 'statuses.id')
             ->where('spends.budget_id', $this->activeBudget->id)
-            ->whereNotIn(DB::raw('lower(statuses.body)'), ['unallocated', 'unalocated'])
+            ->whereNotIn(DB::raw('lower(statuses.body)'), ['unallocated', 'unalocated', 'belum dialokasi'])
             ->sum('spends.amount');
 
         return (int) $this->activeBudget->income - (int) $managedExpense;
@@ -516,7 +516,7 @@ class Budget extends Component
             ->join('platforms', 'spends.platform_id', '=', 'platforms.id')
             ->join('statuses', 'spends.status_id', '=', 'statuses.id')
             ->where('spends.budget_id', $this->activeBudget->id)
-            ->whereIn(DB::raw('lower(trim(statuses.body))'), ['allocated', 'allcoated'])
+            ->whereIn(DB::raw('lower(trim(statuses.body))'), ['allocated', 'allcoated', 'dialokasi'])
             ->selectRaw('platforms.id as id, platforms.name as name, sum(spends.amount) as total, count(*) as transactions')
             ->groupBy('platforms.id', 'platforms.name')
             ->orderByDesc('total')
@@ -609,10 +609,10 @@ class Budget extends Component
         return view('livewire.budget', [
             'summaryCards' => $this->summaryCards($selectedInvestment, $selectedAllocation),
             'insightCards' => [
-                ['label' => 'TRANSACTIONS', 'amount' => $this->transactionCount(), 'format' => 'number'],
-                ['label' => 'AVG EXPENSE', 'amount' => $this->averageExpense(), 'format' => 'money'],
-                ['label' => 'LARGEST EXPENSE', 'amount' => $this->largestExpense(), 'format' => 'money'],
-                ['label' => 'UNALLOCATED', 'amount' => $this->unallocatedTotal(), 'format' => 'money'],
+                ['label' => 'TRANSAKSI', 'amount' => $this->transactionCount(), 'format' => 'number'],
+                ['label' => 'RATA-RATA', 'amount' => $this->averageExpense(), 'format' => 'money'],
+                ['label' => 'TERBESAR', 'amount' => $this->largestExpense(), 'format' => 'money'],
+                ['label' => 'BELUM DIALOKASI', 'amount' => $this->unallocatedTotal(), 'format' => 'money'],
             ],
             'platformAnalytics' => $this->platformAnalytics(),
             'statusAnalytics' => $this->statusAnalytics(),

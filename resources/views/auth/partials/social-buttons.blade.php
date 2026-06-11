@@ -43,7 +43,7 @@
                             </svg>
                     @endswitch
                 </span>
-                <span>Continue with {{ $meta['label'] }}</span>
+                <span>Lanjut dengan {{ $meta['label'] }}</span>
         @if ($meta['configured'])
             </a>
         @else

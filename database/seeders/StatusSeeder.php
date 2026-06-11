@@ -13,7 +13,7 @@ class StatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $statuses = collect(['Unallocated', 'Allocated', 'Withdrawn', 'Done']);
+        $statuses = collect(['Belum dialokasi', 'Dialokasi', 'Ditarik', 'Selesai']);
 
         $statuses->each(function ($status) {
             Status::create([

@@ -33,8 +33,8 @@
                 </span>
 
                 <div class="min-w-0">
-                    <div class="eyebrow">Active Plan</div>
-                    <h1 class="page-title">{{ $activeBudget?->name ?? 'No plan yet' }}</h1>
+                    <div class="eyebrow">Rencana Aktif</div>
+                    <h1 class="page-title">{{ $activeBudget?->name ?? 'Belum ada rencana' }}</h1>
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
                         </template>
                     </div>
 
-                    <button x-ref="budgetSettingsTrigger" type="button" x-on:click.stop="budgetSettingsMenu.toggle($refs.budgetSettingsTrigger, $refs.budgetSettingsMenu)" class="btn-icon" aria-label="Plan settings" data-tooltip="Plan settings">
+                    <button x-ref="budgetSettingsTrigger" type="button" x-on:click.stop="budgetSettingsMenu.toggle($refs.budgetSettingsTrigger, $refs.budgetSettingsMenu)" class="btn-icon" aria-label="Pengaturan rencana" data-tooltip="Pengaturan rencana">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.348.78.748.936.236.092.466.19.69.3.38.185.833.143 1.184-.099l.737-.51a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.51.737c-.242.35-.284.804-.099 1.184.11.224.208.454.3.69.156.4.512.678.936.748l.894.149c.542.09.94.56.94 1.11v1.093c0 .55-.398 1.02-.94 1.11l-.894.149c-.424.07-.78.348-.936.748a7.02 7.02 0 0 1-.3.69c-.185.38-.143.833.099 1.184l.51.737c.32.448.27 1.061-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.45.12l-.737-.51c-.35-.242-.804-.284-1.184-.099a7.02 7.02 0 0 1-.69.3c-.4.156-.678.512-.748.936l-.149.894c-.09.542-.56.94-1.11.94h-1.093c-.55 0-1.02-.398-1.11-.94l-.149-.894a1.125 1.125 0 0 0-.748-.936 7.02 7.02 0 0 1-.69-.3c-.38-.185-.833-.143-1.184.099l-.737.51a1.125 1.125 0 0 1-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.51-.737c.242-.35.284-.804.099-1.184a7.02 7.02 0 0 1-.3-.69 1.125 1.125 0 0 0-.936-.748l-.894-.149a1.125 1.125 0 0 1-.94-1.11v-1.093c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.78-.348.936-.748.092-.236.19-.466.3-.69.185-.38.143-.833-.099-1.184l-.51-.737a1.125 1.125 0 0 1 .12-1.45l.774-.773a1.125 1.125 0 0 1 1.45-.12l.737.51c.35.242.804.284 1.184.099.224-.11.454-.208.69-.3.4-.156.678-.512.748-.936l.149-.894Z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -75,7 +75,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.25 15.75 4.5-4.5 1.5 1.5-4.5 4.5h-1.5v-1.5Z" />
                                     </svg>
                                 </span>
-                                <span>Rename plan</span>
+                                <span>Ubah nama rencana</span>
                             </button>
                             <button type="button" x-on:click="budgetSettingsMenu.close(); editIncome = true" wire:click="startEditingIncome" class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                                 <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-300">
@@ -84,7 +84,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v3.75m-1.5-1.5h3" />
                                     </svg>
                                 </span>
-                                <span>Edit income</span>
+                                <span>Ubah pemasukan</span>
                             </button>
                             <button type="button" x-on:click="budgetSettingsMenu.close()" wire:click="duplicateActiveBudget" class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-800">
                                 <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 dark:bg-slate-800 dark:text-slate-400">
@@ -94,7 +94,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M7.125 14.625h4.5m-2.25-2.25v4.5" />
                                     </svg>
                                 </span>
-                                <span>Duplicate plan</span>
+                                <span>Duplikat rencana</span>
                             </button>
                             <button type="button" x-on:click="budgetSettingsMenu.close(); deleteBudget = true" class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-red-500 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-500/10">
                                 <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-300">
@@ -102,17 +102,17 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5h10.5m-8.25 0V6A1.5 1.5 0 0 1 10.5 4.5h3A1.5 1.5 0 0 1 15 6v1.5m-7.5 0 .75 12A2.25 2.25 0 0 0 10.5 21h3a2.25 2.25 0 0 0 2.25-2.25l.75-11.25M10.5 11.25v5.25m3-5.25v5.25" />
                                     </svg>
                                 </span>
-                                <span>Delete plan</span>
+                                <span>Hapus rencana</span>
                             </button>
                         </div>
                     </template>
                 @endif
 
-                <button type="button" x-on:click="openBudgetModalFromTour()" class="btn-primary px-3 sm:px-4" data-onboarding-target="new-budget" aria-label="New Plan" data-tooltip="New Plan">
+                <button type="button" x-on:click="openBudgetModalFromTour()" class="btn-primary px-3 sm:px-4" data-onboarding-target="new-budget" aria-label="Rencana Baru" data-tooltip="Rencana Baru">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-                    <span class="hidden sm:inline">New Plan</span>
+                    <span class="hidden sm:inline">Rencana Baru</span>
                 </button>
             </div>
         </div>
@@ -182,7 +182,7 @@
                     class="text-xs font-semibold text-gray-400 transition hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                     x-on:click="$wire.completeOnboarding(); skipOnboarding()"
                 >
-                    Skip
+                    Lewati
                 </button>
                 <button
                     type="button"
@@ -207,22 +207,22 @@
                         </svg>
                     </span>
                     <div>
-                        <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Rename Plan</div>
-                        <p class="text-sm text-gray-500 dark:text-slate-400">Give this plan a clearer name.</p>
+                        <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Ubah Nama Rencana</div>
+                        <p class="text-sm text-gray-500 dark:text-slate-400">Beri nama yang lebih jelas untuk rencana ini.</p>
                     </div>
                 </div>
 
                 <form class="mt-5 space-y-4" wire:submit="renameActiveBudget">
                     <div>
-                        <input wire:model="renameBudgetName" type="text" class="input-field" placeholder="Plan name">
+                        <input wire:model="renameBudgetName" type="text" class="input-field" placeholder="Nama rencana">
                         @error('renameBudgetName')
                             <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="flex justify-end gap-2">
-                        <button type="button" x-on:click="renameBudget = false" class="btn-secondary">Cancel</button>
-                        <button type="submit" class="btn-primary">Save</button>
+                        <button type="button" x-on:click="renameBudget = false" class="btn-secondary">Batal</button>
+                        <button type="submit" class="btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -239,14 +239,14 @@
                         </svg>
                     </span>
                     <div>
-                        <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Edit Total Income</div>
-                        <p class="text-sm text-gray-500 dark:text-slate-400">Update the income planned for this plan.</p>
+                        <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Ubah Total Pemasukan</div>
+                        <p class="text-sm text-gray-500 dark:text-slate-400">Perbarui pemasukan yang direncanakan.</p>
                     </div>
                 </div>
 
                 <form class="mt-5 space-y-4" wire:submit="updateActiveBudgetIncome">
                     <div>
-                        <label for="budget-income-edit" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Income</label>
+                        <label for="budget-income-edit" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Pemasukan</label>
                         <input wire:model="incomeAmount" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" id="budget-income-edit" class="input-field" placeholder="2.000.000">
                         @error('incomeAmount')
                             <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
@@ -254,8 +254,8 @@
                     </div>
 
                     <div class="flex justify-end gap-2">
-                        <button type="button" x-on:click="editIncome = false" class="btn-secondary">Cancel</button>
-                        <button type="submit" class="btn-primary">Save</button>
+                        <button type="button" x-on:click="editIncome = false" class="btn-secondary">Batal</button>
+                        <button type="submit" class="btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -272,18 +272,18 @@
                         </svg>
                     </span>
                     <div>
-                        <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Delete Plan</div>
-                        <p class="text-sm text-gray-500 dark:text-slate-400">This action cannot be undone.</p>
+                        <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Hapus Rencana</div>
+                        <p class="text-sm text-gray-500 dark:text-slate-400">Tindakan ini tidak bisa dibatalkan.</p>
                     </div>
                 </div>
 
                 <p class="mt-5 text-sm text-gray-600 dark:text-slate-300">
-                    Delete <span class="font-semibold text-gray-950 dark:text-slate-50">{{ $activeBudget->name }}</span> and all its expenses?
+                    Hapus <span class="font-semibold text-gray-950 dark:text-slate-50">{{ $activeBudget->name }}</span> dan semua pengeluarannya?
                 </p>
 
                 <form class="mt-6 flex justify-end gap-2" wire:submit="deleteActiveBudget">
-                    <button type="button" x-on:click="deleteBudget = false" class="btn-secondary">Cancel</button>
-                    <button type="submit" class="btn-danger">Delete</button>
+                    <button type="button" x-on:click="deleteBudget = false" class="btn-secondary">Batal</button>
+                    <button type="submit" class="btn-danger">Hapus</button>
                 </form>
             </div>
         </div>
@@ -316,8 +316,8 @@
                                             type="button"
                                             x-on:click.stop="allocationMenu.toggle($refs.allocationTrigger, $refs.allocationMenu)"
                                             class="summary-menu-button"
-                                            aria-label="Choose allocation platform"
-                                            data-tooltip="Choose allocation platform"
+                                            aria-label="Pilih platform alokasi"
+                                            data-tooltip="Pilih platform alokasi"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -330,8 +330,8 @@
                                             type="button"
                                             x-on:click.stop="investmentMenu.toggle($refs.investmentTrigger, $refs.investmentMenu)"
                                             class="summary-menu-button"
-                                            aria-label="Choose investment spend"
-                                            data-tooltip="Choose investment spend"
+                                            aria-label="Pilih pengeluaran investasi"
+                                            data-tooltip="Pilih pengeluaran investasi"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -387,7 +387,7 @@
                                         <button type="button" x-on:click="investmentMenu.close()" wire:click="selectInvestment(@js($option['key']))" wire:key="budget-investment-option-{{ str($option['key'])->slug() }}" class="investment-option {{ $selectedInvestmentKey === $option['key'] ? 'investment-option-active' : '' }}">
                                             <span class="min-w-0">
                                                 <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
-                                                <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi / {{ $option['movements'] }} movements</span>
+                                                <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi / {{ $option['movements'] }} mutasi</span>
                                             </span>
                                             <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
                                         </button>
@@ -402,14 +402,14 @@
             <section id="expenses" class="min-w-0">
                 <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h2 class="text-xl font-bold text-gray-950 dark:text-slate-50">Expenses</h2>
+                        <h2 class="text-xl font-bold text-gray-950 dark:text-slate-50">Pengeluaran</h2>
                     </div>
 
                     <button type="button" x-on:click="openExpenseModalFromTour()" class="btn-primary" data-onboarding-target="expense-button">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
-                        <span>New Expense</span>
+                        <span>Pengeluaran Baru</span>
                     </button>
                 </div>
 
@@ -420,8 +420,8 @@
                 <div class="panel px-4 py-4">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <div class="eyebrow">Plan</div>
-                            <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Ringkasan plan</h2>
+                            <div class="eyebrow">Rencana</div>
+                            <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Ringkasan rencana</h2>
                         </div>
                         <span class="icon-box-muted">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -445,11 +445,11 @@
                 <div class="panel px-4 py-4">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <div class="eyebrow">Top</div>
-                            <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Expense terbesar</h2>
+                            <div class="eyebrow">Teratas</div>
+                            <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Pengeluaran terbesar</h2>
                         </div>
                         <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} money-value text-sm font-semibold">
-                            {{ $this->rupiah($remainingBalance) }} left
+                            Sisa {{ $this->rupiah($remainingBalance) }}
                         </div>
                     </div>
 
@@ -459,7 +459,7 @@
                                 <div class="min-w-0">
                                     <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $expense->name }}</div>
                                     <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
-                                        <span>{{ $expense->label?->name ?? 'Unlabeled' }}</span>
+                                        <span>{{ $expense->label?->name ?? 'Tanpa label' }}</span>
                                         <span>{{ $expense->platform?->name }}</span>
                                         <span>{{ $expense->status?->body }}</span>
                                     </div>
@@ -467,7 +467,7 @@
                                 <div class="money-value shrink-0 font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
                             </div>
                         @empty
-                            <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No expenses yet.</div>
+                            <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada pengeluaran.</div>
                         @endforelse
                     </div>
                 </div>
@@ -481,8 +481,8 @@
                                 <span class="progress-circle-value">{{ min(999, $spendProgress) }}%</span>
                             </span>
                             <div class="min-w-0">
-                                <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Plan Pulse</h2>
-                                <p class="text-xs text-gray-500 dark:text-slate-400">{{ $spendProgress }}% used</p>
+                                <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Kondisi Rencana</h2>
+                                <p class="text-xs text-gray-500 dark:text-slate-400">{{ $spendProgress }}% terpakai</p>
                             </div>
                         </div>
                         <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} money-value text-sm font-semibold">
@@ -511,7 +511,7 @@
                                 <div class="money-value mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
                             </div>
                         @empty
-                            <div class="text-sm text-gray-500 dark:text-slate-400">No transactions yet.</div>
+                            <div class="text-sm text-gray-500 dark:text-slate-400">Belum ada transaksi.</div>
                         @endforelse
                     </div>
                 </div>
@@ -525,7 +525,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
                         </svg>
                     </span>
-                    <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Platform Distribution</h2>
+                    <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Distribusi Platform</h2>
                 </div>
 
                 <div class="mt-4 space-y-3">
@@ -540,7 +540,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="text-sm text-gray-500 dark:text-slate-400">No platform data yet.</div>
+                        <div class="text-sm text-gray-500 dark:text-slate-400">Belum ada data platform.</div>
                     @endforelse
                 </div>
             </section>
@@ -553,9 +553,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08" />
                     </svg>
                 </span>
-                <div class="mt-4 text-lg font-semibold text-gray-950 dark:text-slate-50">No plan yet</div>
-                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Create your first plan to start tracking expenses.</p>
-                <button type="button" x-on:click="openBudgetModalFromTour()" class="btn-primary mt-4" data-onboarding-target="new-budget">New Plan</button>
+                <div class="mt-4 text-lg font-semibold text-gray-950 dark:text-slate-50">Belum ada rencana</div>
+                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Buat rencana pertama untuk mulai mencatat pengeluaran.</p>
+                <button type="button" x-on:click="openBudgetModalFromTour()" class="btn-primary mt-4" data-onboarding-target="new-budget">Rencana Baru</button>
             </section>
         @endif
     </main>

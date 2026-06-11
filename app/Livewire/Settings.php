@@ -72,8 +72,8 @@ class Settings extends Component
             tone: 'success',
             title: 'Berhasil',
             message: $emailChanged
-                ? 'Profile updated. Verification email sudah dikirim ke alamat baru.'
-                : 'Profile updated.',
+                ? 'Profil diperbarui. Email verifikasi sudah dikirim ke alamat baru.'
+                : 'Profil diperbarui.',
         );
     }
 
@@ -101,7 +101,7 @@ class Settings extends Component
             'alokasi-flash',
             tone: 'success',
             title: 'Berhasil',
-            message: $wasPasswordless ? 'Password berhasil dibuat.' : 'Password updated.',
+            message: $wasPasswordless ? 'Password berhasil dibuat.' : 'Password diperbarui.',
         );
     }
 
@@ -114,7 +114,7 @@ class Settings extends Component
         Excel::import(new BudgetSpendsImport(auth()->user()), $this->importFile);
 
         $this->reset('importFile');
-        $this->dispatch('alokasi-flash', tone: 'success', title: 'Berhasil', message: 'Import finished.');
+        $this->dispatch('alokasi-flash', tone: 'success', title: 'Berhasil', message: 'Impor selesai.');
     }
 
     public function sendFeedback(): void
@@ -137,7 +137,7 @@ class Settings extends Component
             'alokasi-flash',
             tone: 'success',
             title: 'Makasih',
-            message: 'Feedback kamu sudah masuk.',
+            message: 'Masukan kamu sudah masuk.',
         );
     }
 

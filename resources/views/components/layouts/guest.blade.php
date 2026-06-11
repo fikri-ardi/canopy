@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
-    <title>{{ $title ?? 'Alokasi' }} - Your Income Pal</title>
+    <title>{{ $title ?? 'Alokasi' }} - Teman Atur Uang</title>
 </head>
 
 <body class="h-full font-sans">
@@ -30,9 +30,9 @@
             {{ $slot }}
 
             <div class="mt-6 flex items-center justify-center gap-3 text-xs font-semibold text-gray-400 dark:text-slate-500">
-                <a href="{{ route('privacy') }}" class="transition hover:text-green-600 dark:hover:text-green-400">Privacy Policy</a>
+                <a href="{{ route('privacy') }}" class="transition hover:text-green-600 dark:hover:text-green-400">Kebijakan Privasi</a>
                 <span aria-hidden="true">/</span>
-                <a href="{{ route('terms') }}" class="transition hover:text-green-600 dark:hover:text-green-400">Terms</a>
+                <a href="{{ route('terms') }}" class="transition hover:text-green-600 dark:hover:text-green-400">Syarat</a>
             </div>
         </div>
     </main>

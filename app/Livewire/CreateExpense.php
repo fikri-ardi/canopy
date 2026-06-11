@@ -127,14 +127,14 @@ class CreateExpense extends Component
     private function ensureDefaultPlatformsAndStatuses(): void
     {
         if ($this->platformsSchemaReady() && ! Platform::where('user_id', auth()->id())->exists()) {
-            collect(['Cash', 'GoPay', 'Shopeepay', 'OVO', 'Dana', 'BNI', 'BRI', 'BCA'])->each(fn ($platform) => Platform::firstOrCreate([
+            collect(['Tunai', 'GoPay', 'Shopeepay', 'OVO', 'Dana', 'BNI', 'BRI', 'BCA'])->each(fn ($platform) => Platform::firstOrCreate([
                 'user_id' => auth()->id(),
                 'name' => $platform,
             ]));
         }
 
         if ($this->statusesSchemaReady() && ! Status::where('user_id', auth()->id())->exists()) {
-            collect(['Unallocated', 'Allocated', 'Withdrawn', 'Done'])->each(fn ($status) => Status::create([
+            collect(['Belum dialokasi', 'Dialokasi', 'Ditarik', 'Selesai'])->each(fn ($status) => Status::create([
                 'user_id' => auth()->id(),
                 'body' => $status,
             ]));

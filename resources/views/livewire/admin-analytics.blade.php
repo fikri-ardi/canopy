@@ -10,12 +10,12 @@
 
                 <div class="min-w-0">
                     <div class="eyebrow">Admin</div>
-                    <h1 class="page-title">User Analytics</h1>
+                    <h1 class="page-title">Analitik Pengguna</h1>
                 </div>
             </div>
             <div class="hidden items-center gap-2 rounded-lg border border-gray-200 bg-white/60 px-3 py-2 text-xs font-medium text-gray-500 backdrop-blur dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-400 sm:flex">
                 <span class="inline-flex size-2 rounded-full bg-green-500"></span>
-                <span>Auto refresh 30s</span>
+                <span>Refresh otomatis 30 detik</span>
                 <span class="text-gray-400 dark:text-slate-600">{{ $refreshedAt->format('H:i:s') }}</span>
             </div>
         </div>
@@ -24,10 +24,10 @@
     <main class="space-y-5 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
         <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ([
-                ['label' => 'Active now', 'value' => $activeNow, 'note' => 'Last 5 minutes', 'tone' => 'green'],
-                ['label' => 'DAU', 'value' => $dailyActiveUsers, 'note' => 'Seen today', 'tone' => 'cyan'],
-                ['label' => 'MAU', 'value' => $monthlyActiveUsers, 'note' => 'Seen this month', 'tone' => 'violet'],
-                ['label' => 'Users', 'value' => $totalUsers, 'note' => 'Total accounts', 'tone' => 'slate'],
+                ['label' => 'Aktif sekarang', 'value' => $activeNow, 'note' => '5 menit terakhir', 'tone' => 'green'],
+                ['label' => 'DAU', 'value' => $dailyActiveUsers, 'note' => 'Terlihat hari ini', 'tone' => 'cyan'],
+                ['label' => 'MAU', 'value' => $monthlyActiveUsers, 'note' => 'Terlihat bulan ini', 'tone' => 'violet'],
+                ['label' => 'Pengguna', 'value' => $totalUsers, 'note' => 'Total akun', 'tone' => 'slate'],
             ] as $card)
                 <div class="metric-card">
                     <div class="min-w-0">
@@ -54,8 +54,8 @@
             <div class="panel p-4 sm:p-5">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Currently Active</h2>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Users seen in the last 5 minutes.</p>
+                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Sedang Aktif</h2>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Pengguna yang terlihat dalam 5 menit terakhir.</p>
                     </div>
                     <span class="rounded-md bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-600 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">{{ $currentlyActiveUsers->count() }}</span>
                 </div>
@@ -76,7 +76,7 @@
                         </div>
                     @empty
                         <div class="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                            No active users right now.
+                            Belum ada pengguna aktif sekarang.
                         </div>
                     @endforelse
                 </div>
@@ -84,8 +84,8 @@
 
             <div class="panel p-4 sm:p-5">
                 <div>
-                    <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Recent Feedback</h2>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Latest notes sent from Settings.</p>
+                    <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Masukan Terbaru</h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Catatan terbaru yang dikirim dari Pengaturan.</p>
                 </div>
 
                 <div class="mt-4 space-y-3">
@@ -93,7 +93,7 @@
                         <div class="rounded-lg border border-gray-200 bg-white/70 p-3 dark:border-slate-800 dark:bg-slate-900/60">
                             <div class="flex items-center justify-between gap-3">
                                 <div class="min-w-0">
-                                    <div class="truncate text-sm font-semibold text-gray-950 dark:text-slate-50">{{ $feedback->user?->name ?? 'Deleted user' }}</div>
+                                    <div class="truncate text-sm font-semibold text-gray-950 dark:text-slate-50">{{ $feedback->user?->name ?? 'Pengguna terhapus' }}</div>
                                     <div class="truncate text-xs text-gray-500 dark:text-slate-400">{{ $feedback->created_at?->diffForHumans() }}</div>
                                 </div>
                                 <span class="shrink-0 rounded-md bg-gray-100 px-2 py-1 text-xs font-semibold capitalize text-gray-500 dark:bg-slate-800 dark:text-slate-300">{{ $feedback->mood }}</span>
@@ -102,7 +102,7 @@
                         </div>
                     @empty
                         <div class="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                            No feedback yet.
+                            Belum ada masukan.
                         </div>
                     @endforelse
                 </div>
@@ -122,18 +122,18 @@
             @endphp
 
             <div>
-                <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Recent Users</h2>
-                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Newest accounts and their assigned role.</p>
+                <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Pengguna Terbaru</h2>
+                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Akun terbaru dan role yang dipakai.</p>
             </div>
 
             <div id="recent-users-table" class="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-slate-800">
                 <div class="hidden grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_7rem_8.5rem_9rem] bg-gray-50 px-3 py-2 text-xs font-semibold uppercase text-gray-400 dark:bg-slate-900 dark:text-slate-500 md:grid">
                     @foreach ([
-                        ['field' => 'name', 'label' => 'User', 'align' => 'text-left'],
+                        ['field' => 'name', 'label' => 'Pengguna', 'align' => 'text-left'],
                         ['field' => 'email', 'label' => 'Email', 'align' => 'text-left'],
                         ['field' => 'role', 'label' => 'Role', 'align' => 'text-left'],
-                        ['field' => 'last_seen_at', 'label' => 'Last seen', 'align' => 'text-right justify-end'],
-                        ['field' => 'created_at', 'label' => 'Joined', 'align' => 'text-right justify-end'],
+                        ['field' => 'last_seen_at', 'label' => 'Terakhir terlihat', 'align' => 'text-right justify-end'],
+                        ['field' => 'created_at', 'label' => 'Bergabung', 'align' => 'text-right justify-end'],
                     ] as $heading)
                         @php($sort = $recentUserSortLabel($heading['field'], $heading['label']))
                         <button type="button" wire:click="sortRecentUsers('{{ $heading['field'] }}')" class="{{ $heading['align'] }} inline-flex items-center gap-1 rounded-md px-1.5 py-1 transition hover:bg-white hover:text-gray-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 {{ $sort['isActive'] ? 'text-green-600 dark:text-green-300' : '' }}">
@@ -151,20 +151,20 @@
                             <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $user->name }}</div>
                             <div class="truncate text-gray-500 dark:text-slate-400">{{ $user->email }}</div>
                             <div>
-                                <span class="rounded-md bg-gray-100 px-2 py-1 text-xs font-semibold capitalize text-gray-500 dark:bg-slate-800 dark:text-slate-300">{{ $user->role?->label ?? 'User' }}</span>
+                                <span class="rounded-md bg-gray-100 px-2 py-1 text-xs font-semibold capitalize text-gray-500 dark:bg-slate-800 dark:text-slate-300">{{ $user->role?->label ?? 'Pengguna' }}</span>
                             </div>
                             <div class="text-gray-500 dark:text-slate-400 md:text-right">
                                 @if ($user->last_seen_at)
                                     <span class="block">{{ $user->last_seen_at->diffForHumans() }}</span>
                                     <span class="block text-xs text-gray-400 dark:text-slate-500">{{ $user->last_seen_at->format('d M, H:i') }}</span>
                                 @else
-                                    <span class="text-gray-400 dark:text-slate-500">Never</span>
+                                    <span class="text-gray-400 dark:text-slate-500">Belum pernah</span>
                                 @endif
                             </div>
                             <div class="text-gray-500 dark:text-slate-400 md:text-right">{{ $user->created_at?->format('d M Y') }}</div>
                         </div>
                     @empty
-                        <div class="px-4 py-8 text-center text-sm text-gray-500 dark:text-slate-400">No users yet.</div>
+                        <div class="px-4 py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada pengguna.</div>
                     @endforelse
                 </div>
             </div>
@@ -172,7 +172,7 @@
             @if ($recentUsersTotal > 0)
                 <div class="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
                     <div class="text-sm text-gray-500 dark:text-slate-400">
-                        Showing <span class="font-semibold text-gray-800 dark:text-slate-200">{{ $recentUsersShowing }}</span> of <span class="font-semibold text-gray-800 dark:text-slate-200">{{ $recentUsersTotal }}</span> users
+                        Menampilkan <span class="font-semibold text-gray-800 dark:text-slate-200">{{ $recentUsersShowing }}</span> dari <span class="font-semibold text-gray-800 dark:text-slate-200">{{ $recentUsersTotal }}</span> pengguna
                     </div>
 
                     <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
@@ -181,7 +181,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                 </svg>
-                                Show {{ $recentUsersNextCount }} more
+                                Tampilkan {{ $recentUsersNextCount }} lagi
                             </button>
                         @endif
 
@@ -190,7 +190,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                                 </svg>
-                                Show less
+                                Tampilkan lebih sedikit
                             </button>
                         @endif
                     </div>

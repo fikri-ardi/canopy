@@ -115,8 +115,8 @@ class Reports extends Component
 
         return $this->filteredSpendQuery()
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
-            ->selectRaw("coalesce(labels.name, 'Unlabeled') as name, sum(spends.amount) as total, count(*) as transactions")
-            ->groupByRaw("coalesce(labels.name, 'Unlabeled')")
+            ->selectRaw("coalesce(labels.name, 'Tanpa label') as name, sum(spends.amount) as total, count(*) as transactions")
+            ->groupByRaw("coalesce(labels.name, 'Tanpa label')")
             ->orderByDesc('total')
             ->limit(6)
             ->get()

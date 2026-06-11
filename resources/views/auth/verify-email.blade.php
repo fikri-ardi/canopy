@@ -1,7 +1,7 @@
-<x-layouts.guest title="Verify Email">
+<x-layouts.guest title="Verifikasi Email">
     <section class="panel px-5 py-6 sm:px-6">
         <div>
-            <div class="eyebrow">Verify email</div>
+            <div class="eyebrow">Verifikasi email</div>
             <h1 class="page-title">Cek inbox kamu</h1>
         </div>
 
@@ -13,7 +13,7 @@
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn-secondary w-full">Logout</button>
+                <button type="submit" class="btn-secondary w-full">Keluar</button>
             </form>
         </div>
     </section>

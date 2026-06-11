@@ -92,7 +92,7 @@
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Income</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Pemasukan</div>
                         <div class="metric-value money-value">{{ $this->rupiah($totalIncome) }}</div>
                     </div>
                     <span class="icon-box">
@@ -105,7 +105,7 @@
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Expense</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Pengeluaran</div>
                         <div class="metric-value money-value">{{ $this->rupiah($totalExpense) }}</div>
                     </div>
                     <span class="icon-box">
@@ -118,7 +118,7 @@
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Remaining</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Sisa</div>
                         <div class="{{ $remainingBalance < 0 ? 'metric-value-danger' : 'metric-value' }} money-value">{{ $this->rupiah($remainingBalance) }}</div>
                     </div>
                     <span class="{{ $remainingBalance < 0 ? 'inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20' : 'icon-box-muted' }}">
@@ -131,7 +131,7 @@
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transactions</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transaksi</div>
                         <div class="metric-value">{{ $transactionCount }}</div>
                     </div>
                     <span class="icon-box-muted">
@@ -144,7 +144,7 @@
             <div class="metric-card">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Active Labels</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Label Aktif</div>
                         <div class="metric-value">{{ $labelCount }}</div>
                     </div>
                     <span class="icon-box-muted">
@@ -206,7 +206,7 @@
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div class="min-w-0">
                     <div class="eyebrow">Chart</div>
-                    <h2 class="mt-1 text-base font-semibold text-gray-950 dark:text-slate-50 sm:text-lg">Tren kategori</h2>
+                    <h2 class="mt-1 text-base font-semibold text-gray-950 dark:text-slate-50 sm:text-lg">Tren pengeluaran</h2>
                 </div>
                 <span class="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 ring-1 ring-green-100 dark:bg-green-500/10 dark:text-green-300 dark:ring-green-500/20">
                     {{ $categoryBudgetChart['periodLabel'] ?? now()->year }}
@@ -215,17 +215,17 @@
 
             @if (! $categoryBudgetChart['ready'])
                 <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                    Add labels to expenses to activate the category chart.
+                    Tambahkan label pada pengeluaran untuk mengaktifkan chart kategori.
                 </div>
             @elseif ($categoryBudgetChart['series']->isEmpty())
                 <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                    No category spending found in this year.
+                    Belum ada pengeluaran kategori di tahun ini.
                 </div>
             @else
                 <div class="mt-4 -mx-4 bg-green-50/45 px-4 py-4 dark:bg-green-500/[0.06] sm:-mx-5 sm:px-5 sm:py-5">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div class="min-w-0">
-                            <div class="text-xs font-semibold uppercase text-green-700/70 dark:text-green-300/70">Category</div>
+                            <div class="text-xs font-semibold uppercase text-green-700/70 dark:text-green-300/70">Kategori</div>
                             <h3 class="mt-1 truncate text-xl font-semibold text-gray-950 dark:text-slate-50" x-text="summary?.label ?? @js($categoryBudgetChart['topCategory']['label'])">{{ $categoryBudgetChart['topCategory']['label'] }}</h3>
                             <div class="mt-1 text-xs font-medium text-gray-500 dark:text-slate-400" x-text="summary?.dateLabel ?? @js($categoryBudgetChart['topCategory']['dateLabel'])">{{ $categoryBudgetChart['topCategory']['dateLabel'] }}</div>
                             <div class="mt-2 flex flex-wrap items-center gap-2 text-sm">
@@ -380,10 +380,10 @@
                 <div>
                     <div class="eyebrow">Activity</div>
                     <h2 class="mt-1 text-lg font-semibold text-gray-950 dark:text-slate-50">Aktivitas label</h2>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ $labelActivityHeatmap['totalTransactions'] }} transactions / {{ $labelActivityHeatmap['periodLabel'] }}</p>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ $labelActivityHeatmap['totalTransactions'] }} transaksi / {{ $labelActivityHeatmap['periodLabel'] }}</p>
                 </div>
                 <label class="relative w-full sm:w-40">
-                    <span class="sr-only">Filter year</span>
+                    <span class="sr-only">Filter tahun</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3.75 8.25h16.5M5.25 5.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25Z" />
                     </svg>
@@ -400,11 +400,11 @@
 
             @if (! $labelActivityHeatmap['ready'])
                 <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                    Add labels to expenses to activate label activity.
+                    Tambahkan label pada pengeluaran untuk mengaktifkan aktivitas label.
                 </div>
             @elseif ($labelActivityHeatmap['rows']->isEmpty())
                 <div class="mt-4 rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                    No label spending found in this view.
+                    Belum ada pengeluaran berlabel di tampilan ini.
                 </div>
             @else
                 <div class="mt-5 overflow-x-auto pb-1">
@@ -437,11 +437,11 @@
                         </div>
 
                         <div class="mt-4 flex items-center justify-end gap-1 text-xs text-gray-400 dark:text-slate-500 sm:gap-1.5">
-                            <span>Less</span>
+                            <span>Ringan</span>
                             @for ($level = 0; $level <= 4; $level++)
                                 <span class="label-activity-cell label-activity-level-{{ $level }}"></span>
                             @endfor
-                            <span>More</span>
+                            <span>Padat</span>
                         </div>
                     </div>
                 </div>
@@ -453,11 +453,11 @@
             <div class="panel px-4 py-4">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <div class="eyebrow">Plans</div>
+                        <div class="eyebrow">Rencana</div>
                         <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Kondisi plan</h2>
                     </div>
                     <div class="rounded-lg bg-gray-50 px-3 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Avg Spend</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Rata-rata</div>
                         <div class="money-value font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($averageTransaction) }}</div>
                     </div>
                 </div>
@@ -480,7 +480,7 @@
                         </div>
                     @empty
                         <div class="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500 dark:border-slate-700 dark:text-slate-400">
-                            No plans yet.
+                            Belum ada plan.
                         </div>
                     @endforelse
                 </div>
@@ -490,7 +490,7 @@
                 <div class="flex items-center justify-between gap-3">
                     <div>
                         <div class="eyebrow">Recent</div>
-                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Expense terbaru</h2>
+                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-slate-50">Pengeluaran terbaru</h2>
                     </div>
                     <span class="icon-box-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
@@ -506,20 +506,20 @@
                                 <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $expense->name }}</div>
                                 <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
                                     <span>{{ $expense->budget?->name }}</span>
-                                    <span>{{ $expense->label?->name ?? 'Unlabeled' }}</span>
+                                    <span>{{ $expense->label?->name ?? 'Tanpa label' }}</span>
                                     <span>{{ $expense->created_at?->format('d M Y') }}</span>
                                 </div>
                             </div>
                             <div class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
                         </div>
                     @empty
-                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No recent expenses.</div>
+                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada pengeluaran terbaru.</div>
                     @endforelse
                 </div>
 
                 @if ($largestExpense)
                     <div class="mt-4 rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Largest Expense</div>
+                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Pengeluaran Terbesar</div>
                         <div class="mt-2 flex items-center justify-between gap-3">
                             <div class="min-w-0 truncate font-semibold text-gray-950 dark:text-slate-50">{{ $largestExpense->name }}</div>
                             <div class="money-value shrink-0 font-bold text-red-500">{{ $this->rupiah($largestExpense->getRawOriginal('amount')) }}</div>
@@ -532,7 +532,7 @@
         <section class="grid gap-4 xl:grid-cols-3">
             <div class="panel px-4 py-4">
                 <div class="eyebrow">Top</div>
-                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Expense terbesar</h2>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Pengeluaran terbesar</h2>
 
                 <div class="mt-4 divide-y divide-gray-100 dark:divide-slate-800">
                     @forelse ($topExpenses as $expense)
@@ -541,20 +541,20 @@
                                 <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $expense->name }}</div>
                                 <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
                                     <span>{{ $expense->budget?->name }}</span>
-                                    <span>{{ $expense->label?->name ?? 'Unlabeled' }}</span>
+                                    <span>{{ $expense->label?->name ?? 'Tanpa label' }}</span>
                                 </div>
                             </div>
                             <div class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
                         </div>
                     @empty
-                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No expenses in this view.</div>
+                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada pengeluaran di tampilan ini.</div>
                     @endforelse
                 </div>
             </div>
 
             <div class="panel px-4 py-4">
                 <div class="eyebrow">Platforms</div>
-                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Metode bayar</h2>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Platform</h2>
 
                 <div class="mt-4 space-y-3">
                     @forelse ($platformBreakdown as $platform)
@@ -568,14 +568,14 @@
                             </div>
                         </div>
                     @empty
-                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No platform data yet.</div>
+                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada data platform.</div>
                     @endforelse
                 </div>
             </div>
 
             <div class="panel px-4 py-4">
                 <div class="eyebrow">Status</div>
-                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Allocation state</h2>
+                <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Status alokasi</h2>
 
                 <div class="mt-4 grid gap-2">
                     @forelse ($statusBreakdown as $status)
@@ -587,7 +587,7 @@
                             <div class="money-value mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
                         </div>
                     @empty
-                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">No status data yet.</div>
+                        <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada data status.</div>
                     @endforelse
                 </div>
             </div>

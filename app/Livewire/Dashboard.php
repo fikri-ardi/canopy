@@ -84,8 +84,8 @@ class Dashboard extends Component
                         ->orWhere('spends.name', 'like', '%'.$this->search.'%');
                 });
             })
-            ->selectRaw("coalesce(labels.name, 'Unlabeled') as label_name, sum(spends.amount) as total, count(*) as transactions")
-            ->groupByRaw("coalesce(labels.name, 'Unlabeled')")
+            ->selectRaw("coalesce(labels.name, 'Tanpa label') as label_name, sum(spends.amount) as total, count(*) as transactions")
+            ->groupByRaw("coalesce(labels.name, 'Tanpa label')")
             ->orderByDesc('total')
             ->limit(6)
             ->get();
@@ -94,7 +94,7 @@ class Dashboard extends Component
             $items = Spend::query()
                 ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
                 ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
-                ->whereRaw("coalesce(labels.name, 'Unlabeled') = ?", [$label->label_name])
+                ->whereRaw("coalesce(labels.name, 'Tanpa label') = ?", [$label->label_name])
                 ->when($this->search, function ($query) {
                     $query->where(function ($query) {
                         $query->where('labels.name', 'like', '%'.$this->search.'%')
@@ -165,7 +165,7 @@ class Dashboard extends Component
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
             ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
             ->whereBetween('spends.created_at', [$periodStart, $periodEnd])
-            ->selectRaw("coalesce(labels.name, 'Unlabeled') as label_name, spends.name as spend_name, spends.amount as raw_amount, spends.created_at")
+            ->selectRaw("coalesce(labels.name, 'Tanpa label') as label_name, spends.name as spend_name, spends.amount as raw_amount, spends.created_at")
             ->get();
 
         $cellTotals = $spends
@@ -182,14 +182,14 @@ class Dashboard extends Component
                     ->values();
 
                 if ($names->isEmpty()) {
-                    return 'No spend';
+                    return 'Belum ada pengeluaran';
                 }
 
                 if ($names->count() === 1) {
                     return $names->first();
                 }
 
-                return $names->first().' +'.($names->count() - 1).' more';
+                return $names->first().' +'.($names->count() - 1).' lainnya';
             });
 
         $maxCell = max((int) $cellTotals->max(), 1);
@@ -222,7 +222,7 @@ class Dashboard extends Component
                         'amount' => $amount,
                         'formatted' => $this->rupiah($amount),
                         'level' => $level,
-                        'spendName' => $cellNames->get($cellKey, 'No spend'),
+                        'spendName' => $cellNames->get($cellKey, 'Belum ada pengeluaran'),
                         'date' => $week['fullLabel'],
                     ];
                 }),
@@ -373,7 +373,7 @@ class Dashboard extends Component
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
             ->where('budgets.user_id', auth()->id())
             ->whereBetween('spends.created_at', [$periodStart, $periodEnd])
-            ->selectRaw("coalesce(labels.name, 'Unlabeled') as category, spends.amount as raw_amount, spends.created_at")
+            ->selectRaw("coalesce(labels.name, 'Tanpa label') as category, spends.amount as raw_amount, spends.created_at")
             ->get();
 
         if ($spends->isEmpty()) {
@@ -562,14 +562,14 @@ class Dashboard extends Component
             ->values();
 
         if ($dates->isEmpty()) {
-            return 'No spend date';
+            return 'Belum ada tanggal pengeluaran';
         }
 
         if ($dates->count() <= 2) {
             return $dates->join(', ');
         }
 
-        return $dates->take(2)->join(', ').' +'.($dates->count() - 2).' dates';
+        return $dates->take(2)->join(', ').' +'.($dates->count() - 2).' tanggal';
     }
 
     private function chartColors(): array

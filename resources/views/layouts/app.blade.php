@@ -16,7 +16,7 @@
     </script>
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
-    <title>Alokasi - Your Income Pal</title>
+    <title>Alokasi - Teman Atur Uang</title>
 </head>
 
 <body
@@ -220,70 +220,70 @@
                 tourSteps: {
                     'budgets-menu': {
                         kicker: 'Langkah 1',
-                        title: 'Menu Plan',
-                        copy: 'Alokasi menyusun income dan expenses dari sini. Kita mulai dari halaman Plan.',
+                        title: 'Menu Rencana',
+                        copy: 'Alokasi menyusun pemasukan dan pengeluaran dari sini. Kita mulai dari halaman Rencana.',
                         action: 'Lanjut',
                         next: 'new-budget',
                     },
                     'new-budget': {
                         kicker: 'Langkah 2',
-                        title: 'Buat plan baru',
-                        copy: 'Klik tombol New Plan untuk membuat rencana income pertama.',
+                        title: 'Buat rencana baru',
+                        copy: 'Klik tombol Rencana Baru untuk membuat rencana pemasukan pertama.',
                     },
                     'budget-name': {
-                        kicker: 'Plan',
-                        title: 'Nama plan',
-                        copy: 'Isi nama yang gampang dikenali, misalnya Juni 2026 atau Monthly Plan.',
+                        kicker: 'Rencana',
+                        title: 'Nama rencana',
+                        copy: 'Isi nama yang gampang dikenali, misalnya Juni 2026 atau Rencana Bulanan.',
                     },
                     'budget-income': {
-                        kicker: 'Plan',
-                        title: 'Total income',
-                        copy: 'Masukkan income utama untuk plan ini. Angka akan dirapikan otomatis saat diketik.',
+                        kicker: 'Rencana',
+                        title: 'Total pemasukan',
+                        copy: 'Masukkan pemasukan utama untuk rencana ini. Angka akan dirapikan otomatis saat diketik.',
                     },
                     'budget-create': {
-                        kicker: 'Plan',
-                        title: 'Simpan plan',
-                        copy: 'Klik Create untuk menyimpan plan dan lanjut ke expense pertama.',
+                        kicker: 'Rencana',
+                        title: 'Simpan rencana',
+                        copy: 'Klik Buat untuk menyimpan rencana dan lanjut ke pengeluaran pertama.',
                     },
                     'expense-button': {
                         kicker: 'Langkah 3',
-                        title: 'Tambah expense',
-                        copy: 'Klik New Expense supaya plan pertama punya transaksi awal.',
+                        title: 'Tambah pengeluaran',
+                        copy: 'Klik Pengeluaran Baru supaya rencana pertama punya transaksi awal.',
                     },
                     'expense-name': {
-                        kicker: 'Expense',
-                        title: 'Nama expense',
+                        kicker: 'Pengeluaran',
+                        title: 'Nama pengeluaran',
                         copy: 'Tulis transaksi singkat, misalnya Makan siang, Internet, atau Transport.',
                     },
                     'expense-amount': {
-                        kicker: 'Expense',
-                        title: 'Nominal expense',
+                        kicker: 'Pengeluaran',
+                        title: 'Nominal pengeluaran',
                         copy: 'Masukkan jumlah transaksi. Nol di depan dibersihkan dan ribuan diformat otomatis.',
                     },
                     'expense-label': {
-                        kicker: 'Expense',
+                        kicker: 'Pengeluaran',
                         title: 'Label',
-                        copy: 'Label membantu membaca kategori pengeluaran di dashboard dan reports.',
+                        copy: 'Label membantu membaca kategori pengeluaran di dashboard dan laporan.',
                     },
                     'expense-platform': {
-                        kicker: 'Expense',
+                        kicker: 'Pengeluaran',
                         title: 'Platform',
-                        copy: 'Pilih sumber uang atau tempat pembayaran, seperti Cash, GoPay, Dana, atau rekening bank.',
+                        copy: 'Pilih sumber uang atau tempat pembayaran, seperti Tunai, GoPay, Dana, atau rekening bank.',
                     },
                     'expense-status': {
-                        kicker: 'Expense',
+                        kicker: 'Pengeluaran',
                         title: 'Status',
                         copy: 'Status menandai apakah uang belum dialokasi, sudah dialokasi, selesai, atau ditarik.',
                     },
                     'expense-create': {
                         kicker: 'Selesai',
-                        title: 'Simpan expense',
-                        copy: 'Klik Add Expense untuk menyimpan transaksi pertama.',
+                        title: 'Simpan pengeluaran',
+                        copy: 'Klik Tambah Pengeluaran untuk menyimpan transaksi pertama.',
                     },
                     'dashboard-menu': {
                         kicker: 'Langkah terakhir',
                         title: 'Buka Dashboard',
-                        copy: 'Klik menu Dashboard untuk melihat ringkasan dan grafik dari plan serta expense yang baru kamu buat.',
+                        copy: 'Klik menu Dashboard untuk melihat ringkasan dan grafik dari rencana serta pengeluaran yang baru kamu buat.',
                     },
                 },
                 init() {

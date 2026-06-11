@@ -7,15 +7,15 @@
                 </svg>
             </span>
             <div>
-                <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Create Expense</div>
-                <p class="text-sm text-gray-500 dark:text-slate-400">Add a transaction to this plan.</p>
+                <div class="text-lg font-semibold text-gray-950 dark:text-slate-50">Buat Pengeluaran</div>
+                <p class="text-sm text-gray-500 dark:text-slate-400">Tambahkan transaksi ke rencana ini.</p>
             </div>
         </div>
 
         <form class="mt-5 space-y-5" wire:submit="store">
             <div class="space-y-3">
                 <div>
-                    <label for="expense-name" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Expense</label>
+                    <label for="expense-name" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Pengeluaran</label>
                     <input wire:model="name" x-on:blur="advanceExpenseName($event.target.value)" x-on:keydown.enter.prevent="advanceExpenseName($event.target.value)" type="text" name="name" id="expense-name" placeholder="Makan" class="input-field" data-onboarding-target="expense-name">
                     @error('name')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
@@ -23,7 +23,7 @@
                 </div>
 
                 <div>
-                    <label for="expense-amount" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Amount</label>
+                    <label for="expense-amount" class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Nominal</label>
                     <input wire:model="amount" x-on:blur="advanceExpenseAmount($event.target.value)" x-on:keydown.enter.prevent="advanceExpenseAmount($event.target.value)" type="text" inputmode="numeric" autocomplete="off" data-number-format="live" name="amount" id="expense-amount" placeholder="300.000" class="input-field" data-onboarding-target="expense-amount">
                     @error('amount')
                         <div class="mt-1 text-xs text-red-500">{{ $message }}</div>
@@ -34,7 +34,7 @@
                     <div x-data="{labelMenu: alokasiDropdown()}" class="relative">
                         <label class="mb-1 block text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Label</label>
                         <button x-ref="labelTrigger" type="button" x-on:click.stop="labelMenu.toggle($refs.labelTrigger, $refs.labelMenu)" class="btn-secondary w-full justify-between" data-onboarding-target="expense-label">
-                            <span class="truncate">{{ $selectedLabel?->name ?? 'Select label' }}</span>
+                            <span class="truncate">{{ $selectedLabel?->name ?? 'Pilih label' }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 shrink-0">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
@@ -94,9 +94,9 @@
             </div>
 
             <div class="flex justify-end gap-2">
-                <button type="button" x-on:click="createExpense = false" class="btn-secondary">Cancel</button>
+                <button type="button" x-on:click="createExpense = false" class="btn-secondary">Batal</button>
                 <button type="submit" class="btn-primary" data-onboarding-target="expense-create">
-                    <span>Add Expense</span>
+                    <span>Tambah Pengeluaran</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                     </svg>
