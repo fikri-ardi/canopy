@@ -14,7 +14,6 @@ class Dashboard extends Component
     public $search = '';
     public $categoryChartPeriod;
     public $labelActivityYear;
-    public $showAllLabelActivity = false;
 
     public function mount(): void
     {
@@ -31,16 +30,6 @@ class Dashboard extends Component
         auth()->user()->forceFill([
             'onboarding_completed_at' => now(),
         ])->save();
-    }
-
-    public function toggleLabelActivityRows(): void
-    {
-        $this->showAllLabelActivity = ! $this->showAllLabelActivity;
-    }
-
-    public function updatedLabelActivityYear(): void
-    {
-        $this->showAllLabelActivity = false;
     }
 
     public function setCategoryChartPeriod(string $period): void
@@ -147,9 +136,6 @@ class Dashboard extends Component
                 'rows' => collect(),
                 'weeks' => collect(),
                 'totalRows' => 0,
-                'hiddenRows' => 0,
-                'canExpand' => false,
-                'isExpanded' => false,
                 'totalTransactions' => 0,
                 'periodLabel' => '',
             ];
@@ -161,23 +147,18 @@ class Dashboard extends Component
 
         while ($cursor->lte($gridEnd)) {
             $weekStart = $cursor->copy();
+            $weekEnd = $weekStart->copy()->addDays(13)->endOfDay();
+            $labelDate = $weekStart->copy()->addWeek();
+            $previousLabelDate = $weekStart->copy()->subWeeks(2)->addWeek();
 
             $weeks->push([
                 'key' => $weekStart->toDateString(),
-                'label' => $weekStart->isSameMonth($weekStart->copy()->subWeek()) ? '' : $weekStart->format('M'),
+                'label' => $labelDate->isSameMonth($previousLabelDate) ? '' : $labelDate->format('M'),
                 'short' => $weekStart->format('d M'),
-                'days' => collect(range(0, 6))->map(function (int $offset) use ($weekStart) {
-                    $day = $weekStart->copy()->addDays($offset);
-
-                    return [
-                        'key' => $day->toDateString(),
-                        'label' => $day->format('D'),
-                        'short' => $day->format('d M'),
-                    ];
-                }),
+                'fullLabel' => $weekStart->format('d M').' - '.$weekEnd->format('d M Y'),
             ]);
 
-            $cursor->addWeek();
+            $cursor->addWeeks(2);
         }
 
         $spends = Spend::query()
@@ -188,11 +169,11 @@ class Dashboard extends Component
             ->get();
 
         $cellTotals = $spends
-            ->groupBy(fn ($spend) => $spend->label_name.'|'.$spend->created_at->copy()->toDateString())
+            ->groupBy(fn ($spend) => $spend->label_name.'|'.$this->labelActivityBucketKey($spend->created_at, $gridStart))
             ->map(fn ($items) => (int) $items->sum(fn ($spend) => (int) $spend->raw_amount));
 
         $cellNames = $spends
-            ->groupBy(fn ($spend) => $spend->label_name.'|'.$spend->created_at->copy()->toDateString())
+            ->groupBy(fn ($spend) => $spend->label_name.'|'.$this->labelActivityBucketKey($spend->created_at, $gridStart))
             ->map(function ($items) {
                 $names = $items
                     ->pluck('spend_name')
@@ -225,30 +206,24 @@ class Dashboard extends Component
             ->values();
 
         $totalRows = $labelRows->count();
-        $visibleRows = $this->showAllLabelActivity ? $labelRows : $labelRows->take(3);
 
-        $rows = $visibleRows->map(function (array $row) use ($weeks, $cellTotals, $cellNames, $maxCell) {
+        $rows = $labelRows->map(function (array $row) use ($weeks, $cellTotals, $cellNames, $maxCell) {
             return [
                 'label' => $row['label'],
                 'total' => $row['total'],
                 'transactions' => $row['transactions'],
                 'weeks' => $weeks->map(function (array $week) use ($row, $cellTotals, $cellNames, $maxCell) {
+                    $cellKey = $row['label'].'|'.$week['key'];
+                    $amount = (int) ($cellTotals->get($cellKey) ?? 0);
+                    $level = $amount === 0 ? 0 : max(1, min(4, (int) ceil(($amount / $maxCell) * 4)));
+
                     return [
                         'key' => $week['key'],
-                        'days' => $week['days']->map(function (array $day) use ($row, $cellTotals, $cellNames, $maxCell) {
-                            $cellKey = $row['label'].'|'.$day['key'];
-                            $amount = (int) ($cellTotals->get($cellKey) ?? 0);
-                            $level = $amount === 0 ? 0 : max(1, min(4, (int) ceil(($amount / $maxCell) * 4)));
-
-                            return [
-                                'amount' => $amount,
-                                'formatted' => $this->rupiah($amount),
-                                'level' => $level,
-                                'spendName' => $cellNames->get($cellKey, 'No spend'),
-                                'day' => $day['label'],
-                                'date' => $day['short'],
-                            ];
-                        }),
+                        'amount' => $amount,
+                        'formatted' => $this->rupiah($amount),
+                        'level' => $level,
+                        'spendName' => $cellNames->get($cellKey, 'No spend'),
+                        'date' => $week['fullLabel'],
                     ];
                 }),
             ];
@@ -258,9 +233,6 @@ class Dashboard extends Component
             'ready' => true,
             'rows' => $rows,
             'totalRows' => $totalRows,
-            'hiddenRows' => max(0, $totalRows - $rows->count()),
-            'canExpand' => $totalRows > 3,
-            'isExpanded' => (bool) $this->showAllLabelActivity,
             'weeks' => $weeks,
             'totalTransactions' => $spends->count(),
             'periodLabel' => $periodStart->format('M').' - '.$periodEnd->format('M Y'),
@@ -494,6 +466,7 @@ class Dashboard extends Component
                         'color' => $color,
                         'points' => $points,
                     'path' => $this->linePath($points->all()),
+                    'areaPath' => $this->areaPath($points->all(), $padding['top'] + $plotHeight),
                         'latestPoint' => $points->filter(fn (array $point) => $point['amount'] > 0)->last() ?? $points->last(),
                         'summary' => [
                             'name' => $name,
@@ -687,6 +660,14 @@ class Dashboard extends Component
         $gridEnd = $periodEnd->copy()->endOfWeek();
 
         return [$periodStart, $periodEnd, $gridStart, $gridEnd];
+    }
+
+    private function labelActivityBucketKey($date, Carbon $gridStart): string
+    {
+        $weeksFromStart = $gridStart->diffInWeeks(Carbon::parse($date)->startOfWeek());
+        $bucketOffset = intdiv($weeksFromStart, 2) * 2;
+
+        return $gridStart->copy()->addWeeks($bucketOffset)->toDateString();
     }
 
     private function selectedLabelActivityYear(): int

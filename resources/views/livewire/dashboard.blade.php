@@ -263,6 +263,16 @@
                             role="img"
                             aria-label="Multi-line chart of spending by category"
                         >
+                            <defs>
+                                @foreach ($categoryBudgetChart['series'] as $seriesItem)
+                                    <linearGradient id="dashboard-chart-area-gradient-{{ $loop->index }}" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="{{ $seriesItem['color'] }}" stop-opacity="0.28" />
+                                        <stop offset="58%" stop-color="{{ $seriesItem['color'] }}" stop-opacity="0.10" />
+                                        <stop offset="100%" stop-color="{{ $seriesItem['color'] }}" stop-opacity="0" />
+                                    </linearGradient>
+                                @endforeach
+                            </defs>
+
                             <rect x="0" y="0" width="{{ $categoryBudgetChart['width'] }}" height="{{ $categoryBudgetChart['height'] }}" fill="transparent" x-on:click="closeTooltip()"></rect>
 
                             @foreach ($categoryBudgetChart['yTicks'] as $tick)
@@ -274,6 +284,15 @@
                                 @if ($bucket['showLabel'])
                                     <text x="{{ $bucket['x'] }}" y="{{ $categoryBudgetChart['height'] - 24 }}" text-anchor="middle" class="dashboard-chart-axis-text">{{ $bucket['label'] }}</text>
                                 @endif
+                            @endforeach
+
+                            @foreach ($categoryBudgetChart['series'] as $seriesItem)
+                                <path
+                                    d="{{ $seriesItem['areaPath'] }}"
+                                    class="dashboard-chart-area"
+                                    x-bind:class="selectedLine && selectedLine !== @js($seriesItem['name']) ? 'dashboard-chart-area-muted' : (selectedLine === @js($seriesItem['name']) ? 'dashboard-chart-area-active' : '')"
+                                    fill="url(#dashboard-chart-area-gradient-{{ $loop->index }})"
+                                ></path>
                             @endforeach
 
                             @foreach ($categoryBudgetChart['series'] as $seriesItem)
@@ -389,32 +408,27 @@
                 </div>
             @else
                 <div class="mt-5 overflow-x-auto pb-1">
-                    <div class="min-w-[38rem] sm:min-w-[58rem]">
+                    <div class="label-activity-heatmap min-w-[30rem] sm:min-w-[48rem]">
                         <div class="label-activity-week-grid ml-[4.35rem] mr-[4.25rem] sm:ml-32 sm:mr-24" style="grid-template-columns: repeat({{ $labelActivityHeatmap['weeks']->count() }}, var(--label-activity-cell-size));">
                             @foreach ($labelActivityHeatmap['weeks'] as $week)
                                 <div class="h-4 text-center text-[10px] font-medium text-gray-400 dark:text-slate-500">{{ $week['label'] }}</div>
                             @endforeach
                         </div>
 
-                        <div class="mt-1 space-y-1 sm:space-y-1.5">
+                        <div class="label-activity-rows mt-1">
                             @foreach ($labelActivityHeatmap['rows'] as $row)
-                                <div class="grid grid-cols-[3.95rem_minmax(0,1fr)_3.95rem] items-center gap-1 sm:grid-cols-[7.5rem_minmax(0,1fr)_6rem] sm:gap-2">
+                                <div class="label-activity-row grid grid-cols-[3.95rem_minmax(0,1fr)_3.95rem] items-center gap-1 sm:grid-cols-[7.5rem_minmax(0,1fr)_6rem] sm:gap-2">
                                     <div class="min-w-0">
                                         <div class="truncate text-xs font-semibold text-gray-700 dark:text-slate-200">{{ $row['label'] }}</div>
-                                        <div class="hidden text-[10px] text-gray-400 dark:text-slate-500 sm:block">{{ $row['transactions'] }}x</div>
                                     </div>
                                     <div class="label-activity-week-grid" style="grid-template-columns: repeat({{ $labelActivityHeatmap['weeks']->count() }}, var(--label-activity-cell-size));">
                                         @foreach ($row['weeks'] as $week)
-                                            <div class="label-activity-day-grid">
-                                                @foreach ($week['days'] as $cell)
-                                                    <span
-                                                        tabindex="0"
-                                                        class="label-activity-cell label-activity-level-{{ $cell['level'] }} focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-950"
-                                                        data-tooltip="{{ $cell['spendName'] }} / {{ $cell['day'] }}, {{ $cell['date'] }} / {{ $cell['formatted'] }}"
-                                                        aria-label="{{ $cell['spendName'] }} {{ $cell['day'] }} {{ $cell['date'] }} {{ $cell['formatted'] }}"
-                                                    ></span>
-                                                @endforeach
-                                            </div>
+                                            <span
+                                                tabindex="0"
+                                                class="label-activity-cell label-activity-level-{{ $week['level'] }} focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-950"
+                                                data-tooltip="{{ $week['spendName'] }} / {{ $week['date'] }} / {{ $week['formatted'] }}"
+                                                aria-label="{{ $week['spendName'] }} {{ $week['date'] }} {{ $week['formatted'] }}"
+                                            ></span>
                                         @endforeach
                                     </div>
                                     <div class="money-value truncate text-right text-[10px] font-semibold text-gray-500 dark:text-slate-400 sm:text-xs">{{ $this->rupiah($row['total']) }}</div>
@@ -432,23 +446,6 @@
                     </div>
                 </div>
 
-                @if ($labelActivityHeatmap['canExpand'])
-                    <div class="mt-4 flex justify-center border-t border-gray-100 pt-4 dark:border-slate-800">
-                        <button type="button" wire:click="toggleLabelActivityRows" class="btn-secondary px-3 py-2 text-xs">
-                            @if ($labelActivityHeatmap['isExpanded'])
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
-                                </svg>
-                                <span>Show less</span>
-                            @else
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                </svg>
-                                <span>Show all {{ $labelActivityHeatmap['totalRows'] }} labels</span>
-                            @endif
-                        </button>
-                    </div>
-                @endif
             @endif
         </section>
 

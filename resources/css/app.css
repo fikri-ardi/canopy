@@ -377,6 +377,25 @@
         gap: var(--label-activity-cell-gap);
     }
 
+    .label-activity-heatmap {
+        --label-activity-cell-size: 1.05rem;
+        --label-activity-cell-gap: 0.28rem;
+    }
+
+    .label-activity-heatmap .label-activity-week-grid {
+        --label-activity-cell-size: 1.05rem;
+        --label-activity-cell-gap: 0.28rem;
+    }
+
+    .label-activity-rows {
+        display: grid;
+        gap: var(--label-activity-cell-gap, 0.28rem);
+    }
+
+    .label-activity-row {
+        min-height: var(--label-activity-cell-size, 1.05rem);
+    }
+
     .label-activity-day-grid {
         display: grid;
         gap: var(--label-activity-cell-gap);
@@ -1173,6 +1192,12 @@ body,
 
     .label-activity-week-grid {
         --label-activity-cell-size: 0.4rem;
+        --label-activity-cell-gap: 2px;
+    }
+
+    .label-activity-heatmap,
+    .label-activity-heatmap .label-activity-week-grid {
+        --label-activity-cell-size: 0.72rem;
         --label-activity-cell-gap: 2px;
     }
 
