@@ -58,6 +58,8 @@ Never use Alpine for:
 * Avoid horizontal scrolling.
 * Follow existing UI patterns.
 * Avoid excessive nesting and visual noise.
+* Apply a clean, minimalist UI, with a touch of layered blur effects.
+* The UI should be consistent across all pages.
 
 ## Testing
 Required:
