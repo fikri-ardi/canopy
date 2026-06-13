@@ -379,7 +379,7 @@
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <div class="eyebrow">Activity</div>
-                    <h2 class="mt-1 text-lg font-semibold text-gray-950 dark:text-slate-50">Aktivitas label</h2>
+                    <h2 class="mt-1 text-lg font-semibold text-gray-950 dark:text-slate-50">Aktivitas</h2>
                     <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ $labelActivityHeatmap['totalTransactions'] }} transaksi / {{ $labelActivityHeatmap['periodLabel'] }}</p>
                 </div>
                 <label class="relative w-full sm:w-40">
