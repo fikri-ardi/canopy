@@ -179,9 +179,18 @@
         @if ($showSavingsDetail)
             <template x-teleport="body">
                 <div
-                    x-data="{ open: true }"
+                    x-data="{
+                        open: false,
+                        close() {
+                            this.open = false;
+                            setTimeout(() => {
+                                $wire.closeSavingsDetail();
+                            }, 250);
+                        }
+                    }"
+                    x-init="$nextTick(() => open = true)"
                     x-show="open"
-                    x-on:keydown.escape.window="open = false; $nextTick(() => $wire.closeSavingsDetail())"
+                    x-on:keydown.escape.window="close()"
                     x-cloak
                     class="savings-detail-overlay"
                     id="savings-detail-panel"
@@ -196,7 +205,7 @@
                         x-transition:leave="transition ease-in duration-200"
                         x-transition:leave-start="opacity-100"
                         x-transition:leave-end="opacity-0"
-                        x-on:click="open = false; $nextTick(() => $wire.closeSavingsDetail())"
+                        x-on:click="close()"
                     ></div>
 
                     {{-- Panel --}}
@@ -209,7 +218,7 @@
                         x-transition:leave="transition ease-in duration-200"
                         x-transition:leave-start="savings-detail-panel-visible"
                         x-transition:leave-end="savings-detail-panel-hidden"
-                        x-on:click.outside="open = false; $nextTick(() => $wire.closeSavingsDetail())"
+                        x-on:click.outside="close()"
                     >
                         {{-- Header --}}
                         <div class="flex items-center justify-between gap-3 border-b border-slate-200/70 px-5 py-4 dark:border-slate-800/70">
@@ -220,7 +229,7 @@
                             <button
                                 type="button"
                                 class="btn-icon"
-                                x-on:click="open = false; $nextTick(() => $wire.closeSavingsDetail())"
+                                x-on:click="close()"
                                 aria-label="Tutup panel"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4">
