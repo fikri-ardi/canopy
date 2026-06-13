@@ -5,7 +5,7 @@
         <div class="h-full md:flex md:flex-col">
             <a href="/" wire:navigate class="sidebar-brand hidden min-w-0 items-center gap-3 py-5 md:flex">
                 <span class="sidebar-brand-logo">
-                    <img src="/images/favicon.svg" alt="Alokasi" class="size-6">
+                    <img src="{{ asset('images/favicon.svg') }}" alt="Alokasi" class="size-6">
                 </span>
                 <span class="hidden min-w-0 flex-1 md:block">
                     <span class="block truncate text-sm font-medium text-gray-950 dark:text-slate-50">{{ $sidebarUser?->name ?? 'Alokasi' }}</span>

@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\AlokasiDataExport;
-use App\Exports\BudgetSpendsExport;
-use App\Models\Budget;
+use App\Services\DataExportService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Maatwebsite\Excel\Excel as ExcelWriter;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DataExportController extends Controller
 {
-    public function budgets(Request $request)
+    public function budgets(Request $request, DataExportService $dataExportService)
     {
         $validated = $request->validate([
             'format' => ['required', Rule::in(['csv', 'xlsx', 'ods'])],
@@ -23,33 +20,19 @@ class DataExportController extends Controller
             ],
         ]);
 
-        $budgetIds = collect($validated['budgets'] ?? [])
-            ->map(fn ($id) => (int) $id)
-            ->unique()
-            ->values()
-            ->all();
+        $budgetIds = $dataExportService->selectedBudgetIds($validated['budgets'] ?? []);
 
-        if ($budgetIds === [] && ! Budget::where('user_id', $request->user()->id)->exists()) {
+        if ($budgetIds === [] && ! $dataExportService->userHasBudgets($request->user())) {
             return back()->with('error', 'Belum ada plan yang bisa diexport.');
         }
 
         $format = $validated['format'];
-        $writerType = match ($format) {
-            'csv' => ExcelWriter::CSV,
-            'ods' => ExcelWriter::ODS,
-            default => ExcelWriter::XLSX,
-        };
-
-        $fileName = 'alokasi-plan-export-'.now()->format('Ymd-His').'.'.$format;
-        $headers = $format === 'csv' ? ['Content-Type' => 'text/csv'] : [];
 
         return Excel::download(
-            $format === 'csv'
-                ? new BudgetSpendsExport($request->user(), $budgetIds)
-                : new AlokasiDataExport($request->user(), $budgetIds),
-            $fileName,
-            $writerType,
-            $headers,
+            $dataExportService->export($request->user(), $budgetIds, $format),
+            $dataExportService->fileName($format),
+            $dataExportService->writerType($format),
+            $dataExportService->headers($format),
         );
     }
 }
