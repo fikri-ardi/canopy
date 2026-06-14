@@ -147,6 +147,54 @@
                     </span>
                 </div>
             </div>
+            <div class="metric-card">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Investasi</div>
+                            @if ($investmentOptions->isNotEmpty())
+                                <button
+                                    x-ref="dashboardInvestmentTrigger"
+                                    type="button"
+                                    x-on:click.stop="investmentMenu.toggle($refs.dashboardInvestmentTrigger, $refs.dashboardInvestmentMenu)"
+                                    class="summary-menu-button"
+                                    aria-label="Pilih pengeluaran investasi"
+                                    data-tooltip="Pilih pengeluaran investasi"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
+                        <div class="metric-value money-value">{{ $this->rupiah($totalInvestment) }}</div>
+                        @if ($investmentDetail)
+                            <div class="mt-1 truncate text-xs font-medium text-gray-500 dark:text-slate-400">{{ $investmentDetail }}</div>
+                        @endif
+                    </div>
+                    <span class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+                        </svg>
+                    </span>
+                </div>
+
+                @if ($investmentOptions->isNotEmpty())
+                    <template x-teleport="body">
+                        <div x-ref="dashboardInvestmentMenu" x-show="investmentMenu.open" x-cloak x-transition x-bind:style="investmentMenu.style" x-on:click.outside="investmentMenu.close()" x-on:resize.window="investmentMenu.close()" wire:key="dashboard-investment-menu" wire:ignore.self class="floating-select-menu investment-select-menu">
+                            @foreach ($investmentOptions as $option)
+                                <button type="button" x-on:click="investmentMenu.close()" wire:click="selectInvestment(@js($option['key']))" wire:key="dashboard-investment-option-{{ str($option['key'])->slug() }}" class="investment-option {{ $selectedInvestmentKey === $option['key'] ? 'investment-option-active' : '' }}">
+                                    <span class="min-w-0">
+                                        <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
+                                        <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi / {{ $option['movements'] }} mutasi</span>
+                                    </span>
+                                    <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </template>
+                @endif
+            </div>
         </section>
 
         {{-- Savings Rate Detail Panel --}}

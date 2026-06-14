@@ -637,6 +637,7 @@
 
         window.alokasiDashboardPage = function (showWelcomeTour = false) {
             return {
+                investmentMenu: alokasiDropdown({ minWidth: 336, maxWidth: 420 }),
                 welcomeTour: {
                     visible: showWelcomeTour,
                     style: '',
