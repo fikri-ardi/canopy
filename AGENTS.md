@@ -58,13 +58,6 @@ All changes must:
 * Not break existing features.
 * Not introduce Livewire or JavaScript errors.
 
-## Always
-* Analyze requirements first.
-* Follow existing project patterns.
-* Validate all user input.
-* Choose the simplest viable solution.
-* Provide a summary after implementation.
-
 ## Ask First
 * Database schema changes
 * New packages or dependencies
