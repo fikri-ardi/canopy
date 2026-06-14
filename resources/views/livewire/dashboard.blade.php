@@ -147,32 +147,6 @@
                     </span>
                 </div>
             </div>
-            <div class="metric-card">
-                <div class="flex items-start justify-between gap-3">
-                    <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Transaksi</div>
-                        <div class="metric-value">{{ $transactionCount }}</div>
-                    </div>
-                    <span class="icon-box-muted">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
-                        </svg>
-                    </span>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="flex items-start justify-between gap-3">
-                    <div class="min-w-0">
-                        <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Label Aktif</div>
-                        <div class="metric-value">{{ $labelCount }}</div>
-                    </div>
-                    <span class="icon-box-muted">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
-                        </svg>
-                    </span>
-                </div>
-            </div>
         </section>
 
         {{-- Savings Rate Detail Panel --}}

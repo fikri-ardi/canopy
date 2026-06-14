@@ -1,8 +1,5 @@
 # AGENTS.md
 
-## Project
-Alokasi is a personal finance application for managing budgets, expenses, savings goals, and financial reports.
-
 ## Stack
 * Laravel 11
 * Livewire 3
@@ -29,16 +26,7 @@ Use Controllers only for:
 * Use Livewire form objects for valition.
 
 ### Alpine
-Use Alpine only for lightweight UI interactions:
-* Dropdowns
-* Modals
-* Tabs
-* Toggles
-
-Never use Alpine for:
-* Business logic
-* Data fetching
-* Complex state management
+Use Alpine only for lightweight UI interactions
 
 ## Database
 * Use foreign keys whenever possible.
@@ -65,7 +53,6 @@ Never use Alpine for:
 Required:
 * New endpoint → Feature Test
 * New service → Unit Test
-* Financial calculation → Scenario coverage
 All changes must:
 * Pass relevant tests.
 * Not break existing features.
@@ -73,10 +60,8 @@ All changes must:
 
 ## Always
 * Analyze requirements first.
-* Create an implementation plan before coding.
 * Follow existing project patterns.
 * Validate all user input.
-* Use Services for business logic.
 * Choose the simplest viable solution.
 * Provide a summary after implementation.
 
