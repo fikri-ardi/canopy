@@ -195,7 +195,10 @@
                                 </div>
                                 <form wire:submit="saveTarget" class="flex w-full min-w-0 gap-2 sm:w-auto">
                                     <input wire:model="targetAmount" data-number-format="live" type="text" inputmode="numeric" placeholder="Target" @disabled(! $targetsReady) class="input-field w-full sm:w-40">
-                                    <button type="submit" @disabled(! $targetsReady) class="btn-secondary shrink-0 px-3 py-2 text-xs">Simpan</button>
+                                    <button type="submit" @disabled(! $targetsReady || $errors->has('targetAmount')) wire:loading.attr="disabled" wire:target="saveTarget" class="btn-secondary shrink-0 px-3 py-2 text-xs inline-flex items-center gap-1.5">
+                                        <span wire:loading wire:target="saveTarget" class="spinner text-slate-500 dark:text-slate-300"></span>
+                                        <span>Simpan</span>
+                                    </button>
                                 </form>
                             </div>
                             @error('targetAmount')
@@ -220,7 +223,8 @@
                         <div class="min-w-0 sm:col-span-2 lg:col-span-3 xl:col-span-4">
                             <input wire:model="movementNote" type="text" placeholder="Catatan" @disabled(! $selected) class="input-field">
                         </div>
-                        <button type="submit" @disabled(! $selected) class="btn-primary w-full min-w-0 sm:col-span-2 lg:col-span-12 lg:w-auto lg:justify-self-end">
+                        <button type="submit" @disabled(! $selected) wire:loading.attr="disabled" wire:target="storeMovement" class="btn-primary w-full min-w-0 sm:col-span-2 lg:col-span-12 lg:w-auto lg:justify-self-end inline-flex items-center justify-center gap-2">
+                            <span wire:loading wire:target="storeMovement" class="spinner text-white"></span>
                             <span>Simpan</span>
                         </button>
                     </form>
@@ -297,8 +301,11 @@
             </p>
 
             <div class="mt-6 flex justify-end gap-2">
-                <button type="button" x-on:click="deleteMovement = false" class="btn-secondary">Batal</button>
-                <button type="button" x-on:click="deleteMovement = false" wire:click="deleteMovement" class="btn-danger">Hapus</button>
+                <button type="button" x-on:click="deleteMovement = false" wire:loading.attr="disabled" wire:target="deleteMovement" class="btn-secondary">Batal</button>
+                <button type="button" x-on:click="deleteMovement = false" wire:loading.attr="disabled" wire:target="deleteMovement" wire:click="deleteMovement" class="btn-danger inline-flex items-center gap-2">
+                    <span wire:loading wire:target="deleteMovement" class="spinner text-white"></span>
+                    <span>Hapus</span>
+                </button>
             </div>
         </div>
     </div>

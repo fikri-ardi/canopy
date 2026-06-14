@@ -151,8 +151,9 @@
                     </div>
 
                     <div class="sm:col-span-2">
-                        <button type="submit" wire:loading.attr="disabled" wire:target="updateProfile" class="btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="updateProfile" class="btn-primary inline-flex items-center gap-2">
+                            <span wire:loading wire:target="updateProfile" class="spinner text-white"></span>
+                            <svg wire:loading.remove wire:target="updateProfile" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
                             <span wire:loading.remove wire:target="updateProfile">Simpan Profil</span>
@@ -201,8 +202,9 @@
                             @enderror
                         </div>
 
-                        <button type="submit" wire:loading.attr="disabled" wire:target="sendFeedback" class="btn-primary w-full sm:w-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="sendFeedback" class="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto">
+                            <span wire:loading wire:target="sendFeedback" class="spinner text-white"></span>
+                            <svg wire:loading.remove wire:target="sendFeedback" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.77 59.77 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L6 12Zm0 0h7.5" />
                             </svg>
                             <span wire:loading.remove wire:target="sendFeedback">Kirim Masukan</span>
@@ -243,8 +245,9 @@
                     </div>
 
                     <div class="sm:col-span-3">
-                        <button type="submit" wire:loading.attr="disabled" wire:target="updatePassword" class="btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="updatePassword" class="btn-primary inline-flex items-center gap-2">
+                            <span wire:loading wire:target="updatePassword" class="spinner text-white"></span>
+                            <svg wire:loading.remove wire:target="updatePassword" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 0h10.5A2.25 2.25 0 0 1 19.5 12.75v6A2.25 2.25 0 0 1 17.25 21H6.75A2.25 2.25 0 0 1 4.5 18.75v-6A2.25 2.25 0 0 1 6.75 10.5Z" />
                             </svg>
                             <span wire:loading.remove wire:target="updatePassword">{{ $hasPassword ? 'Perbarui Password' : 'Atur Password' }}</span>
@@ -341,7 +344,8 @@
                             <div class="mt-2 text-xs text-red-500">{{ $message }}</div>
                         @enderror
 
-                        <button type="submit" wire:loading.attr="disabled" wire:target="importFile,importData" class="btn-secondary mt-3 w-full disabled:cursor-not-allowed disabled:opacity-60">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="importFile,importData" class="btn-secondary mt-3 w-full disabled:cursor-not-allowed disabled:opacity-60 inline-flex items-center justify-center gap-2">
+                            <span wire:loading wire:target="importData" class="spinner text-slate-500 dark:text-slate-300"></span>
                             <span wire:loading.remove wire:target="importData">Impor Data</span>
                             <span wire:loading wire:target="importData">Mengimpor...</span>
                         </button>

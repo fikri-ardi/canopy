@@ -221,8 +221,12 @@
                     </div>
 
                     <div class="flex justify-end gap-2">
-                        <button type="button" x-on:click="renameBudget = false" class="btn-secondary">Batal</button>
-                        <button type="submit" class="btn-primary">Simpan</button>
+                        <button type="button" x-on:click="renameBudget = false" wire:loading.attr="disabled" wire:target="renameActiveBudget" class="btn-secondary">Batal</button>
+                        <button type="submit" wire:loading.attr="disabled" wire:target="renameActiveBudget" class="btn-primary inline-flex items-center gap-2">
+                            <span wire:loading wire:target="renameActiveBudget" class="spinner text-white"></span>
+                            <span wire:loading.remove wire:target="renameActiveBudget">Simpan</span>
+                            <span wire:loading wire:target="renameActiveBudget">Menyimpan...</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -254,8 +258,12 @@
                     </div>
 
                     <div class="flex justify-end gap-2">
-                        <button type="button" x-on:click="editIncome = false" class="btn-secondary">Batal</button>
-                        <button type="submit" class="btn-primary">Simpan</button>
+                        <button type="button" x-on:click="editIncome = false" wire:loading.attr="disabled" wire:target="updateActiveBudgetIncome" class="btn-secondary">Batal</button>
+                        <button type="submit" wire:loading.attr="disabled" wire:target="updateActiveBudgetIncome" class="btn-primary inline-flex items-center gap-2">
+                            <span wire:loading wire:target="updateActiveBudgetIncome" class="spinner text-white"></span>
+                            <span wire:loading.remove wire:target="updateActiveBudgetIncome">Simpan</span>
+                            <span wire:loading wire:target="updateActiveBudgetIncome">Menyimpan...</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -282,8 +290,12 @@
                 </p>
 
                 <form class="mt-6 flex justify-end gap-2" wire:submit="deleteActiveBudget">
-                    <button type="button" x-on:click="deleteBudget = false" class="btn-secondary">Batal</button>
-                    <button type="submit" class="btn-danger">Hapus</button>
+                    <button type="button" x-on:click="deleteBudget = false" wire:loading.attr="disabled" wire:target="deleteActiveBudget" class="btn-secondary">Batal</button>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="deleteActiveBudget" class="btn-danger inline-flex items-center gap-2">
+                        <span wire:loading wire:target="deleteActiveBudget" class="spinner text-white"></span>
+                        <span wire:loading.remove wire:target="deleteActiveBudget">Hapus</span>
+                        <span wire:loading wire:target="deleteActiveBudget">Menghapus...</span>
+                    </button>
                 </form>
             </div>
         </div>

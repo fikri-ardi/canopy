@@ -32,6 +32,7 @@
         $watch('sidebarCollapsed', value => localStorage.setItem('sidebarCollapsed', value));
     "
 >
+    <div id="page-loading-bar" class="fixed top-0 left-0 right-0 h-0.5 bg-green-500 z-[9999] transition-all duration-300 pointer-events-none opacity-0" style="width: 0%;"></div>
     <x-flash-banner />
 
     <div class="relative z-10 flex min-h-full">
@@ -183,9 +184,31 @@
                 subtree: true,
             });
         });
+        document.addEventListener('livewire:navigating', () => {
+            const bar = document.getElementById('page-loading-bar');
+            if (bar) {
+                bar.style.width = '0%';
+                bar.style.opacity = '1';
+                bar.style.transition = 'width 10s cubic-bezier(0.08, 0.82, 0.17, 1)';
+                requestAnimationFrame(() => {
+                    bar.style.width = '90%';
+                });
+            }
+        });
         document.addEventListener('livewire:navigated', () => {
             window.alokasiOpenDropdowns.clear();
             window.alokasiSyncModalScrollLock();
+            const bar = document.getElementById('page-loading-bar');
+            if (bar) {
+                bar.style.transition = 'width 0.25s ease-out, opacity 0.25s ease-in';
+                bar.style.width = '100%';
+                setTimeout(() => {
+                    bar.style.opacity = '0';
+                }, 200);
+                setTimeout(() => {
+                    bar.style.width = '0%';
+                }, 450);
+            }
         });
         document.addEventListener('saved', () => window.alokasiReleaseInteractionLocks());
         document.addEventListener('budget-created', () => window.alokasiReleaseInteractionLocks());

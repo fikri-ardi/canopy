@@ -32,8 +32,9 @@
                     </svg>
                     <input wire:model="body" type="text" placeholder="Belum dialokasi, Dialokasi, Ditarik, Selesai" @disabled(! $schemaReady) class="input-field pl-9">
                 </div>
-                <button type="submit" @disabled(! $schemaReady) class="btn-primary w-full sm:w-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                <button type="submit" @disabled(! $schemaReady || $errors->has('body')) wire:loading.attr="disabled" wire:target="store" class="btn-primary w-full sm:w-auto inline-flex items-center justify-center gap-2">
+                    <span wire:loading wire:target="store" class="spinner text-white"></span>
+                    <svg wire:loading.remove wire:target="store" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                     <span>Tambah Status</span>

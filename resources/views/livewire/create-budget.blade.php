@@ -31,10 +31,12 @@
             </div>
 
             <div class="flex justify-end gap-2">
-                <button type="button" x-on:click="createBudget = false" class="btn-secondary">Batal</button>
-                <button type="submit" class="btn-primary" data-onboarding-target="budget-create">
-                    <span>Buat</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                <button type="button" x-on:click="createBudget = false" wire:loading.attr="disabled" wire:target="store" class="btn-secondary">Batal</button>
+                <button type="submit" wire:loading.attr="disabled" wire:target="store" class="btn-primary inline-flex items-center gap-2" data-onboarding-target="budget-create">
+                    <span wire:loading wire:target="store" class="spinner text-white"></span>
+                    <span wire:loading.remove wire:target="store">Buat</span>
+                    <span wire:loading wire:target="store">Membuat...</span>
+                    <svg wire:loading.remove wire:target="store" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                     </svg>
                 </button>
