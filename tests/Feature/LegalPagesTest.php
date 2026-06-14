@@ -3,13 +3,13 @@
 it('shows the privacy policy page', function () {
     $this->get(route('privacy'))
         ->assertOk()
-        ->assertSee('Privacy Policy')
-        ->assertSee('Alokasi stores the account and finance-management data');
+        ->assertSee('Kebijakan Privasi')
+        ->assertSee('Alokasi menyimpan data akun');
 });
 
 it('shows the terms and conditions page', function () {
     $this->get(route('terms'))
         ->assertOk()
-        ->assertSee('Terms and Conditions')
-        ->assertSee('No Financial Advice');
+        ->assertSee('Syarat dan Ketentuan')
+        ->assertSee('Bukan Nasihat Keuangan');
 });

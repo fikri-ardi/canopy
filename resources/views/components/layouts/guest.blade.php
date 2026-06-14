@@ -10,6 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
+    <link rel="manifest" href="/build/manifest.webmanifest">
+    <meta name="theme-color" content="#22c55e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Alokasi">
+    <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png">
     <title>{{ $title ?? 'Alokasi' }} - Teman Atur Uang</title>
 </head>
 

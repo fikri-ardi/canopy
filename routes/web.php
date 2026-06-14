@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/privacy-policy', 'legal.privacy')->name('privacy');
 Route::view('/terms-and-conditions', 'legal.terms')->name('terms');
+Route::view('/offline', 'offline')->name('offline');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');

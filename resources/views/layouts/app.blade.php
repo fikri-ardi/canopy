@@ -16,6 +16,12 @@
     </script>
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
+    <link rel="manifest" href="/build/manifest.webmanifest">
+    <meta name="theme-color" content="#22c55e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Alokasi">
+    <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png">
     <title>Alokasi - Teman Atur Uang</title>
 </head>
 
@@ -886,7 +892,110 @@
         window.addEventListener('resize', function () {
             window.alokasiTooltip.hide();
         });
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => {
+                        console.log('ServiceWorker registered: ', reg);
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            if (installingWorker == null) return;
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed') {
+                                    if (navigator.serviceWorker.controller) {
+                                        console.log('New version is available. Please reload.');
+                                    } else {
+                                        console.log('Content is cached for offline use.');
+                                    }
+                                }
+                            };
+                        };
+                    })
+                    .catch(err => {
+                        console.error('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+        // Intercept logout to clear cache
+        document.addEventListener('submit', (e) => {
+            const form = e.target;
+            if (form && form.action && form.action.includes('logout')) {
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHES' });
+                }
+            }
+        });
     </script>
+
+    <!-- Custom PWA Install Prompt Banner -->
+    <div 
+        x-data="{ 
+            canInstall: false, 
+            deferredPrompt: null,
+            dismissed: localStorage.getItem('pwa-prompt-dismissed') === 'true',
+            init() {
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    this.deferredPrompt = e;
+                    if (!this.dismissed) {
+                        this.canInstall = true;
+                    }
+                });
+                window.addEventListener('appinstalled', () => {
+                    this.canInstall = false;
+                    this.deferredPrompt = null;
+                });
+            },
+            async install() {
+                if (!this.deferredPrompt) return;
+                this.deferredPrompt.prompt();
+                const { outcome } = await this.deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    this.canInstall = false;
+                }
+                this.deferredPrompt = null;
+            },
+            dismiss() {
+                this.canInstall = false;
+                localStorage.setItem('pwa-prompt-dismissed', 'true');
+            }
+        }"
+        x-show="canInstall"
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="opacity-0 translate-y-8"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-8"
+        class="fixed bottom-6 left-1/2 z-[9999] w-full max-w-md -translate-x-1/2 px-4 sm:px-0"
+        style="display: none;"
+    >
+        <div class="flex items-center justify-between gap-4 rounded-2xl border border-gray-200/80 bg-white/80 p-4 shadow-xl backdrop-blur-lg dark:border-slate-800/80 dark:bg-slate-900/85">
+            <div class="flex items-center gap-3">
+                <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-500 ring-1 ring-green-100 dark:bg-green-500/10 dark:ring-green-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM9 7.5A.75.75 0 0 0 9 9h1.5c.98 0 1.813.626 2.122 1.5H9A.75.75 0 0 0 9 12h3.622a2.251 2.251 0 0 1-2.122 1.5H9a.75.75 0 0 0-.53 1.28l3 3a.75.75 0 1 0 1.06-1.06L10.8 14.988A3.752 3.752 0 0 0 14.175 12H15a.75.75 0 0 0 0-1.5h-.825A3.733 3.733 0 0 0 13.5 9H15a.75.75 0 0 0 0-1.5H9Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-gray-950 dark:text-slate-50">Pasang Alokasi</h4>
+                    <p class="text-xs text-gray-500 dark:text-slate-400">Akses cepat & pengalaman offline lancar.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button @click="dismiss()" class="rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-950 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                    Nanti
+                </button>
+                <button @click="install()" class="rounded-lg bg-green-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600">
+                    Pasang
+                </button>
+            </div>
+        </div>
+    </div>
+
     @livewireScripts
 </body>
 

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PWA Icon Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 2rem;
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        h1 { margin-top: 0; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            background: #fafafa;
+        }
+        canvas {
+            max-width: 100%;
+            border: 1px solid #d1d5db;
+            margin-top: 0.5rem;
+            background: #e5e7eb;
+        }
+        button {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background: #16a34a;
+        }
+        #status {
+            margin-top: 1rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PWA Icon Generator</h1>
+        <p>This page loads Alokasi's favicon.svg, renders the required standard and maskable variants onto canvases, and saves them to the disk.</p>
+        
+        <button id="generate-btn">Generate & Save Icons</button>
+        <div id="status">Ready</div>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>Standard 192x192</h3>
+                <canvas id="canvas-192" width="192" height="192"></canvas>
+            </div>
+            <div class="card">
+                <h3>Standard 512x512</h3>
+                <canvas id="canvas-512" width="512" height="512"></canvas>
+            </div>
+            <div class="card">
+                <h3>Maskable 192x192</h3>
+                <canvas id="canvas-192-maskable" width="192" height="192"></canvas>
+            </div>
+            <div class="card">
+                <h3>Maskable 512x512</h3>
+                <canvas id="canvas-512-maskable" width="512" height="512"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = 'Fetching favicon.svg...';
+            
+            try {
+                const response = await fetch('/images/favicon.svg');
+                if (!response.ok) throw new Error('Failed to fetch favicon.svg');
+                const svgText = await response.text();
+                
+                statusDiv.textContent = 'Processing SVG content...';
+                
+                // 1. Standard SVG Data URL
+                const standardBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+                const standardUrl = URL.createObjectURL(standardBlob);
+                
+                // 2. Maskable SVG (rx="0" on rect, scaled content to 75% to fit safe zone)
+                // Let's parse the SVG to perform clean modifications
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
+                
+                // Remove rounded corners from the background rect
+                const rect = svgDoc.querySelector('rect');
+                if (rect) {
+                    rect.removeAttribute('rx');
+                    rect.removeAttribute('ry');
+                }
+                
+                // Wrap inner elements (circle and path) in a scaled group
+                const circle = svgDoc.querySelector('circle');
+                const path = svgDoc.querySelector('path');
+                
+                if (circle && path) {
+                    const g = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    g.setAttribute('transform', 'translate(32, 32) scale(0.75) translate(-32, -32)');
+                    
+                    // Move circle and path into group
+                    circle.parentNode.insertBefore(g, circle);
+                    g.appendChild(circle);
+                    g.appendChild(path);
+                }
+                
+                const serializer = new XMLSerializer();
+                const maskableSvgText = serializer.serializeToString(svgDoc);
+                const maskableBlob = new Blob([maskableSvgText], { type: 'image/svg+xml;charset=utf-8' });
+                const maskableUrl = URL.createObjectURL(maskableBlob);
+                
+                statusDiv.textContent = 'Rendering to canvases...';
+                
+                // Render helper
+                const renderToCanvas = (url, canvasId) => {
+                    return new Promise((resolve, reject) => {
+                        const canvas = document.getElementById(canvasId);
+                        const ctx = canvas.getContext('2d');
+                        const img = new Image();
+                        
+                        img.onload = () => {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            resolve();
+                        };
+                        img.onerror = (e) => reject(new Error(`Failed to load image for canvas ${canvasId}`));
+                        img.src = url;
+                    });
+                };
+                
+                await renderToCanvas(standardUrl, 'canvas-192');
+                await renderToCanvas(standardUrl, 'canvas-512');
+                await renderToCanvas(maskableUrl, 'canvas-192-maskable');
+                await renderToCanvas(maskableUrl, 'canvas-512-maskable');
+                
+                statusDiv.textContent = 'Uploading generated icons to server...';
+                
+                const saveIcon = async (canvasId, filename) => {
+                    const canvas = document.getElementById(canvasId);
+                    const dataUrl = canvas.toDataURL('image/png');
+                    
+                    const res = await fetch('/temp-save-icon', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: filename, data: dataUrl })
+                    });
+                    
+                    if (!res.ok) {
+                        const errText = await res.text();
+                        throw new Error(`Failed to save ${filename}: ${errText}`);
+                    }
+                };
+                
+                await saveIcon('canvas-192', 'icon-192x192.png');
+                await saveIcon('canvas-512', 'icon-512x512.png');
+                await saveIcon('canvas-192-maskable', 'icon-192x192-maskable.png');
+                await saveIcon('canvas-512-maskable', 'icon-512x512-maskable.png');
+                
+                statusDiv.textContent = 'Icons generated and saved successfully!';
+                statusDiv.style.color = '#16a34a';
+                
+                // Clean up URLs
+                URL.revokeObjectURL(standardUrl);
+                URL.revokeObjectURL(maskableUrl);
+                
+            } catch (err) {
+                console.error(err);
+                statusDiv.textContent = 'Error: ' + err.message;
+                statusDiv.style.color = '#dc2626';
+            }
+        });
+    </script>
+</body>
+</html>
