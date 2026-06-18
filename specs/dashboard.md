@@ -38,7 +38,6 @@ Empty States:
 - No savings.
 
 ### Category Trend
-
 Purpose:
 Show spending trend by category.
 

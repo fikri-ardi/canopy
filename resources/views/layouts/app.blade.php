@@ -16,8 +16,9 @@
     </script>
     @vite('resources/css/app.css')
     <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+icon">
-    <link rel="manifest" href="/build/manifest.webmanifest">
+    <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#22c55e">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Alokasi">
@@ -896,9 +897,18 @@
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                navigator.serviceWorker.register('/service-worker.js?v=3', {
+                    scope: '/',
+                    updateViaCache: 'none',
+                })
                     .then(reg => {
                         console.log('ServiceWorker registered: ', reg);
+                        reg.update();
+
+                        if (reg.waiting) {
+                            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        }
+
                         reg.onupdatefound = () => {
                             const installingWorker = reg.installing;
                             if (installingWorker == null) return;
@@ -906,6 +916,7 @@
                                 if (installingWorker.state === 'installed') {
                                     if (navigator.serviceWorker.controller) {
                                         console.log('New version is available. Please reload.');
+                                        installingWorker.postMessage({ type: 'SKIP_WAITING' });
                                     } else {
                                         console.log('Content is cached for offline use.');
                                     }

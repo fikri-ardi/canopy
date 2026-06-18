@@ -21,6 +21,8 @@ export default defineConfig({
                 name: 'Alokasi',
                 short_name: 'Alokasi',
                 description: 'Alokasi - Teman Atur Uang',
+                id: '/',
+                scope: '/',
                 theme_color: '#22c55e',
                 background_color: '#f9fafb',
                 display: 'standalone',

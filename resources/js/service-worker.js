@@ -1,8 +1,13 @@
+import { clientsClaim, skipWaiting } from 'workbox-core';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute, NavigationRoute } from 'workbox-routing';
 import { CacheFirst, NetworkFirst, StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { ExpirationPlugin } from 'workbox-expiration';
+
+// Make the updated worker control the current tab as soon as it activates.
+skipWaiting();
+clientsClaim();
 
 // 1. Precaching
 // Workbox will replace self.__WB_MANIFEST with the generated list of files to precache.
@@ -11,6 +16,40 @@ precacheAndRoute(self.__WB_MANIFEST || []);
 // 2. Offline Fallback for Navigation
 const OFFLINE_URL = '/offline';
 const CACHE_NAME_OFFLINE = 'offline-fallback-v1';
+
+const offlineFallback = async () => {
+    const cache = await caches.open(CACHE_NAME_OFFLINE);
+
+    const response = await cache.match(OFFLINE_URL);
+
+    if (! response) {
+        return Response.error();
+    }
+
+    return new Response(await response.text(), {
+        status: 200,
+        statusText: 'OK',
+        headers: {
+            'Content-Type': 'text/html; charset=UTF-8',
+            'Cache-Control': 'no-store',
+        },
+    });
+};
+
+const htmlNetworkFallback = async ({ request }) => {
+    try {
+        return await fetch(request);
+    } catch (error) {
+        return offlineFallback();
+    }
+};
+
+const isSameOriginHtmlRequest = ({ request, url }) => {
+    return request.method === 'GET'
+        && url.origin === self.location.origin
+        && request.headers.get('accept')?.includes('text/html')
+        && ! url.pathname.startsWith('/livewire/');
+};
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
@@ -48,11 +87,13 @@ registerRoute(
         try {
             return await navigationHandler.handle(params);
         } catch (error) {
-            const cache = await caches.open(CACHE_NAME_OFFLINE);
-            return (await cache.match(OFFLINE_URL)) || Response.error();
+            return offlineFallback();
         }
     })
 );
+
+// Livewire wire:navigate prefetches pages as normal HTML fetches, not browser navigations.
+registerRoute(isSameOriginHtmlRequest, htmlNetworkFallback);
 
 // 3. Images: Stale While Revalidate
 registerRoute(
@@ -84,7 +125,10 @@ registerRoute(
 
 // 5. API / Cors requests: Network First
 registerRoute(
-    ({ request, url }) => request.mode === 'cors' || url.pathname.startsWith('/api/'),
+    ({ request, url }) => {
+        return url.pathname.startsWith('/api/')
+            || (request.mode === 'cors' && url.origin !== self.location.origin);
+    },
     new NetworkFirst({
         cacheName: 'api-cache',
         networkTimeoutSeconds: 5,
