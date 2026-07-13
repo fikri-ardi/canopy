@@ -61,17 +61,6 @@ class Dashboard extends Component
         $this->showSavingsDetail = false;
     }
 
-    public function selectInvestment(string $investmentName): void
-    {
-        $option = $this->investmentOptions()->firstWhere('key', $investmentName);
-
-        if (! $option) {
-            return;
-        }
-
-        $this->selectedInvestmentName = $option['key'];
-    }
-
     private function shouldShowOnboardingWelcome(): bool
     {
         return auth()->user()->needsOnboarding()

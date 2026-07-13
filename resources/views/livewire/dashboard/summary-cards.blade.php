@@ -133,8 +133,15 @@
 
         @if ($this->investmentOptions->isNotEmpty())
         <template x-teleport="body">
-            <div x-ref="dashboardInvestmentMenu" x-show="investmentMenu.open" x-cloak x-transition x-bind:style="investmentMenu.style"
-                x-on:click.outside="investmentMenu.close()" x-on:resize.window="investmentMenu.close()" wire:key="dashboard-investment-menu"
+            <div 
+                x-ref="dashboardInvestmentMenu" 
+                x-show="investmentMenu.open" 
+                x-cloak 
+                x-transition 
+                x-bind:style="investmentMenu.style"
+                x-on:click.outside="investmentMenu.close()" 
+                x-on:resize.window="investmentMenu.close()" 
+                wire:key="dashboard-investment-menu"
                 wire:ignore.self class="floating-select-menu investment-select-menu">
                 @foreach ($this->investmentOptions as $option)
                 <button type="button" x-on:click="investmentMenu.close()" wire:click="selectInvestment(@js($option['key']))"

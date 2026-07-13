@@ -23,7 +23,7 @@ class SummaryCards extends Component
     #[Computed]
     public function selectedInvestmentName()
     {
-        return strtolower($this->investmentOptions->first()['name']);
+        return $this->investmentOptions->first()['key'];
     }
 
     #[Computed]
@@ -32,6 +32,12 @@ class SummaryCards extends Component
         $selectedInvestment = $this->selectedInvestmentOption($this->investmentOptions);
 
         return (int) $selectedInvestment['amount'];
+    }
+
+    public function selectInvestment(string $investmentName): void
+    {
+        $option = $this->investmentOptions->firstWhere('key', $investmentName);
+        $this->selectedInvestmentName = $option['key'];
     }
 
     private function selectedInvestmentOption($options): ?array
