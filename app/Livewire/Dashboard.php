@@ -8,7 +8,6 @@ use App\Models\Spend;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -19,8 +18,6 @@ class Dashboard extends Component
     public $categoryChartPeriod;
 
     public $labelActivityYear;
-
-    public $showSavingsDetail = false;
 
     public $selectedInvestmentName;
 
@@ -51,16 +48,6 @@ class Dashboard extends Component
         $this->categoryChartPeriod = $period;
     }
 
-    public function openSavingsDetail(): void
-    {
-        $this->showSavingsDetail = true;
-    }
-
-    public function closeSavingsDetail(): void
-    {
-        $this->showSavingsDetail = false;
-    }
-
     private function shouldShowOnboardingWelcome(): bool
     {
         return auth()->user()->needsOnboarding()
@@ -79,11 +66,6 @@ class Dashboard extends Component
             ->whereHas('budget', fn($query) => $query->where('user_id', auth()->id()));
     }
 
-    private function userBudgetQuery(): Builder
-    {
-        return Budget::query()
-            ->where('user_id', auth()->id());
-    }
 
     private function labelBreakdown()
     {
@@ -242,7 +224,9 @@ class Dashboard extends Component
 
     private function totalIncome(): int
     {
-        return (int) $this->userBudgetQuery()->sum('income');
+        return (int) Budget::query()
+            ->where('user_id', auth()->id())
+            ->sum('income');
     }
 
     private function totalSavings(): int
@@ -253,70 +237,6 @@ class Dashboard extends Component
             ->where('budgets.user_id', auth()->id())
             ->whereIn(DB::raw('lower(trim(labels.name))'), ['investment', 'investasi'])
             ->sum('spends.amount');
-    }
-
-    private function savingsRateDetail(int $totalIncome): array
-    {
-        $totalSavings = $this->totalSavings();
-        $rate = $this->savingsRate($totalSavings, $totalIncome);
-
-        $currentMonth = now();
-        $previousMonth = now()->subMonth();
-
-        $currentMonthSavings = $this->monthlySavings($currentMonth);
-        $currentMonthIncome = $this->monthlyIncome($currentMonth);
-        $currentMonthRate = $currentMonthIncome > 0
-            ? (int) round(($currentMonthSavings / $currentMonthIncome) * 100)
-            : 0;
-
-        $previousMonthSavings = $this->monthlySavings($previousMonth);
-        $previousMonthIncome = $this->monthlyIncome($previousMonth);
-        $previousMonthRate = $previousMonthIncome > 0
-            ? (int) round(($previousMonthSavings / $previousMonthIncome) * 100)
-            : 0;
-
-        $trendDiff = $currentMonthRate - $previousMonthRate;
-
-        return [
-            'rate' => $rate,
-            'totalIncome' => $totalIncome,
-            'totalSavings' => $totalSavings,
-            'hasIncome' => $totalIncome > 0,
-            'hasSavings' => $totalSavings > 0,
-            'trend' => [
-                'current' => [
-                    'label' => $currentMonth->translatedFormat('M'),
-                    'rate' => $currentMonthRate,
-                ],
-                'previous' => [
-                    'label' => $previousMonth->translatedFormat('M'),
-                    'rate' => $previousMonthRate,
-                ],
-                'diff' => $trendDiff,
-                'diffFormatted' => ($trendDiff > 0 ? '+' : '') . $trendDiff . '%',
-                'tone' => $trendDiff > 0 ? 'up' : ($trendDiff < 0 ? 'down' : 'flat'),
-            ],
-        ];
-    }
-
-    private function monthlySavings(Carbon $month): int
-    {
-        return (int) Spend::query()
-            ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
-            ->join('labels', 'spends.label_id', '=', 'labels.id')
-            ->where('budgets.user_id', auth()->id())
-            ->whereIn(DB::raw('lower(trim(labels.name))'), ['investment', 'investasi'])
-            ->whereYear('spends.created_at', $month->year)
-            ->whereMonth('spends.created_at', $month->month)
-            ->sum('spends.amount');
-    }
-
-    private function monthlyIncome(Carbon $month): int
-    {
-        return (int) $this->userBudgetQuery()
-            ->whereYear('created_at', $month->year)
-            ->whereMonth('created_at', $month->month)
-            ->sum('income');
     }
 
     private function transactionCount(): int
@@ -352,7 +272,8 @@ class Dashboard extends Component
 
     private function budgetHealth()
     {
-        return $this->userBudgetQuery()
+        return Budget::query()
+            ->where('user_id', auth()->id())
             ->withSum('spends as total_spent', 'amount')
             ->latest('created_at')
             ->latest('id')
@@ -855,7 +776,6 @@ class Dashboard extends Component
             'totalIncome' => $totalIncome,
             'totalExpense' => $totalExpense,
             'remainingBalance' => $totalIncome - $totalExpense,
-            'budgetCount' => $this->userBudgetQuery()->count(),
             'transactionCount' => $transactionCount,
             'averageTransaction' => $this->averageTransaction(),
             'largestExpense' => $this->largestExpense(),
@@ -864,7 +784,6 @@ class Dashboard extends Component
             'labelCount' => $labelBreakdown->count(),
             'topLabel' => $labelBreakdown->first(),
             'showOnboardingWelcome' => $this->shouldShowOnboardingWelcome(),
-            'savingsRateDetail' => $this->showSavingsDetail ? $this->savingsRateDetail($totalIncome) : null,
             'investmentOptions' => $investmentOptions,
             'selectedInvestmentKey' => $selectedInvestment['key'] ?? null,
             'totalInvestment' => (int) ($selectedInvestment['amount'] ?? 0),
