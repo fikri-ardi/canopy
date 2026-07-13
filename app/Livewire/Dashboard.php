@@ -9,13 +9,17 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
     public $search = '';
+
     public $categoryChartPeriod;
+
     public $labelActivityYear;
+
     public $showSavingsDetail = false;
 
     public $selectedInvestmentName;
@@ -24,6 +28,7 @@ class Dashboard extends Component
     {
         $this->labelActivityYear ??= now()->year;
         $this->categoryChartPeriod ??= $this->defaultCategoryChartYear();
+        $this->selectedInvestmentName ??= $this->investmentOptions()->first()['name'];
     }
 
     public function completeOnboarding(): void
@@ -71,22 +76,18 @@ class Dashboard extends Component
     {
         return auth()->user()->needsOnboarding()
             && Budget::query()
-                ->where('user_id', auth()->id())
-                ->whereHas('spends')
-                ->exists();
+            ->where('user_id', auth()->id())
+            ->whereHas('spends')
+            ->exists();
     }
 
     private function userSpendQuery(bool $withRelations = false): Builder
     {
         $relations = ['budget', 'platform', 'status'];
 
-        if ($this->labelsSchemaReady()) {
-            $relations[] = 'label';
-        }
-
         return Spend::query()
-            ->when($withRelations, fn ($query) => $query->with($relations))
-            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()));
+            ->when($withRelations, fn($query) => $query->with($relations))
+            ->whereHas('budget', fn($query) => $query->where('user_id', auth()->id()));
     }
 
     private function userBudgetQuery(): Builder
@@ -97,17 +98,13 @@ class Dashboard extends Component
 
     private function labelBreakdown()
     {
-        if (! $this->labelsSchemaReady()) {
-            return collect();
-        }
-
         $labels = Spend::query()
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
-            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+            ->whereHas('budget', fn($query) => $query->where('user_id', auth()->id()))
             ->when($this->search, function ($query) {
                 $query->where(function ($query) {
-                    $query->where('labels.name', 'like', '%'.$this->search.'%')
-                        ->orWhere('spends.name', 'like', '%'.$this->search.'%');
+                    $query->where('labels.name', 'like', '%' . $this->search . '%')
+                        ->orWhere('spends.name', 'like', '%' . $this->search . '%');
                 });
             })
             ->selectRaw("coalesce(labels.name, 'Tanpa label') as label_name, sum(spends.amount) as total, count(*) as transactions")
@@ -119,12 +116,12 @@ class Dashboard extends Component
         return $labels->map(function ($label) {
             $items = Spend::query()
                 ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
-                ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+                ->whereHas('budget', fn($query) => $query->where('user_id', auth()->id()))
                 ->whereRaw("coalesce(labels.name, 'Tanpa label') = ?", [$label->label_name])
                 ->when($this->search, function ($query) {
                     $query->where(function ($query) {
-                        $query->where('labels.name', 'like', '%'.$this->search.'%')
-                            ->orWhere('spends.name', 'like', '%'.$this->search.'%');
+                        $query->where('labels.name', 'like', '%' . $this->search . '%')
+                            ->orWhere('spends.name', 'like', '%' . $this->search . '%');
                     });
                 })
                 ->selectRaw('spends.name as name, sum(spends.amount) as total, count(*) as transactions')
@@ -139,7 +136,7 @@ class Dashboard extends Component
                 'name' => $label->label_name,
                 'total' => (int) $label->total,
                 'transactions' => (int) $label->transactions,
-                'items' => $items->map(fn ($item) => [
+                'items' => $items->map(fn($item) => [
                     'name' => $item->name,
                     'total' => (int) $item->total,
                     'transactions' => (int) $item->transactions,
@@ -156,17 +153,6 @@ class Dashboard extends Component
 
     private function labelActivityHeatmap(): array
     {
-        if (! $this->labelsSchemaReady()) {
-            return [
-                'ready' => false,
-                'rows' => collect(),
-                'weeks' => collect(),
-                'totalRows' => 0,
-                'totalTransactions' => 0,
-                'periodLabel' => '',
-            ];
-        }
-
         [$periodStart, $periodEnd, $gridStart, $gridEnd] = $this->labelActivityRange();
         $weeks = collect();
         $cursor = $gridStart->copy();
@@ -181,7 +167,7 @@ class Dashboard extends Component
                 'key' => $weekStart->toDateString(),
                 'label' => $labelDate->isSameMonth($previousLabelDate) ? '' : $labelDate->format('M'),
                 'short' => $weekStart->format('d M'),
-                'fullLabel' => $weekStart->format('d M').' - '.$weekEnd->format('d M Y'),
+                'fullLabel' => $weekStart->format('d M') . ' - ' . $weekEnd->format('d M Y'),
             ]);
 
             $cursor->addWeeks(2);
@@ -189,17 +175,17 @@ class Dashboard extends Component
 
         $spends = Spend::query()
             ->leftJoin('labels', 'spends.label_id', '=', 'labels.id')
-            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+            ->whereHas('budget', fn($query) => $query->where('user_id', auth()->id()))
             ->whereBetween('spends.created_at', [$periodStart, $periodEnd])
             ->selectRaw("coalesce(labels.name, 'Tanpa label') as label_name, spends.name as spend_name, spends.amount as raw_amount, spends.created_at")
             ->get();
 
         $cellTotals = $spends
-            ->groupBy(fn ($spend) => $spend->label_name.'|'.$this->labelActivityBucketKey($spend->created_at, $gridStart))
-            ->map(fn ($items) => (int) $items->sum(fn ($spend) => (int) $spend->raw_amount));
+            ->groupBy(fn($spend) => $spend->label_name . '|' . $this->labelActivityBucketKey($spend->created_at, $gridStart))
+            ->map(fn($items) => (int) $items->sum(fn($spend) => (int) $spend->raw_amount));
 
         $cellNames = $spends
-            ->groupBy(fn ($spend) => $spend->label_name.'|'.$this->labelActivityBucketKey($spend->created_at, $gridStart))
+            ->groupBy(fn($spend) => $spend->label_name . '|' . $this->labelActivityBucketKey($spend->created_at, $gridStart))
             ->map(function ($items) {
                 $names = $items
                     ->pluck('spend_name')
@@ -215,16 +201,16 @@ class Dashboard extends Component
                     return $names->first();
                 }
 
-                return $names->first().' +'.($names->count() - 1).' lainnya';
+                return $names->first() . ' +' . ($names->count() - 1) . ' lainnya';
             });
 
         $maxCell = max((int) $cellTotals->max(), 1);
 
         $labelRows = $spends
             ->groupBy('label_name')
-            ->map(fn ($items, string $label) => [
+            ->map(fn($items, string $label) => [
                 'label' => $label,
-                'total' => (int) $items->sum(fn ($spend) => (int) $spend->raw_amount),
+                'total' => (int) $items->sum(fn($spend) => (int) $spend->raw_amount),
                 'transactions' => $items->count(),
                 'items' => $items,
             ])
@@ -239,7 +225,7 @@ class Dashboard extends Component
                 'total' => $row['total'],
                 'transactions' => $row['transactions'],
                 'weeks' => $weeks->map(function (array $week) use ($row, $cellTotals, $cellNames, $maxCell) {
-                    $cellKey = $row['label'].'|'.$week['key'];
+                    $cellKey = $row['label'] . '|' . $week['key'];
                     $amount = (int) ($cellTotals->get($cellKey) ?? 0);
                     $level = $amount === 0 ? 0 : max(1, min(4, (int) ceil(($amount / $maxCell) * 4)));
 
@@ -261,7 +247,7 @@ class Dashboard extends Component
             'totalRows' => $totalRows,
             'weeks' => $weeks,
             'totalTransactions' => $spends->count(),
-            'periodLabel' => $periodStart->format('M').' - '.$periodEnd->format('M Y'),
+            'periodLabel' => $periodStart->format('M') . ' - ' . $periodEnd->format('M Y'),
         ];
     }
 
@@ -272,10 +258,6 @@ class Dashboard extends Component
 
     private function totalSavings(): int
     {
-        if (! $this->labelsSchemaReady()) {
-            return 0;
-        }
-
         return (int) Spend::query()
             ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
             ->join('labels', 'spends.label_id', '=', 'labels.id')
@@ -339,10 +321,6 @@ class Dashboard extends Component
 
     private function monthlySavings(Carbon $month): int
     {
-        if (! $this->labelsSchemaReady()) {
-            return 0;
-        }
-
         return (int) Spend::query()
             ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
             ->join('labels', 'spends.label_id', '=', 'labels.id')
@@ -429,7 +407,7 @@ class Dashboard extends Component
             ->orderByDesc('total')
             ->limit(6)
             ->get()
-            ->map(fn ($item) => [
+            ->map(fn($item) => [
                 'name' => $item->name,
                 'total' => (int) $item->total,
                 'transactions' => (int) $item->transactions,
@@ -445,7 +423,7 @@ class Dashboard extends Component
             ->groupBy('statuses.id', 'statuses.body')
             ->orderByDesc('total')
             ->get()
-            ->map(fn ($item) => [
+            ->map(fn($item) => [
                 'name' => $item->name,
                 'total' => (int) $item->total,
                 'transactions' => (int) $item->transactions,
@@ -469,19 +447,6 @@ class Dashboard extends Component
         $selectedPeriod = array_key_exists((string) $this->categoryChartPeriod, $periodOptions)
             ? (string) $this->categoryChartPeriod
             : $this->defaultCategoryChartYear();
-
-        if (! $this->labelsSchemaReady()) {
-            return [
-                'ready' => false,
-                'series' => collect(),
-                'buckets' => collect(),
-                'yTicks' => collect(),
-                'width' => $width,
-                'height' => $height,
-                'periodOptions' => $periodOptions,
-                'selectedPeriod' => $selectedPeriod,
-            ];
-        }
 
         [$periodStart, $periodEnd, $buckets, $bucketFormat, $periodLabel] = $this->categoryChartRange((int) $selectedPeriod);
 
@@ -514,25 +479,25 @@ class Dashboard extends Component
 
         $valuesByCategory = $spends
             ->groupBy('category')
-            ->map(fn ($items) => [
-                'total' => (int) $items->sum(fn ($item) => (int) $item->raw_amount),
+            ->map(fn($items) => [
+                'total' => (int) $items->sum(fn($item) => (int) $item->raw_amount),
                 'transactions' => $items->count(),
                 'values' => $items
-                    ->groupBy(fn ($item) => $this->categoryChartBucketKey(Carbon::parse($item->created_at), $bucketFormat))
-                    ->map(fn ($bucketItems) => [
-                        'amount' => (int) $bucketItems->sum(fn ($item) => (int) $item->raw_amount),
+                    ->groupBy(fn($item) => $this->categoryChartBucketKey(Carbon::parse($item->created_at), $bucketFormat))
+                    ->map(fn($bucketItems) => [
+                        'amount' => (int) $bucketItems->sum(fn($item) => (int) $item->raw_amount),
                         'datesLabel' => $this->spendDatesLabel($bucketItems, $bucketFormat),
                     ]),
             ])
             ->sortByDesc('total');
 
         $chartMax = max((int) $valuesByCategory->take(5)->max(
-            fn (array $category) => $category['values']->max(fn (array $bucket) => (int) ($bucket['amount'] ?? 0)) ?? 0
+            fn(array $category) => $category['values']->max(fn(array $bucket) => (int) ($bucket['amount'] ?? 0)) ?? 0
         ), 1);
 
         $bucketCount = max($buckets->count(), 1);
         $labelStep = max(1, (int) ceil($bucketCount / 4));
-        $chartBuckets = $buckets->values()->map(fn (array $bucket, int $index) => [
+        $chartBuckets = $buckets->values()->map(fn(array $bucket, int $index) => [
             ...$bucket,
             'x' => round($padding['left'] + ($xStep * $index), 2),
             'showLabel' => $bucketCount <= 12 || $index === 0 || $index === $bucketCount - 1 || $index % $labelStep === 0,
@@ -572,7 +537,7 @@ class Dashboard extends Component
                         ];
                     })
                     ->values();
-                $defaultPoint = $points->filter(fn (array $point) => $point['amount'] > 0)->last() ?? $points->last();
+                $defaultPoint = $points->filter(fn(array $point) => $point['amount'] > 0)->last() ?? $points->last();
 
                 return [
                     'name' => $name,
@@ -580,21 +545,21 @@ class Dashboard extends Component
                     'total' => $category['total'],
                     'formattedTotal' => $this->rupiah($category['total']),
                     'transactions' => $category['transactions'],
-                        'color' => $color,
-                        'points' => $points,
+                    'color' => $color,
+                    'points' => $points,
                     'path' => $this->linePath($points->all()),
                     'areaPath' => $this->areaPath($points->all(), $padding['top'] + $plotHeight),
-                        'latestPoint' => $points->filter(fn (array $point) => $point['amount'] > 0)->last() ?? $points->last(),
-                        'summary' => [
-                            'name' => $name,
-                            'label' => str($name)->limit(22)->toString(),
-                            'dateLabel' => $periodLabel,
-                            'formattedTotal' => $this->rupiah($category['total']),
-                            'changePercentageLabel' => $defaultPoint['changePercentageLabel'],
-                            'changeTone' => $defaultPoint['changeTone'],
-                        ],
-                    ];
-                })
+                    'latestPoint' => $points->filter(fn(array $point) => $point['amount'] > 0)->last() ?? $points->last(),
+                    'summary' => [
+                        'name' => $name,
+                        'label' => str($name)->limit(22)->toString(),
+                        'dateLabel' => $periodLabel,
+                        'formattedTotal' => $this->rupiah($category['total']),
+                        'changePercentageLabel' => $defaultPoint['changePercentageLabel'],
+                        'changeTone' => $defaultPoint['changeTone'],
+                    ],
+                ];
+            })
             ->values();
 
         $yTicks = collect([0, 0.5, 1])->map(function (float $tick) use ($chartMax, $padding, $plotHeight) {
@@ -634,7 +599,7 @@ class Dashboard extends Component
     private function categoryChartPeriodOptions(): array
     {
         return $this->categoryChartYears()
-            ->mapWithKeys(fn (int $year) => [(string) $year => (string) $year])
+            ->mapWithKeys(fn(int $year) => [(string) $year => (string) $year])
             ->all();
     }
 
@@ -662,7 +627,7 @@ class Dashboard extends Component
     private function categoryChartBucketKey(Carbon $date, string $bucketFormat): string
     {
         if ($bucketFormat === 'quarter') {
-            return $date->format('Y-').'Q'.$date->quarter;
+            return $date->format('Y-') . 'Q' . $date->quarter;
         }
 
         return $date->format($bucketFormat);
@@ -674,7 +639,7 @@ class Dashboard extends Component
         $dates = $spends
             ->pluck('created_at')
             ->filter()
-            ->map(fn ($date) => Carbon::parse($date)->format($format))
+            ->map(fn($date) => Carbon::parse($date)->format($format))
             ->unique()
             ->values();
 
@@ -686,7 +651,7 @@ class Dashboard extends Component
             return $dates->join(', ');
         }
 
-        return $dates->take(2)->join(', ').' +'.($dates->count() - 2).' tanggal';
+        return $dates->take(2)->join(', ') . ' +' . ($dates->count() - 2) . ' tanggal';
     }
 
     private function chartColors(): array
@@ -707,17 +672,17 @@ class Dashboard extends Component
         }
 
         if (count($points) === 1) {
-            return 'M '.$points[0]['x'].' '.$points[0]['y'];
+            return 'M ' . $points[0]['x'] . ' ' . $points[0]['y'];
         }
 
-        $path = 'M '.$points[0]['x'].' '.$points[0]['y'];
+        $path = 'M ' . $points[0]['x'] . ' ' . $points[0]['y'];
 
         for ($index = 0; $index < count($points) - 1; $index++) {
             $current = $points[$index];
             $next = $points[$index + 1];
             $midX = round(($current['x'] + $next['x']) / 2, 2);
 
-            $path .= ' C '.$midX.' '.$current['y'].', '.$midX.' '.$next['y'].', '.$next['x'].' '.$next['y'];
+            $path .= ' C ' . $midX . ' ' . $current['y'] . ', ' . $midX . ' ' . $next['y'] . ', ' . $next['x'] . ' ' . $next['y'];
         }
 
         return $path;
@@ -733,7 +698,7 @@ class Dashboard extends Component
         $last = $points[count($points) - 1];
         $first = $points[0];
 
-        return $linePath.' L '.$last['x'].' '.round($baseline, 2).' L '.$first['x'].' '.round($baseline, 2).' Z';
+        return $linePath . ' L ' . $last['x'] . ' ' . round($baseline, 2) . ' L ' . $first['x'] . ' ' . round($baseline, 2) . ' Z';
     }
 
     private function compactAxisAmount(int $amount): string
@@ -741,11 +706,11 @@ class Dashboard extends Component
         if ($amount >= 1000000) {
             $value = $amount / 1000000;
 
-            return number_format($value, $amount % 1000000 === 0 ? 0 : 1, ',', '.').'jt';
+            return number_format($value, $amount % 1000000 === 0 ? 0 : 1, ',', '.') . 'jt';
         }
 
         if ($amount >= 1000) {
-            return number_format($amount / 1000, 0, ',', '.').'rb';
+            return number_format($amount / 1000, 0, ',', '.') . 'rb';
         }
 
         return number_format($amount, 0, ',', '.');
@@ -765,7 +730,7 @@ class Dashboard extends Component
         $rounded = round($percentage, 1);
         $formatted = number_format($rounded, abs($rounded) === floor(abs($rounded)) ? 0 : 1, ',', '.');
 
-        return ($rounded > 0 ? '+' : '').$formatted.'%';
+        return ($rounded > 0 ? '+' : '') . $formatted . '%';
     }
 
     private function labelActivityRange(): array
@@ -801,10 +766,10 @@ class Dashboard extends Component
     private function labelActivityYears()
     {
         $years = Spend::query()
-            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+            ->whereHas('budget', fn($query) => $query->where('user_id', auth()->id()))
             ->pluck('created_at')
             ->filter()
-            ->map(fn ($date) => Carbon::parse($date)->year)
+            ->map(fn($date) => Carbon::parse($date)->year)
             ->push(now()->year)
             ->push($this->selectedLabelActivityYear())
             ->unique()
@@ -817,10 +782,10 @@ class Dashboard extends Component
     private function categoryChartYears()
     {
         return Spend::query()
-            ->whereHas('budget', fn ($query) => $query->where('user_id', auth()->id()))
+            ->whereHas('budget', fn($query) => $query->where('user_id', auth()->id()))
             ->pluck('created_at')
             ->filter()
-            ->map(fn ($date) => Carbon::parse($date)->year)
+            ->map(fn($date) => Carbon::parse($date)->year)
             ->unique()
             ->sortDesc()
             ->values();
@@ -831,12 +796,9 @@ class Dashboard extends Component
         return (string) ($this->categoryChartYears()->first() ?? now()->year);
     }
 
-    private function investmentOptions()
+    #[Computed]
+    public function investmentOptions()
     {
-        if (! $this->labelsSchemaReady()) {
-            return collect();
-        }
-
         $principals = Spend::query()
             ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
             ->join('labels', 'spends.label_id', '=', 'labels.id')
@@ -847,14 +809,12 @@ class Dashboard extends Component
             ->get()
             ->keyBy('investment_key');
 
-        $movementTotals = $this->investmentMovementsSchemaReady()
-            ? InvestmentMovement::query()
-                ->where('user_id', auth()->id())
-                ->selectRaw("investment_key, sum(case when type = 'withdrawal' then amount else 0 end) as withdrawn, sum(case when type = 'deposit' then amount else 0 end) as deposit, count(*) as movements_count")
-                ->groupBy('investment_key')
-                ->get()
-                ->keyBy('investment_key')
-            : collect();
+        $movementTotals = InvestmentMovement::query()
+            ->where('user_id', auth()->id())
+            ->selectRaw("investment_key, sum(case when type = 'withdrawal' then amount else 0 end) as withdrawn, sum(case when type = 'deposit' then amount else 0 end) as deposit, count(*) as movements_count")
+            ->groupBy('investment_key')
+            ->get()
+            ->keyBy('investment_key');
 
         return $principals
             ->map(function ($spend, $key) use ($movementTotals) {
@@ -894,14 +854,9 @@ class Dashboard extends Component
         return $selected;
     }
 
-    private function investmentMovementsSchemaReady(): bool
-    {
-        return Schema::hasTable('investment_movements');
-    }
-
     public function rupiah($amount): string
     {
-        return 'Rp'.number_format((int) $amount, 0, ',', '.');
+        return 'Rp' . number_format((int) $amount, 0, ',', '.');
     }
 
     public function render()
@@ -912,8 +867,8 @@ class Dashboard extends Component
         $transactionCount = $this->transactionCount();
         $totalSavings = $this->totalSavings();
         $savingsRate = $this->savingsRate($totalSavings, $totalIncome);
-        $investmentOptions = $this->investmentOptions();
-        $selectedInvestment = $this->selectedInvestmentOption($investmentOptions);
+        $investmentOptions = $this->investmentOptions;
+        $selectedInvestment = $this->selectedInvestmentOption($this->investmentOptions);
 
         return view('livewire.dashboard', [
             'labelBreakdown' => $labelBreakdown,
@@ -933,7 +888,6 @@ class Dashboard extends Component
             'recentExpenses' => $this->recentExpenses(),
             'budgetHealth' => $this->budgetHealth(),
             'labelCount' => $labelBreakdown->count(),
-            'labelsReady' => $this->labelsSchemaReady(),
             'topLabel' => $labelBreakdown->first(),
             'showOnboardingWelcome' => $this->shouldShowOnboardingWelcome(),
             'savingsRate' => $savingsRate,
@@ -943,12 +897,5 @@ class Dashboard extends Component
             'totalInvestment' => (int) ($selectedInvestment['amount'] ?? 0),
             'investmentDetail' => $selectedInvestment['name'] ?? null,
         ]);
-    }
-
-    private function labelsSchemaReady(): bool
-    {
-        return Schema::hasTable('labels')
-            && Schema::hasColumn('labels', 'user_id')
-            && Schema::hasColumn('spends', 'label_id');
     }
 }
