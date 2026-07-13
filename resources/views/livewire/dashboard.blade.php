@@ -184,11 +184,11 @@
                                     <div class="mt-6 space-y-3">
                                         <div class="rounded-lg bg-gray-50 px-4 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                                             <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Total Income</div>
-                                            <div class="money-value mt-1 text-base font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($savingsRateDetail['totalIncome']) }}</div>
+                                            <div class="money-value mt-1 text-base font-bold text-gray-950 dark:text-slate-50">{{ rupiah($savingsRateDetail['totalIncome']) }}</div>
                                         </div>
                                         <div class="rounded-lg bg-green-50/70 px-4 py-3 ring-1 ring-green-100 dark:bg-green-500/[0.08] dark:ring-green-500/20">
                                             <div class="text-xs font-semibold uppercase text-green-700/70 dark:text-green-300/70">Total Saved</div>
-                                            <div class="money-value mt-1 text-base font-bold text-green-700 dark:text-green-300">{{ $this->rupiah($savingsRateDetail['totalSavings']) }}</div>
+                                            <div class="money-value mt-1 text-base font-bold text-green-700 dark:text-green-300">{{ rupiah($savingsRateDetail['totalSavings']) }}</div>
                                         </div>
                                     </div>
 
@@ -196,9 +196,9 @@
                                     <div class="mt-5 rounded-lg border border-slate-200/70 px-4 py-3 dark:border-slate-800/70">
                                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Formula</div>
                                         <div class="mt-2 text-center font-mono text-xs text-gray-600 dark:text-slate-300">
-                                            <span class="money-value text-green-600 dark:text-green-300">{{ $this->rupiah($savingsRateDetail['totalSavings']) }}</span>
+                                            <span class="money-value text-green-600 dark:text-green-300">{{ rupiah($savingsRateDetail['totalSavings']) }}</span>
                                             <span class="text-gray-400 dark:text-slate-500"> / </span>
-                                            <span class="money-value">{{ $this->rupiah($savingsRateDetail['totalIncome']) }}</span>
+                                            <span class="money-value">{{ rupiah($savingsRateDetail['totalIncome']) }}</span>
                                             <span class="text-gray-400 dark:text-slate-500"> × 100 = </span>
                                             <span class="font-bold text-gray-950 dark:text-slate-50">{{ $savingsRateDetail['rate'] }}%</span>
                                         </div>
@@ -552,7 +552,7 @@
                                             ></span>
                                         @endforeach
                                     </div>
-                                    <div class="money-value truncate text-right text-[10px] font-semibold text-gray-500 dark:text-slate-400 sm:text-xs">{{ $this->rupiah($row['total']) }}</div>
+                                    <div class="money-value truncate text-right text-[10px] font-semibold text-gray-500 dark:text-slate-400 sm:text-xs">{{ rupiah($row['total']) }}</div>
                                 </div>
                             @endforeach
                         </div>
@@ -579,7 +579,7 @@
                     </div>
                     <div class="rounded-lg bg-gray-50 px-3 py-2 text-right ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Rata-rata</div>
-                        <div class="money-value font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($averageTransaction) }}</div>
+                        <div class="money-value font-bold text-gray-950 dark:text-slate-50">{{ rupiah($averageTransaction) }}</div>
                     </div>
                 </div>
 
@@ -589,7 +589,7 @@
                             <div class="mb-2 flex items-center justify-between gap-3 text-sm">
                                 <div class="min-w-0">
                                     <div class="truncate font-semibold text-gray-950 dark:text-slate-50">{{ $budget['name'] }}</div>
-                                    <div class="money-value text-xs text-gray-500 dark:text-slate-400">{{ $this->rupiah($budget['spent']) }} of {{ $this->rupiah($budget['income']) }}</div>
+                                    <div class="money-value text-xs text-gray-500 dark:text-slate-400">{{ rupiah($budget['spent']) }} of {{ rupiah($budget['income']) }}</div>
                                 </div>
                                 <div class="{{ $budget['tone'] === 'danger' ? 'text-red-500' : ($budget['tone'] === 'warning' ? 'text-amber-500' : 'text-green-500') }} shrink-0 font-semibold">
                                     {{ $budget['percentage'] }}%
@@ -631,7 +631,7 @@
                                     <span>{{ $expense->created_at?->format('d M Y') }}</span>
                                 </div>
                             </div>
-                            <div class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
+                            <div class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ rupiah($expense->getRawOriginal('amount')) }}</div>
                         </div>
                     @empty
                         <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada pengeluaran terbaru.</div>
@@ -643,7 +643,7 @@
                         <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">Pengeluaran Terbesar</div>
                         <div class="mt-2 flex items-center justify-between gap-3">
                             <div class="min-w-0 truncate font-semibold text-gray-950 dark:text-slate-50">{{ $largestExpense->name }}</div>
-                            <div class="money-value shrink-0 font-bold text-red-500">{{ $this->rupiah($largestExpense->getRawOriginal('amount')) }}</div>
+                            <div class="money-value shrink-0 font-bold text-red-500">{{ rupiah($largestExpense->getRawOriginal('amount')) }}</div>
                         </div>
                     </div>
                 @endif
@@ -665,7 +665,7 @@
                                     <span>{{ $expense->label?->name ?? 'Tanpa label' }}</span>
                                 </div>
                             </div>
-                            <div class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
+                            <div class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ rupiah($expense->getRawOriginal('amount')) }}</div>
                         </div>
                     @empty
                         <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada pengeluaran di tampilan ini.</div>
@@ -705,7 +705,7 @@
                                 <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ ucfirst($status['name']) }}</span>
                                 <span class="text-gray-500 dark:text-slate-400">{{ $status['transactions'] }}x</span>
                             </div>
-                            <div class="money-value mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
+                            <div class="money-value mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ rupiah($status['total']) }}</div>
                         </div>
                     @empty
                         <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada data status.</div>

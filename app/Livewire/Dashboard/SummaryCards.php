@@ -90,7 +90,7 @@ class SummaryCards extends Component
             ->selectRaw("
                 investment_key, 
                 sum(
-                    case 
+                    case
                         when type = 'withdrawal' 
                         then amount 
                         else 0 

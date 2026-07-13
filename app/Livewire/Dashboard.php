@@ -232,7 +232,7 @@ class Dashboard extends Component
                     return [
                         'key' => $week['key'],
                         'amount' => $amount,
-                        'formatted' => $this->rupiah($amount),
+                        'formatted' => rupiah($amount),
                         'level' => $level,
                         'spendName' => $cellNames->get($cellKey, 'Belum ada pengeluaran'),
                         'date' => $week['fullLabel'],
@@ -264,15 +264,6 @@ class Dashboard extends Component
             ->where('budgets.user_id', auth()->id())
             ->whereIn(DB::raw('lower(trim(labels.name))'), ['investment', 'investasi'])
             ->sum('spends.amount');
-    }
-
-    private function savingsRate(int $totalSavings, int $totalIncome): int
-    {
-        if ($totalIncome <= 0) {
-            return 0;
-        }
-
-        return (int) round(($totalSavings / $totalIncome) * 100);
     }
 
     private function savingsRateDetail(int $totalIncome): array
@@ -517,7 +508,7 @@ class Dashboard extends Component
                         'fullLabel' => $bucket['fullLabel'],
                         'spendDateLabel' => $bucketData['datesLabel'] ?? $bucket['fullLabel'],
                         'amount' => $amount,
-                        'formatted' => $this->rupiah($amount),
+                        'formatted' => rupiah($amount),
                         'x' => $bucket['x'],
                         'y' => round($y, 2),
                     ];
@@ -543,7 +534,7 @@ class Dashboard extends Component
                     'name' => $name,
                     'label' => str($name)->limit(18)->toString(),
                     'total' => $category['total'],
-                    'formattedTotal' => $this->rupiah($category['total']),
+                    'formattedTotal' => rupiah($category['total']),
                     'transactions' => $category['transactions'],
                     'color' => $color,
                     'points' => $points,
@@ -554,7 +545,7 @@ class Dashboard extends Component
                         'name' => $name,
                         'label' => str($name)->limit(22)->toString(),
                         'dateLabel' => $periodLabel,
-                        'formattedTotal' => $this->rupiah($category['total']),
+                        'formattedTotal' => rupiah($category['total']),
                         'changePercentageLabel' => $defaultPoint['changePercentageLabel'],
                         'changeTone' => $defaultPoint['changeTone'],
                     ],
@@ -854,11 +845,6 @@ class Dashboard extends Component
         return $selected;
     }
 
-    public function rupiah($amount): string
-    {
-        return 'Rp' . number_format((int) $amount, 0, ',', '.');
-    }
-
     public function render()
     {
         $labelBreakdown = $this->labelBreakdown();
@@ -866,7 +852,6 @@ class Dashboard extends Component
         $totalExpense = $this->totalExpense();
         $transactionCount = $this->transactionCount();
         $totalSavings = $this->totalSavings();
-        $savingsRate = $this->savingsRate($totalSavings, $totalIncome);
         $investmentOptions = $this->investmentOptions;
         $selectedInvestment = $this->selectedInvestmentOption($this->investmentOptions);
 
@@ -890,7 +875,6 @@ class Dashboard extends Component
             'labelCount' => $labelBreakdown->count(),
             'topLabel' => $labelBreakdown->first(),
             'showOnboardingWelcome' => $this->shouldShowOnboardingWelcome(),
-            'savingsRate' => $savingsRate,
             'savingsRateDetail' => $this->showSavingsDetail ? $this->savingsRateDetail($totalIncome) : null,
             'investmentOptions' => $investmentOptions,
             'selectedInvestmentKey' => $selectedInvestment['key'] ?? null,
