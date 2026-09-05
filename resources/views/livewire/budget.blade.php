@@ -23,8 +23,10 @@
     x-on:budget-deleted.window="deleteBudget = false"
     class="min-w-0"
 >
+    {{-- Plan Header --}}
     <header class="app-header">
         <div class="page-header-layout">
+            {{-- Current plan name --}}
             <div class="page-header-copy">
                 <span class="page-hero-icon page-hero-icon-amber">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-6">
@@ -38,6 +40,7 @@
                 </div>
             </div>
 
+            {{-- Plan selector --}}
             <div class="page-header-actions">
                 @if ($activeBudget)
                     <div class="relative min-w-0 flex-1 sm:min-w-48 sm:flex-none">
@@ -108,6 +111,7 @@
                     </template>
                 @endif
 
+                {{-- Create new plan --}}
                 <button type="button" x-on:click="openBudgetModalFromTour()" class="btn-primary px-3 sm:px-4" data-onboarding-target="new-budget" aria-label="Rencana Baru" data-tooltip="Rencana Baru">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -118,6 +122,7 @@
         </div>
     </header>
 
+    {{-- onboarding --}}
     <template x-teleport="body">
         <template x-if="tour.visible && currentTourStep()">
             <div aria-hidden="true">
@@ -129,6 +134,7 @@
         </template>
     </template>
 
+    {{-- onboarding --}}
     <template x-teleport="body">
         <svg
             x-show="tour.visible && currentTourStep()"
@@ -165,6 +171,7 @@
         </svg>
     </template>
 
+    {{-- onboarding --}}
     <template x-teleport="body">
         <div
             x-show="tour.visible && currentTourStep()"
@@ -195,8 +202,10 @@
         </div>
     </template>
 
+    {{-- Create plan modal --}}
     <livewire:create-budget />
 
+    {{-- Rename plan modal --}}
     @if ($activeBudget)
         <div x-show="renameBudget" x-cloak x-transition class="modal-backdrop">
             <div x-on:click.away="renameBudget = false" class="modal-panel">
@@ -233,6 +242,7 @@
         </div>
     @endif
 
+    {{-- Edit income modal --}}
     @if ($activeBudget)
         <div x-show="editIncome" x-cloak x-transition class="modal-backdrop">
             <div x-on:click.away="editIncome = false" class="modal-panel">
@@ -270,6 +280,7 @@
         </div>
     @endif
 
+    {{-- Delete plan modal --}}
     @if ($activeBudget)
         <div x-show="deleteBudget" x-cloak x-transition class="modal-backdrop">
             <div x-on:click.away="deleteBudget = false" class="modal-panel">
@@ -303,6 +314,7 @@
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
         @if ($activeBudget)
+            {{-- Plan summary --}}
             <section
                 class="sticky-summary summary-grid"
                 x-data="{
@@ -411,7 +423,9 @@
                 @endforeach
             </section>
 
+            {{-- Spends section --}}
             <section id="expenses" class="min-w-0">
+                {{-- Header --}}
                 <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-gray-950 dark:text-slate-50">Pengeluaran</h2>
@@ -425,9 +439,11 @@
                     </button>
                 </div>
 
+                {{-- Spending lists --}}
                 <livewire:show-expense :activeBudgetId="$activeBudgetId" :key="'expenses-'.$budgetRenderKey.'-'.$activeBudgetId" />
             </section>
 
+            {{-- Plan summary card --}}
             <section class="grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(340px,1.1fr)]">
                 <div class="panel px-4 py-4">
                     <div class="flex items-center justify-between gap-3">
@@ -485,80 +501,10 @@
                 </div>
             </section>
 
-            <section id="reports" class="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-                <div class="panel px-4 py-4">
-                    <div class="flex items-center justify-between gap-4">
-                        <div class="flex min-w-0 items-center gap-3">
-                            <span class="progress-circle size-16" style="--progress: {{ $spendProgress }}; --progress-color: {{ $remainingBalance < 0 ? '#ef4444' : '#22c55e' }}">
-                                <span class="progress-circle-value">{{ min(999, $spendProgress) }}%</span>
-                            </span>
-                            <div class="min-w-0">
-                                <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Kondisi Rencana</h2>
-                                <p class="text-xs text-gray-500 dark:text-slate-400">{{ $spendProgress }}% terpakai</p>
-                            </div>
-                        </div>
-                        <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} money-value text-sm font-semibold">
-                            {{ $this->rupiah($remainingBalance) }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel px-4 py-4">
-                    <div class="flex items-center gap-3">
-                        <span class="icon-box-muted">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 4.296 3.745 3.745 0 0 1-4.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.745 3.745 0 0 1-4.296-1.043 3.745 3.745 0 0 1-1.043-4.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-4.296 3.745 3.745 0 0 1 4.296-1.043A3.745 3.745 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.745 3.745 0 0 1 4.296 1.043 3.745 3.745 0 0 1 1.043 4.296A3.745 3.745 0 0 1 21 12Z" />
-                            </svg>
-                        </span>
-                        <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Status</h2>
-                    </div>
-
-                    <div class="mt-3 grid gap-2 sm:grid-cols-2">
-                        @forelse ($statusAnalytics as $status)
-                            <div wire:key="budget-status-analytic-{{ str($status['name'])->slug() }}" class="rounded-lg bg-gray-50 px-3 py-2 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
-                                <div class="flex items-center justify-between gap-2 text-sm">
-                                    <span class="truncate font-semibold text-gray-700 dark:text-slate-200">{{ ucfirst($status['name']) }}</span>
-                                    <span class="text-gray-500 dark:text-slate-400">{{ $status['transactions'] }}x</span>
-                                </div>
-                                <div class="money-value mt-2 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($status['total']) }}</div>
-                            </div>
-                        @empty
-                            <div class="text-sm text-gray-500 dark:text-slate-400">Belum ada transaksi.</div>
-                        @endforelse
-                    </div>
-                </div>
-            </section>
-
-            <section class="panel px-4 py-4">
-                <div class="flex items-center gap-3">
-                    <span class="icon-box-muted">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
-                        </svg>
-                    </span>
-                    <h2 class="text-base font-bold text-gray-950 dark:text-slate-50">Distribusi Platform</h2>
-                </div>
-
-                <div class="mt-4 space-y-3">
-                    @forelse ($platformAnalytics as $platform)
-                        <div wire:key="budget-platform-analytic-{{ str($platform['name'])->slug() }}">
-                            <div class="mb-1 flex items-center justify-between gap-3 text-sm">
-                                <span class="font-semibold text-gray-700 dark:text-slate-200">{{ $platform['name'] }}</span>
-                                <span class="money-value shrink-0 text-gray-500 dark:text-slate-400">{{ $this->rupiah($platform['total']) }} / {{ $platform['percentage'] }}%</span>
-                            </div>
-                            <div class="progress-track h-2">
-                                <div class="progress-fill" style="--progress: {{ $platform['percentage'] }}%; --progress-color: #22c55e"></div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-sm text-gray-500 dark:text-slate-400">Belum ada data platform.</div>
-                    @endforelse
-                </div>
-            </section>
-
+            {{-- Create new spending modal --}}
             <livewire:create-expense @saved="$refresh" :activeBudgetId="$activeBudgetId" :key="'create-expense-'.$budgetRenderKey.'-'.$activeBudgetId" />
         @else
+            {{-- Empty state --}}
             <section class="panel border-dashed px-6 py-12 text-center">
                 <span class="icon-box mx-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
