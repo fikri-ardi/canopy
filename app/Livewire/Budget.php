@@ -18,7 +18,7 @@ class Budget extends Component
 
     public $budgets;
 
-    public $renameBudgetName;
+    public $renameBudget;
 
     public $incomeAmount;
 
@@ -71,7 +71,7 @@ class Budget extends Component
 
     public function startRenamingBudget()
     {
-        $this->renameBudgetName = $this->activeBudget?->name;
+        $this->renameBudget = $this->activeBudget?->name;
     }
 
     public function startEditingIncome()
@@ -87,11 +87,11 @@ class Budget extends Component
         }
 
         $validated = $this->validate([
-            'renameBudgetName' => ['required', 'string', 'max:255'],
+            'renameBudget' => ['required', 'string', 'max:255'],
         ]);
 
         $this->activeBudget->update([
-            'name' => $validated['renameBudgetName'],
+            'name' => $validated['renameBudget'],
         ]);
 
         $this->setActiveBudget($this->activeBudget->fresh(), false);
@@ -287,12 +287,12 @@ class Budget extends Component
 
     private function duplicateBudgetName(string $name): string
     {
-        $baseName = $name.' Salinan';
+        $baseName = $name . ' Salinan';
         $copyName = $baseName;
         $copyNumber = 2;
 
         while ($this->userBudgetsQuery()->where('name', $copyName)->exists()) {
-            $copyName = $baseName.' '.$copyNumber;
+            $copyName = $baseName . ' ' . $copyNumber;
             $copyNumber++;
         }
 
@@ -405,49 +405,6 @@ class Budget extends Component
         return (int) $this->activeBudget->income - (int) $managedExpense;
     }
 
-    private function platformAnalytics()
-    {
-        if (! $this->activeBudget) {
-            return collect();
-        }
-
-        $totalExpense = max($this->totalExpense(), 1);
-
-        return Spend::query()
-            ->join('platforms', 'spends.platform_id', '=', 'platforms.id')
-            ->where('spends.budget_id', $this->activeBudget->id)
-            ->selectRaw('platforms.name as name, sum(spends.amount) as total, count(*) as transactions')
-            ->groupBy('platforms.id', 'platforms.name')
-            ->orderByDesc('total')
-            ->get()
-            ->map(fn ($platform) => [
-                'name' => $platform->name,
-                'total' => (int) $platform->total,
-                'transactions' => (int) $platform->transactions,
-                'percentage' => round(((int) $platform->total / $totalExpense) * 100),
-            ]);
-    }
-
-    private function statusAnalytics()
-    {
-        if (! $this->activeBudget) {
-            return collect();
-        }
-
-        return Spend::query()
-            ->join('statuses', 'spends.status_id', '=', 'statuses.id')
-            ->where('spends.budget_id', $this->activeBudget->id)
-            ->selectRaw('statuses.body as name, sum(spends.amount) as total, count(*) as transactions')
-            ->groupBy('statuses.id', 'statuses.body')
-            ->orderByDesc('total')
-            ->get()
-            ->map(fn ($status) => [
-                'name' => $status->name,
-                'total' => (int) $status->total,
-                'transactions' => (int) $status->transactions,
-            ]);
-    }
-
     private function topExpenses()
     {
         if (! $this->activeBudget) {
@@ -465,15 +422,6 @@ class Budget extends Component
             ->orderByDesc('amount')
             ->take(4)
             ->get();
-    }
-
-    private function spendProgress(): int
-    {
-        if (! $this->activeBudget || (int) $this->activeBudget->income === 0) {
-            return 0;
-        }
-
-        return min(100, round(($this->totalExpense() / (int) $this->activeBudget->income) * 100));
     }
 
     private function selectedInvestmentOption($options): ?array
@@ -521,7 +469,7 @@ class Budget extends Component
             ->groupBy('platforms.id', 'platforms.name')
             ->orderByDesc('total')
             ->get()
-            ->map(fn ($platform) => [
+            ->map(fn($platform) => [
                 'id' => (int) $platform->id,
                 'name' => $platform->name,
                 'amount' => (int) $platform->total,
@@ -547,11 +495,11 @@ class Budget extends Component
 
         $movementTotals = $this->investmentMovementsSchemaReady()
             ? InvestmentMovement::query()
-                ->where('user_id', auth()->id())
-                ->selectRaw("investment_key, sum(case when type = 'withdrawal' then amount else 0 end) as withdrawn, sum(case when type = 'deposit' then amount else 0 end) as deposit, count(*) as movements_count")
-                ->groupBy('investment_key')
-                ->get()
-                ->keyBy('investment_key')
+            ->where('user_id', auth()->id())
+            ->selectRaw("investment_key, sum(case when type = 'withdrawal' then amount else 0 end) as withdrawn, sum(case when type = 'deposit' then amount else 0 end) as deposit, count(*) as movements_count")
+            ->groupBy('investment_key')
+            ->get()
+            ->keyBy('investment_key')
             : collect();
 
         return $principals
@@ -589,11 +537,6 @@ class Budget extends Component
         return Schema::hasTable('investment_movements');
     }
 
-    public function rupiah($amount): string
-    {
-        return 'Rp'.number_format((int) $amount, 0, ',', '.');
-    }
-
     private function rawAmount(string $amount): int
     {
         return (int) str_replace('.', '', $amount);
@@ -614,14 +557,11 @@ class Budget extends Component
                 ['label' => 'TERBESAR', 'amount' => $this->largestExpense(), 'format' => 'money'],
                 ['label' => 'BELUM DIALOKASI', 'amount' => $this->unallocatedTotal(), 'format' => 'money'],
             ],
-            'platformAnalytics' => $this->platformAnalytics(),
-            'statusAnalytics' => $this->statusAnalytics(),
             'topExpenses' => $this->topExpenses(),
             'allocationOptions' => $allocationOptions,
             'selectedAllocationPlatformId' => $selectedAllocation['id'] ?? null,
             'investmentOptions' => $investmentOptions,
             'selectedInvestmentKey' => $selectedInvestment['key'] ?? null,
-            'spendProgress' => $this->spendProgress(),
             'remainingBalance' => $this->remainingBalance(),
         ]);
     }

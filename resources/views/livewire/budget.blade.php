@@ -314,7 +314,7 @@
 
     <main class="space-y-6 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
         @if ($activeBudget)
-            {{-- Plan summary --}}
+            {{-- Plan summary cards --}}
             <section
                 class="sticky-summary summary-grid"
                 x-data="{
@@ -363,7 +363,7 @@
                                         </button>
                                     @endif
                                 </div>
-                                <div class="metric-value-lg money-value">{{ $this->rupiah($card['amount']) }}</div>
+                                <div class="metric-value-lg money-value">{{ rupiah($card['amount']) }}</div>
                                 @if (in_array(($card['key'] ?? null), ['allocation', 'investment'], true))
                                     <div class="mt-1 truncate text-xs font-medium text-gray-500 dark:text-slate-400">{{ $card['detail'] }}</div>
                                 @endif
@@ -397,7 +397,7 @@
                                                 <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
                                                 <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi</span>
                                             </span>
-                                            <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
+                                            <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ rupiah($option['amount']) }}</span>
                                         </button>
                                     @endforeach
                                 </div>
@@ -413,7 +413,7 @@
                                                 <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
                                                 <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi / {{ $option['movements'] }} mutasi</span>
                                             </span>
-                                            <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($option['amount']) }}</span>
+                                            <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ rupiah($option['amount']) }}</span>
                                         </button>
                                     @endforeach
                                 </div>
@@ -443,7 +443,7 @@
                 <livewire:show-expense :activeBudgetId="$activeBudgetId" :key="'expenses-'.$budgetRenderKey.'-'.$activeBudgetId" />
             </section>
 
-            {{-- Plan summary card --}}
+            {{-- Plan conditions --}}
             <section class="grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(340px,1.1fr)]">
                 <div class="panel px-4 py-4">
                     <div class="flex items-center justify-between gap-3">
@@ -463,13 +463,14 @@
                             <div wire:key="budget-insight-card-{{ str($card['label'])->slug() }}" class="metric-tile rounded-lg bg-gray-50 px-3 py-3 ring-1 ring-gray-100 dark:bg-slate-800/70 dark:ring-slate-700">
                                 <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
                                 <div class="metric-value-sm {{ $card['format'] === 'money' ? 'money-value' : '' }}">
-                                    {{ $card['format'] === 'money' ? $this->rupiah($card['amount']) : number_format($card['amount'], 0, ',', '.') }}
+                                    {{ $card['format'] === 'money' ? rupiah($card['amount']) : number_format($card['amount'], 0, ',', '.') }}
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
 
+                {{-- Top expenses --}}
                 <div class="panel px-4 py-4">
                     <div class="flex items-center justify-between gap-3">
                         <div>
@@ -477,7 +478,7 @@
                             <h2 class="mt-1 text-base font-bold text-gray-950 dark:text-slate-50">Pengeluaran terbesar</h2>
                         </div>
                         <div class="{{ $remainingBalance < 0 ? 'text-red-500' : 'text-green-500' }} money-value text-sm font-semibold">
-                            Sisa {{ $this->rupiah($remainingBalance) }}
+                            Sisa {{ rupiah($remainingBalance) }}
                         </div>
                     </div>
 
@@ -492,7 +493,7 @@
                                         <span>{{ $expense->status?->body }}</span>
                                     </div>
                                 </div>
-                                <div class="money-value shrink-0 font-bold text-gray-950 dark:text-slate-50">{{ $this->rupiah($expense->getRawOriginal('amount')) }}</div>
+                                <div class="money-value shrink-0 font-bold text-gray-950 dark:text-slate-50">{{ rupiah($expense->getRawOriginal('amount')) }}</div>
                             </div>
                         @empty
                             <div class="py-8 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada pengeluaran.</div>
