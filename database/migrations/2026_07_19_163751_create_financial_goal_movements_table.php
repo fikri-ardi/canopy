@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('financial_goal_movements', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Budget::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignIdFor(Budget::class)->nullable()->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignIdFor(FinancialGoal::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->text('type');
             $table->integer('amount');
