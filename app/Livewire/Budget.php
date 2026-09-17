@@ -267,6 +267,11 @@ class Budget extends Component
             ->get(['id', 'name']);
     }
 
+    /**
+     * Get the query builder for the authenticated user's budgets.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     private function userBudgetsQuery()
     {
         return ModelsBudget::query()
@@ -275,6 +280,13 @@ class Budget extends Component
             ->latest('id');
     }
 
+    /**
+     * Set the active budget and optionally refresh child components.
+     *
+     * @param  \App\Models\Budget|null  $budget
+     * @param  bool  $refreshChildren
+     * @return void
+     */
     private function setActiveBudget(?ModelsBudget $budget, bool $refreshChildren = true): void
     {
         $this->activeBudget = $budget;
@@ -303,24 +315,58 @@ class Budget extends Component
     {
         if (! $this->activeBudget) {
             return [
-                ['label' => 'TOTAL PEMASUKAN', 'amount' => 0, 'key' => 'income'],
-                ['label' => 'ALOKASI', 'amount' => 0, 'key' => 'allocation', 'detail' => 'Belum ada alokasi platform'],
-                ['label' => 'SISA', 'amount' => 0, 'key' => 'remaining'],
-                ['label' => 'BANK UTAMA', 'amount' => 0, 'key' => 'main_bank'],
-                ['label' => 'INVESTASI', 'amount' => 0, 'key' => 'investment', 'detail' => 'Belum ada pengeluaran investasi'],
+                [
+                    'label' => 'TOTAL PEMASUKAN',
+                    'amount' => 0,
+                    'key' => 'income'
+                ],
+                [
+                    'label' => 'ALOKASI',
+                    'amount' => 0,
+                    'key' => 'allocation',
+                    'detail' => 'Belum ada alokasi platform'
+                ],
+                [
+                    'label' => 'SISA',
+                    'amount' => 0,
+                    'key' => 'remaining'
+                ],
+                [
+                    'label' => 'BANK UTAMA',
+                    'amount' => 0,
+                    'key' => 'main_bank'
+                ],
+                [
+                    'label' => 'INVESTASI',
+                    'amount' => 0,
+                    'key' => 'investment',
+                    'detail' => 'Belum ada pengeluaran investasi'
+                ],
             ];
         }
 
         return [
-            ['label' => 'TOTAL PEMASUKAN', 'amount' => (int) $this->activeBudget->income, 'key' => 'income'],
+            [
+                'label' => 'TOTAL PEMASUKAN',
+                'amount' => (int) $this->activeBudget->income,
+                'key' => 'income'
+            ],
             [
                 'label' => 'ALOKASI',
                 'amount' => (int) ($allocation['amount'] ?? 0),
                 'key' => 'allocation',
                 'detail' => $allocation['name'] ?? 'Belum ada alokasi platform',
             ],
-            ['label' => 'SISA', 'amount' => $this->remainingBalance(), 'key' => 'remaining'],
-            ['label' => 'BANK UTAMA', 'amount' => $this->mainBankBalance(), 'key' => 'main_bank'],
+            [
+                'label' => 'SISA',
+                'amount' => $this->remainingBalance(),
+                'key' => 'remaining'
+            ],
+            [
+                'label' => 'BANK UTAMA',
+                'amount' => $this->mainBankBalance(),
+                'key' => 'main_bank'
+            ],
             [
                 'label' => 'INVESTASI',
                 'amount' => (int) ($investment['amount'] ?? 0),

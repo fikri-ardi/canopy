@@ -364,10 +364,17 @@
                                     @endif
                                 </div>
                                 <div class="metric-value-lg money-value">{{ rupiah($card['amount']) }}</div>
-                                @if (in_array(($card['key'] ?? null), ['allocation', 'investment'], true))
+                                @if (in_array(($card['key'] ?? null), ['allocation'], true))
                                     <div class="mt-1 truncate text-xs font-medium text-gray-500 dark:text-slate-400">{{ $card['detail'] }}</div>
                                 @endif
+                                @if (in_array(($card['key'] ?? null), ['investment'], true))
+                                    <div class="mt-1 truncate text-xs font-semibold text-green-600 dark:text-green-300">
+                                        75% tercapai
+                                    </div>
+                                @endif
                             </div>
+
+                            {{-- Icon --}}
                             <span class="icon-box">
                                 @switch($card['label'])
                                     @case('TOTAL INCOME')
@@ -388,6 +395,7 @@
                             </span>
                         </div>
 
+                        {{-- Allocation select menu --}}
                         @if (($card['key'] ?? null) === 'allocation' && $allocationOptions->isNotEmpty())
                             <template x-teleport="body">
                                 <div x-ref="allocationMenu" x-show="allocationMenu.open" x-cloak x-transition x-bind:style="allocationMenu.style" x-on:click.outside="allocationMenu.close()" x-on:resize.window="allocationMenu.close()" wire:key="budget-allocation-menu" wire:ignore.self class="floating-select-menu investment-select-menu">
@@ -404,11 +412,25 @@
                             </template>
                         @endif
 
+                        {{-- Financial goal select menu  --}}
                         @if (($card['key'] ?? null) === 'investment' && $investmentOptions->isNotEmpty())
                             <template x-teleport="body">
-                                <div x-ref="investmentMenu" x-show="investmentMenu.open" x-cloak x-transition x-bind:style="investmentMenu.style" x-on:click.outside="investmentMenu.close()" x-on:resize.window="investmentMenu.close()" wire:key="budget-investment-menu" wire:ignore.self class="floating-select-menu investment-select-menu">
+                                <div 
+                                    x-ref="investmentMenu" 
+                                    x-show="investmentMenu.open" 
+                                    x-cloak x-transition 
+                                    x-bind:style="investmentMenu.style" 
+                                    x-on:click.outside="investmentMenu.close()" 
+                                    x-on:resize.window="investmentMenu.close()" 
+                                    wire:key="budget-investment-menu" 
+                                    wire:ignore.self 
+                                    class="floating-select-menu investment-select-menu">
                                     @foreach ($investmentOptions as $option)
-                                        <button type="button" x-on:click="investmentMenu.close()" wire:click="selectInvestment(@js($option['key']))" wire:key="budget-investment-option-{{ str($option['key'])->slug() }}" class="investment-option {{ $selectedInvestmentKey === $option['key'] ? 'investment-option-active' : '' }}">
+                                        <button type="button" 
+                                            x-on:click="investmentMenu.close()" 
+                                            wire:click="selectInvestment(@js($option['key']))" 
+                                            wire:key="budget-investment-option-{{ str($option['key'])->slug() }}" 
+                                            class="investment-option {{ $selectedInvestmentKey === $option['key'] ? 'investment-option-active' : '' }}">
                                             <span class="min-w-0">
                                                 <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $option['name'] }}</span>
                                                 <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi / {{ $option['movements'] }} mutasi</span>
@@ -421,6 +443,7 @@
                         @endif
                     </div>
                 @endforeach
+                
             </section>
 
             {{-- Spends section --}}
