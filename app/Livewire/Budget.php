@@ -366,7 +366,7 @@ class Budget extends Component
             ],
             [
                 'label' => 'SISA',
-                'amount' => $this->remainingBalance(),
+                'amount' => $this->remainingBalance,
                 'key' => 'remaining'
             ],
             [
@@ -392,49 +392,8 @@ class Budget extends Component
         return (int) Spend::where('budget_id', $this->activeBudget->id)->sum('amount');
     }
 
-    private function transactionCount(): int
-    {
-        if (! $this->activeBudget) {
-            return 0;
-        }
-
-        return (int) Spend::where('budget_id', $this->activeBudget->id)->count();
-    }
-
-    private function averageExpense(): int
-    {
-        $transactionCount = $this->transactionCount();
-
-        if ($transactionCount === 0) {
-            return 0;
-        }
-
-        return (int) round($this->totalExpense() / $transactionCount);
-    }
-
-    private function largestExpense(): int
-    {
-        if (! $this->activeBudget) {
-            return 0;
-        }
-
-        return (int) Spend::where('budget_id', $this->activeBudget->id)->max('amount');
-    }
-
-    private function unallocatedTotal(): int
-    {
-        if (! $this->activeBudget) {
-            return 0;
-        }
-
-        return (int) Spend::query()
-            ->join('statuses', 'spends.status_id', '=', 'statuses.id')
-            ->where('spends.budget_id', $this->activeBudget->id)
-            ->whereIn(DB::raw('lower(statuses.body)'), ['unallocated', 'unalocated', 'belum dialokasi'])
-            ->sum('spends.amount');
-    }
-
-    private function remainingBalance(): int
+    #[Computed]
+    public function remainingBalance(): int
     {
         if (! $this->activeBudget) {
             return 0;
@@ -456,25 +415,6 @@ class Budget extends Component
             ->sum('spends.amount');
 
         return (int) $this->activeBudget->income - (int) $managedExpense;
-    }
-
-    private function topExpenses()
-    {
-        if (! $this->activeBudget) {
-            return collect();
-        }
-
-        $relations = ['platform', 'status'];
-
-        if (Schema::hasColumn('spends', 'label_id')) {
-            $relations[] = 'label';
-        }
-
-        return Spend::with($relations)
-            ->where('budget_id', $this->activeBudget->id)
-            ->orderByDesc('amount')
-            ->take(4)
-            ->get();
     }
 
     private function selectedAllocationOption($options): ?array
@@ -534,16 +474,8 @@ class Budget extends Component
 
         return view('livewire.budget', [
             'summaryCards' => $this->summaryCards($selectedAllocation),
-            'insightCards' => [
-                ['label' => 'TRANSAKSI', 'amount' => $this->transactionCount(), 'format' => 'number'],
-                ['label' => 'RATA-RATA', 'amount' => $this->averageExpense(), 'format' => 'money'],
-                ['label' => 'TERBESAR', 'amount' => $this->largestExpense(), 'format' => 'money'],
-                ['label' => 'BELUM DIALOKASI', 'amount' => $this->unallocatedTotal(), 'format' => 'money'],
-            ],
-            'topExpenses' => $this->topExpenses(),
             'allocationOptions' => $allocationOptions,
             'selectedAllocationPlatformId' => $selectedAllocation['id'] ?? null,
-            'remainingBalance' => $this->remainingBalance(),
         ]);
     }
 }
