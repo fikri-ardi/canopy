@@ -334,6 +334,8 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-2">
                                     <div class="text-xs font-semibold uppercase text-gray-400 dark:text-slate-500">{{ $card['label'] }}</div>
+
+                                    {{-- Allocation select trigger --}}
                                     @if (($card['key'] ?? null) === 'allocation' && $allocationOptions->isNotEmpty())
                                         <button
                                             x-ref="allocationTrigger"
@@ -348,14 +350,16 @@
                                             </svg>
                                         </button>
                                     @endif
-                                    @if (($card['key'] ?? null) === 'investment' && $investmentOptions->isNotEmpty())
+
+                                    {{-- Financial Goal select trigger --}}
+                                    @if (($card['key'] ?? null) === 'financial_goals' && $this->financialGoals->isNotEmpty())
                                         <button
-                                            x-ref="investmentTrigger"
+                                            x-ref="FinancialGoalTrigger"
                                             type="button"
-                                            x-on:click.stop="investmentMenu.toggle($refs.investmentTrigger, $refs.investmentMenu)"
+                                            x-on:click.stop="financialGoalOptionsMenu.toggle($refs.FinancialGoalTrigger, $refs.financialGoalOptionsMenu)"
                                             class="summary-menu-button"
-                                            aria-label="Pilih pengeluaran investasi"
-                                            data-tooltip="Pilih pengeluaran investasi"
+                                            aria-label="Pilih tujuan keuangan"
+                                            data-tooltip="Pilih tujuan keuangan"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -363,13 +367,19 @@
                                         </button>
                                     @endif
                                 </div>
+
+                                {{-- Metric Value --}}
                                 <div class="metric-value-lg money-value">{{ rupiah($card['amount']) }}</div>
+
+                                {{-- Allocation details --}}
                                 @if (in_array(($card['key'] ?? null), ['allocation'], true))
                                     <div class="mt-1 truncate text-xs font-medium text-gray-500 dark:text-slate-400">{{ $card['detail'] }}</div>
                                 @endif
-                                @if (in_array(($card['key'] ?? null), ['investment'], true))
+                                
+                                {{-- Financial Goal progress --}}
+                                @if (($card['key'] ?? null) === 'financial_goals')
                                     <div class="mt-1 truncate text-xs font-semibold text-green-600 dark:text-green-300">
-                                        75% tercapai
+                                        {{ $card['detail'] }}
                                     </div>
                                 @endif
                             </div>
@@ -412,22 +422,22 @@
                             </template>
                         @endif
 
-                        {{-- Financial goal select menu  --}}
+                        {{-- Financial goal options menu  --}}
                         @if (($card['key'] ?? null) === 'investment' && $investmentOptions->isNotEmpty())
                             <template x-teleport="body">
                                 <div 
-                                    x-ref="investmentMenu" 
-                                    x-show="investmentMenu.open" 
+                                    x-ref="financialGoalOptionsMenu" 
+                                    x-show="financialGoalOptionsMenu.open" 
                                     x-cloak x-transition 
-                                    x-bind:style="investmentMenu.style" 
-                                    x-on:click.outside="investmentMenu.close()" 
-                                    x-on:resize.window="investmentMenu.close()" 
+                                    x-bind:style="financialGoalOptionsMenu.style" 
+                                    x-on:click.outside="financialGoalOptionsMenu.close()" 
+                                    x-on:resize.window="financialGoalOptionsMenu.close()" 
                                     wire:key="budget-investment-menu" 
                                     wire:ignore.self 
                                     class="floating-select-menu investment-select-menu">
                                     @foreach ($investmentOptions as $option)
                                         <button type="button" 
-                                            x-on:click="investmentMenu.close()" 
+                                            x-on:click="financialGoalOptionsMenu.close()" 
                                             wire:click="selectInvestment(@js($option['key']))" 
                                             wire:key="budget-investment-option-{{ str($option['key'])->slug() }}" 
                                             class="investment-option {{ $selectedInvestmentKey === $option['key'] ? 'investment-option-active' : '' }}">
@@ -436,6 +446,34 @@
                                                 <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $option['transactions'] }} transaksi / {{ $option['movements'] }} mutasi</span>
                                             </span>
                                             <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ rupiah($option['amount']) }}</span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </template>
+                        @endif
+                        @if (($card['key'] ?? null) === 'financial_goals' && $this->financialGoals->isNotEmpty())
+                            <template x-teleport="body">
+                                <div 
+                                    x-ref="financialGoalOptionsMenu" 
+                                    x-show="financialGoalOptionsMenu.open" 
+                                    x-cloak x-transition 
+                                    x-bind:style="financialGoalOptionsMenu.style" 
+                                    x-on:click.outside="financialGoalOptionsMenu.close()" 
+                                    x-on:resize.window="financialGoalOptionsMenu.close()" 
+                                    wire:key="budget-investment-menu" 
+                                    wire:ignore.self 
+                                    class="floating-select-menu investment-select-menu">
+                                    @foreach ($this->financialGoals as $goal)
+                                        <button type="button" 
+                                            x-on:click="financialGoalOptionsMenu.close()" 
+                                            wire:click="setActiveFinancialGoal(@js($goal->id))" 
+                                            wire:key="budget-financial-goals-{{ $goal->id }}" 
+                                            class="financial-goals {{ $activeFinancialGoal && $activeFinancialGoal->id === $goal->id ? 'active-financial-goal' : '' }}">
+                                            <span class="min-w-0">
+                                                <span class="block truncate font-semibold text-gray-800 dark:text-slate-100">{{ $goal->name }}</span>
+                                                <span class="mt-0.5 block text-xs text-gray-400 dark:text-slate-500">{{ $goal->movements->count() }} transaksi</span>
+                                            </span>
+                                            <span class="money-value shrink-0 text-sm font-bold text-gray-950 dark:text-slate-50">{{ rupiah($goal->movements->sum('amount')) }}</span>
                                         </button>
                                     @endforeach
                                 </div>

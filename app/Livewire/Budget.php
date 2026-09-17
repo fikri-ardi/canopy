@@ -3,10 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Budget as ModelsBudget;
-use App\Models\InvestmentMovement;
 use App\Models\Spend;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -24,7 +24,7 @@ class Budget extends Component
 
     public $budgetRenderKey = 0;
 
-    public $selectedInvestmentName;
+    public $activeFinancialGoal;
 
     public $selectedAllocationPlatformId;
 
@@ -34,6 +34,7 @@ class Budget extends Component
     {
         $this->refreshBudgets();
         $this->setActiveBudget($this->userBudgetsQuery()->first());
+        $this->setActiveFinancialGoal($this->financialGoals()->first()?->id);
         $this->onboardingStep = $this->initialOnboardingStep();
     }
 
@@ -174,15 +175,21 @@ class Budget extends Component
         $this->setActiveBudget($newBudget);
     }
 
-    public function selectInvestment(string $investmentName): void
+    #[Computed]
+    public function financialGoals()
     {
-        $option = $this->investmentOptions()->firstWhere('key', $investmentName);
+        return auth()->user()
+            ->financialGoals()
+            ->get();
+    }
 
-        if (! $option) {
+    public function setActiveFinancialGoal($id): void
+    {
+        $this->activeFinancialGoal = $this->financialGoals()->firstWhere('id', $id);
+
+        if (! $this->activeFinancialGoal) {
             return;
         }
-
-        $this->selectedInvestmentName = $option['key'];
     }
 
     public function selectAllocationPlatform(int $platformId): void
@@ -311,7 +318,7 @@ class Budget extends Component
         return $copyName;
     }
 
-    private function summaryCards(?array $investment = null, ?array $allocation = null): array
+    private function summaryCards(?array $allocation = null): array
     {
         if (! $this->activeBudget) {
             return [
@@ -337,10 +344,10 @@ class Budget extends Component
                     'key' => 'main_bank'
                 ],
                 [
-                    'label' => 'INVESTASI',
+                    'label' => 'TUJUAN KEUANGAN',
                     'amount' => 0,
-                    'key' => 'investment',
-                    'detail' => 'Belum ada pengeluaran investasi'
+                    'key' => 'financial_goals',
+                    'detail' => 'Belum ada tujuan keuangan'
                 ],
             ];
         }
@@ -368,10 +375,10 @@ class Budget extends Component
                 'key' => 'main_bank'
             ],
             [
-                'label' => 'INVESTASI',
-                'amount' => (int) ($investment['amount'] ?? 0),
-                'key' => 'investment',
-                'detail' => $investment['name'] ?? 'Belum ada pengeluaran investasi',
+                'label' => $this->activeFinancialGoal->name,
+                'amount' => $this->activeFinancialGoal->movements->sum('amount') ?? 0,
+                'key' => 'financial_goals',
+                'detail' => $this->activeFinancialGoal->progress . ' tercapai',
             ],
         ];
     }
@@ -470,21 +477,6 @@ class Budget extends Component
             ->get();
     }
 
-    private function selectedInvestmentOption($options): ?array
-    {
-        if ($options->isEmpty()) {
-            return null;
-        }
-
-        $selected = $this->selectedInvestmentName
-            ? $options->firstWhere('key', $this->selectedInvestmentName)
-            : null;
-
-        $selected ??= $options->first();
-
-        return $selected;
-    }
-
     private function selectedAllocationOption($options): ?array
     {
         if ($options->isEmpty()) {
@@ -523,64 +515,11 @@ class Budget extends Component
             ]);
     }
 
-    private function investmentOptions()
-    {
-        if (! $this->labelsSchemaReady()) {
-            return collect();
-        }
-
-        $principals = Spend::query()
-            ->join('budgets', 'spends.budget_id', '=', 'budgets.id')
-            ->join('labels', 'spends.label_id', '=', 'labels.id')
-            ->where('budgets.user_id', auth()->id())
-            ->whereIn(DB::raw('lower(trim(labels.name))'), ['investment', 'investasi'])
-            ->selectRaw('lower(trim(spends.name)) as investment_key, min(spends.name) as name, sum(spends.amount) as principal, count(*) as transactions, count(distinct spends.budget_id) as budgets_count')
-            ->groupByRaw('lower(trim(spends.name))')
-            ->get()
-            ->keyBy('investment_key');
-
-        $movementTotals = $this->investmentMovementsSchemaReady()
-            ? InvestmentMovement::query()
-            ->where('user_id', auth()->id())
-            ->selectRaw("investment_key, sum(case when type = 'withdrawal' then amount else 0 end) as withdrawn, sum(case when type = 'deposit' then amount else 0 end) as deposit, count(*) as movements_count")
-            ->groupBy('investment_key')
-            ->get()
-            ->keyBy('investment_key')
-            : collect();
-
-        return $principals
-            ->map(function ($spend, $key) use ($movementTotals) {
-                $movement = $movementTotals->get($key);
-                $principal = (int) $spend->principal;
-                $withdrawn = (int) ($movement->withdrawn ?? 0);
-                $deposit = (int) ($movement->deposit ?? 0);
-
-                return [
-                    'key' => $spend->investment_key,
-                    'name' => $spend->name,
-                    'amount' => $principal + $deposit - $withdrawn,
-                    'principal' => $principal,
-                    'withdrawn' => $withdrawn,
-                    'deposit' => $deposit,
-                    'movements' => (int) ($movement->movements_count ?? 0),
-                    'transactions' => (int) $spend->transactions,
-                    'budgets' => (int) $spend->budgets_count,
-                ];
-            })
-            ->sortByDesc('amount')
-            ->values();
-    }
-
     private function labelsSchemaReady(): bool
     {
         return Schema::hasTable('labels')
             && Schema::hasColumn('labels', 'user_id')
             && Schema::hasColumn('spends', 'label_id');
-    }
-
-    private function investmentMovementsSchemaReady(): bool
-    {
-        return Schema::hasTable('investment_movements');
     }
 
     private function rawAmount(string $amount): int
@@ -592,11 +531,9 @@ class Budget extends Component
     {
         $allocationOptions = $this->allocationOptions();
         $selectedAllocation = $this->selectedAllocationOption($allocationOptions);
-        $investmentOptions = $this->investmentOptions();
-        $selectedInvestment = $this->selectedInvestmentOption($investmentOptions);
 
         return view('livewire.budget', [
-            'summaryCards' => $this->summaryCards($selectedInvestment, $selectedAllocation),
+            'summaryCards' => $this->summaryCards($selectedAllocation),
             'insightCards' => [
                 ['label' => 'TRANSAKSI', 'amount' => $this->transactionCount(), 'format' => 'number'],
                 ['label' => 'RATA-RATA', 'amount' => $this->averageExpense(), 'format' => 'money'],
@@ -606,8 +543,6 @@ class Budget extends Component
             'topExpenses' => $this->topExpenses(),
             'allocationOptions' => $allocationOptions,
             'selectedAllocationPlatformId' => $selectedAllocation['id'] ?? null,
-            'investmentOptions' => $investmentOptions,
-            'selectedInvestmentKey' => $selectedInvestment['key'] ?? null,
             'remainingBalance' => $this->remainingBalance(),
         ]);
     }
