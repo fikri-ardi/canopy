@@ -373,12 +373,12 @@
 
                                 {{-- Allocation details --}}
                                 @if (in_array(($card['key'] ?? null), ['allocation'], true))
-                                    <div class="mt-1 truncate text-xs font-medium text-gray-500 dark:text-slate-400">{{ $card['detail'] }}</div>
+                                    <div class="mt-2 truncate text-xs font-medium text-gray-500 dark:text-slate-400">{{ $card['detail'] }}</div>
                                 @endif
                                 
                                 {{-- Financial Goal progress --}}
                                 @if (($card['key'] ?? null) === 'financial_goals')
-                                    <div class="mt-1 truncate text-xs font-semibold text-green-600 dark:text-green-300">
+                                    <div class="mt-2 truncate text-xs text-green-600 dark:text-green-300">
                                         {{ $card['detail'] }}
                                     </div>
                                 @endif
